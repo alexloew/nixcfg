@@ -1,0 +1,21 @@
+# Nix build artifacts
+result
+result-*
+
+# Direnv
+.direnv/
+
+# Editor state
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Secrets (never commit these)
+secrets/
+*.age
+!*.age.pub
