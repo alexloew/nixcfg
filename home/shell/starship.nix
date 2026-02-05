@@ -1,0 +1,38 @@
+# Starship Prompt Configuration
+# Cross-shell prompt customization
+
+{ pkgs, ... }:
+
+{
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+
+    settings = {
+      add_newline = true;
+
+      # Disabled modules (cloud/language providers)
+      aws.disabled = true;
+      package.disabled = true;
+      gcloud.disabled = true;
+      azure.disabled = true;
+      nodejs.disabled = true;
+
+      character = {
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[➜](bold red)";
+      };
+
+      cmd_duration = {
+        min_time = 500;
+        format = "underwent [$duration](bold yellow)";
+      };
+
+      directory = {
+        truncation_length = 255;
+        truncate_to_repo = false;
+        use_logical_path = false;
+      };
+    };
+  };
+}
