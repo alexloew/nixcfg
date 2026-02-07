@@ -10,6 +10,9 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
 
+    # Cursor editor
+    cursor.url = "github:alexloew/cursor-nixos-flake";
+
     # Dank Material Shell - Wayland desktop shell
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
