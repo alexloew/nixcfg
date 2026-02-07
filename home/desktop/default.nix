@@ -6,9 +6,10 @@
 
 {
   imports = [
+    ./dms.nix
     ./fonts.nix
     ./gnome.nix
     ./hyprland.nix
-    ./dms.nix
+    ./idle.nix
   ];
 }
