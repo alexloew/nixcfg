@@ -12,6 +12,12 @@
     ripgrep
     fzf
 
+    # File manager
+    yazi
+
+    # Git TUI
+    lazygit
+
     # System monitoring
     htop
     btop
