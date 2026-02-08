@@ -21,7 +21,6 @@
         trim-trailing-whitespace = true;
         end-of-line-diagnostics = "hint";
         color-modes = true;
-        rainbow-brackets = true;
 
         inline-diagnostics.cursor-line = "warning";
 
