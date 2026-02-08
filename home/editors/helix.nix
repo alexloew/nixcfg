@@ -196,7 +196,7 @@
     extraPackages = with pkgs; [
       # LSPs
       marksman            # Markdown
-      harper-ls           # Grammar checking
+      harper              # Grammar checking (provides harper-ls)
       nil                 # Nix
       rust-analyzer       # Rust
       pyright             # Python
