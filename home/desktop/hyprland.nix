@@ -15,8 +15,15 @@
         ",preferred,auto,2"  # 2x HiDPI scaling
       ];
 
+      # Environment variables for NVIDIA + Wayland
+      env = [
+        "LIBVA_DRIVER_NAME,nvidia"
+        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
+        "GBM_BACKEND,nvidia-drm"
+        "WLR_NO_HARDWARE_CURSORS,1"
+      ];
+
       # DMS handles startup apps (bar, notifications, etc.)
-      # Add any additional startup apps here
       exec-once = [
         # DMS starts automatically via its module
       ];
@@ -41,20 +48,31 @@
         layout = "dwindle";
       };
 
-      # Decorations (rounded corners, blur, shadows)
+      # Decorations (rounded corners, blur, shadows, transparency)
       decoration = {
         rounding = 10;
+
+        # Window transparency
+        active_opacity = 0.95;
+        inactive_opacity = 0.85;
+        fullscreen_opacity = 1.0;
+
         blur = {
           enabled = true;
           size = 8;
-          passes = 2;
+          passes = 3;
           new_optimizations = true;
+          xray = false;
+          noise = 0.02;
+          contrast = 0.9;
+          brightness = 0.8;
+          vibrancy = 0.2;
         };
         shadow = {
           enabled = true;
-          range = 8;
-          render_power = 2;
-          color = "rgba(1a1a1aee)";
+          range = 12;
+          render_power = 3;
+          color = "rgba(1a1a2eee)";
         };
       };
 

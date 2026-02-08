@@ -12,6 +12,7 @@
     ./locale.nix
     ./network.nix
     ./nix.nix
+    ./nvidia.nix
     ./users.nix
   ];
 }
