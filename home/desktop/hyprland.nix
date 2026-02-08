@@ -12,7 +12,7 @@
     settings = {
       # Monitor configuration (adjust to your setup)
       monitor = [
-        ",preferred,auto,1"  # Default: auto-detect
+        ",preferred,auto,2"  # 2x HiDPI scaling
       ];
 
       # DMS handles startup apps (bar, notifications, etc.)
