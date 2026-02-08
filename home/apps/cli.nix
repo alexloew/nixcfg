@@ -18,6 +18,9 @@
     # Git TUI
     lazygit
 
+    # Hardware info
+    pciutils          # lspci
+
     # System monitoring
     htop
     btop
