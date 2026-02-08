@@ -67,7 +67,17 @@
           contrast = 0.9;
           brightness = 0.8;
           vibrancy = 0.2;
+          popups = true;           # Blur popups/menus
+          special = true;          # Blur special workspaces
         };
+
+      # Make DMS bar transparent with blur
+      layerrule = [
+        "blur, dms"
+        "ignorealpha 0.3, dms"
+        "blur, quickshell"
+        "ignorealpha 0.3, quickshell"
+      ];
         shadow = {
           enabled = true;
           range = 12;
