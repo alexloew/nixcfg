@@ -11,7 +11,7 @@
 
   programs.dank-material-shell = {
     enable = true;
-    # dgop not available in nixpkgs stable 25.11
-    enableSystemMonitoring = false;
+    enableSystemMonitoring = true;
+    dgop.package = inputs.dgop.packages.${pkgs.system}.default;
   };
 }
