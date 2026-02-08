@@ -71,10 +71,10 @@
           special = true;          # Blur special workspaces
         };
 
-      # Make DMS bar transparent with blur
+      # Make DMS bar and overlays transparent with blur
       layerrule = [
-        "blur, dms"
-        "ignorealpha 0.3, dms"
+        "blur, dms:bar"
+        "ignorealpha 0.3, dms:bar"
         "blur, quickshell"
         "ignorealpha 0.3, quickshell"
       ];
