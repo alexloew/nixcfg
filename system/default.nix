@@ -13,6 +13,7 @@
     ./network.nix
     ./nix.nix
     ./nvidia.nix
+    ./tpm.nix
     ./users.nix
   ];
 }
