@@ -12,6 +12,11 @@
     abrmd.enable = true;               # Access Broker and Resource Manager
   };
 
+  # Grant tss group access to /dev/tpm0 (needed by Metatron)
+  services.udev.extraRules = ''
+    KERNEL=="tpm0", MODE="0660", GROUP="tss"
+  '';
+
   # TPM tools available system-wide
   environment.systemPackages = with pkgs; [
     tpm2-tools
