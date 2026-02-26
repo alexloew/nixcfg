@@ -57,17 +57,7 @@
         fullscreen_opacity = 1.0;
 
         blur = {
-          enabled = true;
-          size = 8;
-          passes = 3;
-          new_optimizations = true;
-          xray = false;
-          noise = 0.02;
-          contrast = 0.9;
-          brightness = 0.8;
-          vibrancy = 0.2;
-          popups = false;
-          special = true;          # Blur special workspaces
+          enabled = false;
         };
 
       # Make DMS bar and overlays transparent with blur
@@ -168,12 +158,9 @@
         "$mod, mouse_up, workspace, e-1"
       ];
 
-      # Window rules - disable transparency for Chromium-based apps to prevent artifacts
       windowrulev2 = [
         "opacity 1.0 override 1.0 override, class:^(Google-chrome)$"
-        "noblur, class:^(Google-chrome)$"
         "opacity 1.0 override 1.0 override, class:^(Slack)$"
-        "noblur, class:^(Slack)$"
       ];
 
       # Mouse bindings
