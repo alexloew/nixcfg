@@ -1,52 +1,58 @@
 # NVIDIA Graphics Configuration
-# Hybrid Intel + NVIDIA laptop (PRIME offload mode)
-# Uses Intel for display, NVIDIA for demanding workloads
+# Hybrid Intel (Meteor Lake-P) + NVIDIA RTX 500 Ada laptop
+# PRIME offload mode: Intel drives display, NVIDIA available on demand via nvidia-offload
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  # Enable OpenGL
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
   };
 
-  # NVIDIA driver
-  services.xserver.videoDrivers = [ "nvidia" ];
+  # modesetting for the Intel iGPU + nvidia for the dGPU
+  # Both are needed for offload mode so the iGPU drives the display
+  services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
 
   hardware.nvidia = {
-    # Use the stable driver
     package = config.boot.kernelPackages.nvidiaPackages.stable;
-
-    # Modesetting is required for Wayland
     modesetting.enable = true;
+    nvidiaSettings = true;
 
-    # Power management (helps with laptop battery)
-    powerManagement.enable = true;
-    powerManagement.finegrained = true;
-
-    # Use open source kernel module (for Turing+ GPUs, i.e. RTX 20xx and newer)
-    # Set to false if you have an older GPU
+    # NVIDIA open kernel module (recommended for Turing+ / Ada Lovelace)
+    # https://download.nvidia.com/XFree86/Linux-x86_64/565.77/README/kernel_open.html
     open = true;
 
-    # PRIME hybrid graphics (Intel + NVIDIA)
+    # Save VRAM state on suspend to prevent graphical corruption on resume
+    powerManagement.enable = true;
+    # Fine-grained power management: turns off dGPU when idle (Turing+)
+    powerManagement.finegrained = true;
+
     prime = {
       offload = {
         enable = true;
-        enableOffloadCmd = true;  # Provides `nvidia-offload` command
+        enableOffloadCmd = true;
       };
 
-      # Bus IDs - find yours with: lspci | grep -E 'VGA|3D'
-      # Format: PCI:x:y:z
+      # Intel Meteor Lake-P [Intel Arc Graphics] / NVIDIA AD107GLM [RTX 500 Ada]
       intelBusId = "PCI:0:2:0";
       nvidiaBusId = "PCI:1:0:0";
     };
   };
 
+  # Early-load NVIDIA kernel modules for reliable initialization
+  boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+
+  # Prevent nouveau from interfering with the proprietary driver
+  boot.blacklistedKernelModules = [ "nouveau" ];
+  boot.extraModprobeConfig = ''
+    blacklist nouveau
+    options nouveau modeset=0
+  '';
+
   # Environment variables for Wayland + NVIDIA (offload mode)
-  # In offload mode Intel drives the display; only set vars that are safe globally.
-  # NVIDIA-specific vars (__GLX_VENDOR_LIBRARY_NAME, GBM_BACKEND) are set by
-  # the nvidia-offload command when explicitly running apps on the dGPU.
+  # GPU-specific vars (__GLX_VENDOR_LIBRARY_NAME, GBM_BACKEND) are set
+  # automatically by the nvidia-offload command for on-demand dGPU use.
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     ELECTRON_OZONE_PLATFORM_HINT = "auto";
