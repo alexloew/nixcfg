@@ -12,6 +12,10 @@
     abrmd.enable = true;               # Access Broker and Resource Manager
   };
 
+  # Override TCTI string - Metatron stats this literally as a path,
+  # so provide just the device path without the "device:" prefix
+  environment.sessionVariables.TPM2TOOLS_TCTI = "/dev/tpmrm0";
+
   # Grant tss group access to /dev/tpm0 (needed by Metatron)
   services.udev.extraRules = ''
     KERNEL=="tpm0", MODE="0660", GROUP="tss"
