@@ -43,11 +43,12 @@
     };
   };
 
-  # Environment variables for Wayland + NVIDIA
+  # Environment variables for Wayland + NVIDIA (offload mode)
+  # In offload mode Intel drives the display; only set vars that are safe globally.
+  # NVIDIA-specific vars (__GLX_VENDOR_LIBRARY_NAME, GBM_BACKEND) are set by
+  # the nvidia-offload command when explicitly running apps on the dGPU.
   environment.sessionVariables = {
-    # Needed for Hyprland on NVIDIA
-    LIBVA_DRIVER_NAME = "nvidia";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    GBM_BACKEND = "nvidia-drm";
+    NIXOS_OZONE_WL = "1";
+    ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };
 }

@@ -15,12 +15,11 @@
         ",preferred,auto,2"  # 2x HiDPI scaling
       ];
 
-      # Environment variables for NVIDIA + Wayland
+      # Environment variables for NVIDIA + Wayland (offload mode)
       env = [
-        "LIBVA_DRIVER_NAME,nvidia"
-        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
-        "GBM_BACKEND,nvidia-drm"
         "WLR_NO_HARDWARE_CURSORS,1"
+        "NIXOS_OZONE_WL,1"
+        "ELECTRON_OZONE_PLATFORM_HINT,auto"
       ];
 
       # DMS handles startup apps (bar, notifications, etc.)
@@ -160,6 +159,13 @@
         # Scroll through workspaces
         "$mod, mouse_down, workspace, e+1"
         "$mod, mouse_up, workspace, e-1"
+      ];
+
+      # Window rules - disable transparency for Chromium-based apps to prevent artifacts
+      windowrulev2 = [
+        "opacity 1.0 override 1.0 override, class:^(google-chrome)$"
+        "opacity 1.0 override 1.0 override, class:^(Slack)$"
+        "opacity 1.0 override 1.0 override, class:^(slack)$"
       ];
 
       # Mouse bindings
