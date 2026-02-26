@@ -40,9 +40,6 @@
     };
   };
 
-  # Early-load NVIDIA kernel modules for reliable initialization
-  boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-
   # Prevent nouveau from interfering with the proprietary driver
   boot.blacklistedKernelModules = [ "nouveau" ];
   boot.extraModprobeConfig = ''
