@@ -66,7 +66,7 @@
           contrast = 0.9;
           brightness = 0.8;
           vibrancy = 0.2;
-          popups = true;           # Blur popups/menus
+          popups = false;
           special = true;          # Blur special workspaces
         };
 
