@@ -17,8 +17,14 @@
     KERNEL=="tpm0", MODE="0660", GROUP="tss"
   '';
 
-  # TPM tools available system-wide
+  # TPM tools and libraries available system-wide
   environment.systemPackages = with pkgs; [
     tpm2-tools
+    tpm2-tss       # TPM2 Software Stack (libtss2)
   ];
+
+  # Make TPM2 libraries discoverable by standalone binaries (e.g. Metatron)
+  environment.sessionVariables = {
+    TPM2_PKCS11_STORE = "/home/alexloewenthal/.tpm2_pkcs11";
+  };
 }
