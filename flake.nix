@@ -56,7 +56,6 @@
 
         # Netflix modules
         inputs.nflx-nixcfg.nixosModules.pulse-vpn
-        inputs.nflx-nixcfg.nixosModules.sddm-themes
         inputs.nflx-nixcfg.nixosModules.metatron
         {
           nflx = {
