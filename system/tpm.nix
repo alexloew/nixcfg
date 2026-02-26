@@ -2,7 +2,7 @@
 # Trusted Platform Module support for device attestation and crypto
 # https://nixos.wiki/wiki/TPM
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   security.tpm2 = {
@@ -14,7 +14,7 @@
 
   # Override TCTI string - Metatron stats this literally as a path,
   # so provide just the device path without the "device:" prefix
-  environment.sessionVariables.TPM2TOOLS_TCTI = "/dev/tpmrm0";
+  environment.variables.TPM2TOOLS_TCTI = lib.mkForce "/dev/tpmrm0";
 
   # Grant tss group access to /dev/tpm0 (needed by Metatron)
   services.udev.extraRules = ''
