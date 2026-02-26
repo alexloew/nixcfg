@@ -115,6 +115,13 @@
         # DMS spotlight launcher (replaces wofi/rofi)
         "$mod, D, exec, dms ipc call spotlight toggle"
 
+        # Screenshots (saved to ~/Pictures/Screenshots)
+        ", Print, exec, grim ~/Pictures/Screenshots/$(date +'%Y%m%d_%H%M%S').png"
+        "$mod, Print, exec, grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y%m%d_%H%M%S').png"
+        "$mod SHIFT, Print, exec, grim -g \"$(hyprctl -j activewindow | jq -r '.at[0],.at[1],.size[0],.size[1]' | tr '\\n' ' ' | awk '{print $1\",\"$2\" \"$3\"x\"$4}')\" ~/Pictures/Screenshots/$(date +'%Y%m%d_%H%M%S').png"
+        # Screenshots to clipboard
+        "$mod SHIFT, S, exec, grim -g \"$(slurp)\" - | wl-copy"
+
         # Window management
         "$mod, Q, killactive"
         "$mod, M, exit"

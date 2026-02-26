@@ -11,12 +11,18 @@
     tree
     ripgrep
     fzf
+    jq
 
     # File manager
     yazi
 
     # Git TUI
     lazygit
+
+    # Screenshots (Wayland)
+    grim              # screenshot tool
+    slurp             # region selection
+    wl-clipboard      # clipboard support (wl-copy)
 
     # Hardware info
     pciutils          # lspci
