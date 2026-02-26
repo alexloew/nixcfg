@@ -61,6 +61,7 @@
         {
           nflx = {
             username = "alexloewenthal";
+            nix-ld.enable = true;
           };
         }
       ];
