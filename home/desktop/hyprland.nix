@@ -171,7 +171,9 @@
       # Window rules - disable transparency for Chromium-based apps to prevent artifacts
       windowrulev2 = [
         "opacity 1.0 override 1.0 override, class:^(Google-chrome)$"
+        "noblur, class:^(Google-chrome)$"
         "opacity 1.0 override 1.0 override, class:^(Slack)$"
+        "noblur, class:^(Slack)$"
       ];
 
       # Mouse bindings
