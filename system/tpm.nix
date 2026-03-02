@@ -8,12 +8,10 @@
   security.tpm2 = {
     enable = true;
     pkcs11.enable = true;              # PKCS#11 interface
-    # tctiEnvironment.enable = true;     # Set TPM2TOOLS_TCTI env var
+    # Do NOT enable tctiEnvironment: it sets TPM2TOOLS_TCTI=device:/dev/tpmrm0
+    # which metatron-cli cannot parse (nflxaccess-go TCTI bug). Leave unset so
+    # metatron falls back to its hardcoded /dev/tpmrm0 default.
   };
-
-  # Metatron treats TPM2TOOLS_TCTI as a literal file path rather than
-  # parsing the TCTI "device:/dev/tpmrm0" connection string format
-  # environment.variables.TPM2TOOLS_TCTI = lib.mkForce "/dev/tpmrm0";
 
   # Grant tss group access to /dev/tpm0
   services.udev.extraRules = ''
