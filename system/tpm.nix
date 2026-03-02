@@ -9,7 +9,6 @@
     enable = true;
     pkcs11.enable = true;              # PKCS#11 interface
     # tctiEnvironment.enable = true;     # Set TPM2TOOLS_TCTI env var
-    abrmd.enable = false;              # Redundant: /dev/tpmrm0 has an in-kernel resource manager
   };
 
   # Metatron treats TPM2TOOLS_TCTI as a literal file path rather than
