@@ -8,6 +8,7 @@ result-*
 # Editor state
 .idea/
 .vscode/
+.claude/
 *.swp
 *.swo
 *~
