@@ -16,4 +16,10 @@
       # User-specific system packages (prefer home-manager for most)
     ];
   };
+
+  # Preserve SSH_AUTH_SOCK through sudo so flake fetches from
+  # private repos (e.g. nflx-nixcfg) work with nixos-rebuild switch
+  security.sudo.extraConfig = ''
+    Defaults env_keep += "SSH_AUTH_SOCK"
+  '';
 }
