@@ -14,6 +14,12 @@
     # Cursor editor
     cursor.url = "github:alexloew/cursor-nixos-flake";
 
+    # Niri compositor (provides config.lib.niri.actions, required by DMS)
+    niri-flake = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Dank Material Shell - Wayland desktop shell
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
@@ -27,7 +33,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, determinate, fh, home-manager, dms, dgop, ... }@inputs:
+  outputs = { self, nixpkgs, determinate, fh, home-manager, niri-flake, dms, dgop, ... }@inputs:
   let
     system = "x86_64-linux";
     pkgs-unstable = import inputs.nixpkgs-unstable {
@@ -40,6 +46,9 @@
       modules = [
         # Host configuration (branches to system modules)
         ./hosts/nixos
+
+        # Niri compositor (provides config.lib.niri.actions for DMS)
+        niri-flake.nixosModules.niri
 
         # Determinate Systems Nix
         determinate.nixosModules.default

@@ -3,9 +3,12 @@
 # DankMaterialShell handles layout, colors, keybinds, bar, launcher, notifications
 # See: https://danklinux.com/docs/dankmaterialshell/compositors
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [
+    inputs.niri-flake.homeModules.niri
+  ];
   # Install supporting tools
   home.packages = with pkgs; [
     swaylock      # Screen locker
