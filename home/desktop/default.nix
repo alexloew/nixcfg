@@ -1,6 +1,6 @@
 # Desktop Configuration - Aggregator
 # Desktop environment customization and extensions
-# DMS + Hyprland is the primary desktop, GNOME extensions for fallback
+# DMS + Niri is the primary desktop, GNOME extensions for fallback
 
 { config, pkgs, inputs, ... }:
 
@@ -9,7 +9,7 @@
     ./dms.nix
     ./fonts.nix
     ./gnome.nix
-    ./hyprland.nix
+    ./niri.nix
     ./idle.nix
   ];
 }

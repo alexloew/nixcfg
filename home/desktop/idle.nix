@@ -4,23 +4,20 @@
 { pkgs, ... }:
 
 {
-  services.hypridle = {
+  services.swayidle = {
     enable = true;
 
-    settings = {
-      general = {
-        lock_cmd = "pidof hyprlock || hyprlock";
-        before_sleep_cmd = "loginctl lock-session";
-        after_sleep_cmd = "hyprctl dispatch dpms on";
-      };
+    events = [
+      { event = "before-sleep"; command = "loginctl lock-session"; }
+      { event = "lock"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
+    ];
 
-      listener = [
-        {
-          timeout = 300;
-          on-timeout = "hyprctl dispatch dpms off";
-          on-resume = "hyprctl dispatch dpms on";
-        }
-      ];
-    };
+    timeouts = [
+      {
+        timeout = 300;
+        command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
+        resumeCommand = "${pkgs.niri}/bin/niri msg action power-on-monitors";
+      }
+    ];
   };
 }
