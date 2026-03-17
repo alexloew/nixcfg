@@ -15,17 +15,12 @@
     swayidle      # Idle management
   ];
 
-  # Ensure DMS include directories exist with empty files
-  # Niri will error if included files are missing
-  xdg.configFile."niri/dms/.keep" = {
-    text = "";
-    onChange = ''
-      mkdir -p ${config.xdg.configHome}/niri/dms
-      for f in colors layout alttab binds; do
-        touch ${config.xdg.configHome}/niri/dms/$f.kdl
-      done
-    '';
-  };
+  # Ensure DMS include files exist as empty KDL files
+  # Niri will error at startup if any included file is missing
+  xdg.configFile."niri/dms/colors.kdl".text = "";
+  xdg.configFile."niri/dms/layout.kdl".text = "";
+  xdg.configFile."niri/dms/alttab.kdl".text = "";
+  xdg.configFile."niri/dms/binds.kdl".text = "";
 
   # Niri configuration via niri-flake settings
   programs.niri.settings = {
