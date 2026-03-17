@@ -1,6 +1,7 @@
 # Niri Home Configuration
 # Window manager settings and keybinds
-# DankMaterialShell handles the bar, launcher, notifications, etc.
+# DankMaterialShell handles layout, colors, keybinds, bar, launcher, notifications
+# See: https://danklinux.com/docs/dankmaterialshell/compositors
 
 { config, pkgs, lib, ... }:
 
@@ -14,8 +15,27 @@
     swayidle      # Idle management
   ];
 
+  # Ensure DMS include directories exist with empty files
+  # Niri will error if included files are missing
+  xdg.configFile."niri/dms/.keep" = {
+    text = "";
+    onChange = ''
+      mkdir -p ${config.xdg.configHome}/niri/dms
+      for f in colors layout alttab binds; do
+        touch ${config.xdg.configHome}/niri/dms/$f.kdl
+      done
+    '';
+  };
+
   # Niri configuration (KDL format)
   xdg.configFile."niri/config.kdl".text = ''
+    // DankMaterialShell include files
+    // DMS manages layout (gaps, radius), colors, keybinds, and alt-tab
+    include "dms/colors.kdl"
+    include "dms/layout.kdl"
+    include "dms/alttab.kdl"
+    include "dms/binds.kdl"
+
     // Environment variables for NVIDIA + Wayland
     environment {
         NIXOS_OZONE_WL "1"
@@ -47,38 +67,6 @@
         scale 2.0
     }
 
-    // Layout configuration
-    layout {
-        gaps 10
-
-        center-focused-column "never"
-
-        preset-column-widths {
-            proportion 0.33333
-            proportion 0.5
-            proportion 0.66667
-        }
-
-        default-column-width { proportion 0.5; }
-
-        focus-ring {
-            width 2
-            active-color "#89b4fa"
-            inactive-color "#313244"
-        }
-
-        border {
-            off
-        }
-
-        struts {
-            // left 0
-            // right 0
-            // top 0
-            // bottom 0
-        }
-    }
-
     // Decorations
     window-rule {
         opacity 0.95
@@ -93,14 +81,11 @@
         opacity 1.0
     }
 
-    // Key bindings
+    // User key bindings (in addition to DMS-managed binds)
     binds {
         // Application launchers
         Mod+Return { spawn "ghostty"; }
         Mod+B { spawn "firefox"; }
-
-        // DMS spotlight launcher
-        Mod+D { spawn "dms" "ipc" "call" "spotlight" "toggle"; }
 
         // Screenshots (saved to ~/Pictures/Screenshots)
         Print { spawn "sh" "-c" "grim ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"; }
