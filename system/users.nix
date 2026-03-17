@@ -11,7 +11,7 @@
     isNormalUser = true;
     description = "Alex Loewenthal";
     shell = pkgs.zsh;
-    extraGroups = [ "networkmanager" "wheel" "tss" ];
+    extraGroups = [ "networkmanager" "wheel" "tss" "libvirtd" ];
     packages = with pkgs; [
       # User-specific system packages (prefer home-manager for most)
     ];
