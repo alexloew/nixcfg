@@ -7,37 +7,46 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
 ```
 .
 ├── flake.nix                # Entry point
-├── hosts/                   # Machine-specific configs
+├── hosts/
 │   └── nixos/
 │       ├── default.nix      # System entry point
 │       └── hardware.nix     # Hardware configuration
 ├── system/                  # NixOS system modules
-│   ├── boot.nix
+│   ├── boot.nix             # Systemd-boot, EFI, LUKS
 │   ├── desktop/
 │   │   ├── common.nix       # Shared desktop settings
 │   │   ├── gnome.nix        # GNOME + GDM
-│   │   └── hyprland.nix     # Hyprland compositor
-│   ├── hardware.nix         # Audio, printing
+│   │   ├── hyprland.nix     # Hyprland compositor
+│   │   └── niri.nix         # Niri compositor
+│   ├── hardware.nix         # Audio (PipeWire), printing
 │   ├── locale.nix           # Timezone, i18n
 │   ├── network.nix          # NetworkManager
-│   ├── nix.nix              # Nix settings
-│   └── users.nix            # User accounts
+│   ├── nix.nix              # Nix settings, flakes
+│   ├── nvidia.nix           # NVIDIA drivers
+│   ├── tpm.nix              # TPM support
+│   ├── users.nix            # User accounts
+│   └── virt.nix             # Virtualization (libvirt/QEMU/KVM)
 └── home/                    # Home-manager modules
     ├── apps/
     │   ├── cli.nix          # CLI tools
     │   └── gui.nix          # Desktop apps
     ├── desktop/
-    │   ├── dms.nix          # DankMaterialShell
+    │   ├── dms.nix          # DankMaterialShell + Niri integration
     │   ├── fonts.nix        # Nerd fonts
     │   ├── gnome.nix        # GNOME extensions
-    │   └── hyprland.nix     # Hyprland config
+    │   ├── hyprland.nix     # Hyprland config
+    │   ├── idle.nix         # Idle management
+    │   └── niri.nix         # Niri config + DMS includes
     ├── editors/
+    │   ├── cursor.nix       # Cursor editor
     │   └── helix.nix        # Helix editor
     └── shell/
         ├── bash.nix         # Shell aliases
         ├── git.nix          # Git config
         ├── ssh.nix          # SSH client
-        └── starship.nix     # Prompt
+        ├── starship.nix     # Prompt
+        ├── tmux.nix         # Terminal multiplexer
+        └── zsh.nix          # Zsh config
 ```
 
 ## Usage
@@ -54,20 +63,15 @@ sudo nixos-rebuild switch --flake .#nixos
 nix flake update
 ```
 
-### Test in VM
-
-```bash
-nixos-rebuild build-vm --flake .#nixos
-./result/bin/run-nixos-vm
-```
-
 ## Desktop
 
-- **Compositor**: Hyprland (Wayland)
-- **Shell**: DankMaterialShell (bar, launcher, notifications)
+- **Compositor**: Niri (scrollable tiling Wayland compositor)
+- **Shell**: [DankMaterialShell](https://danklinux.com/docs/dankmaterialshell/) (bar, launcher, notifications)
 - **Fallback**: GNOME (select from GDM)
 
-### Hyprland Keybinds
+DMS manages layout (gaps, radius), colors, keybinds, and alt-tab via config includes in `~/.config/niri/dms/`. User keybinds are defined in `home/desktop/niri.nix`.
+
+### Keybinds
 
 | Keys | Action |
 |------|--------|
@@ -75,12 +79,32 @@ nixos-rebuild build-vm --flake .#nixos
 | `Super+D` | App launcher (DMS Spotlight) |
 | `Super+B` | Firefox |
 | `Super+Q` | Close window |
-| `Super+F` | Fullscreen |
+| `Super+F` | Maximize column |
+| `Super+Shift+F` | Fullscreen |
 | `Super+V` | Toggle floating |
-| `Alt+Tab` | Cycle windows |
 | `Super+1-9` | Switch workspace |
 | `Super+Shift+1-9` | Move window to workspace |
 | `Super+H/J/K/L` | Vim-style focus |
+| `Super+Shift+H/J/K/L` | Vim-style move |
+| `Super+Shift+S` | Screenshot region to clipboard |
+
+## Virtualization
+
+libvirt/QEMU/KVM with UEFI and TPM support for testing NixOS ISOs.
+
+```bash
+# Launch an ISO in virt-manager (GUI)
+virt-manager
+
+# Or from the CLI
+virt-install \
+  --name nixos-test \
+  --ram 4096 \
+  --vcpus 2 \
+  --cdrom /path/to/nixos.iso \
+  --disk size=20 \
+  --boot uefi
+```
 
 ## Adding a New Host
 
