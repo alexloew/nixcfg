@@ -92,7 +92,7 @@
       # Window management
       "Mod+Q".action.close-window = [];
       "Mod+Shift+M".action.quit = [];
-      "Mod+V".action.toggle-window-floating = [];
+      "Mod+Shift+V".action.toggle-window-floating = [];
       "Mod+F".action.maximize-column = [];
       "Mod+Shift+F".action.fullscreen-window = [];
 
