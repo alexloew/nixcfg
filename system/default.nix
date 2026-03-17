@@ -15,5 +15,6 @@
     ./nvidia.nix
     ./tpm.nix
     ./users.nix
+    ./virt.nix
   ];
 }
