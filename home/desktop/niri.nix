@@ -15,13 +15,6 @@
     swayidle      # Idle management
   ];
 
-  # Ensure DMS include files exist as empty KDL files
-  # Niri will error at startup if any included file is missing
-  xdg.configFile."niri/dms/colors.kdl".text = "";
-  xdg.configFile."niri/dms/layout.kdl".text = "";
-  xdg.configFile."niri/dms/alttab.kdl".text = "";
-  xdg.configFile."niri/dms/binds.kdl".text = "";
-
   # Niri configuration via niri-flake settings
   programs.niri.settings = {
     # Environment variables for NVIDIA + Wayland
