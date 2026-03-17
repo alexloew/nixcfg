@@ -35,13 +35,6 @@
       config.allowUnfree = true;
     };
   in {
-    # Minimal VM for testing NixOS ISOs and system changes
-    # Usage: nixos-rebuild build-vm --flake .#vm-test
-    nixosConfigurations.vm-test = nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = [ ./hosts/vm-test ];
-    };
-
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs pkgs-unstable; };
       modules = [
