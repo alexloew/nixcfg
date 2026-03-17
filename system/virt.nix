@@ -8,7 +8,6 @@
     enable = true;
     qemu = {
       package = pkgs.qemu_kvm;
-      ovmf.enable = true;   # UEFI support for VMs
       swtpm.enable = true;  # Software TPM for VMs
     };
   };
