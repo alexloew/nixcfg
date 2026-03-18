@@ -60,8 +60,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
-          home-manager.sharedModules = [ niri-flake.homeModules.niri ];
-          home-manager.users.alexloewenthal = import ./home;
+home-manager.users.alexloewenthal = import ./home;
         }
 
         # Netflix modules
