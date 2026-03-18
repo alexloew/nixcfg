@@ -7,10 +7,26 @@
   # GNOME Extensions
   home.packages = with pkgs; [
     gnomeExtensions.dash-to-dock
+    gnome-themes-extra  # Provides Adwaita-dark
   ];
+
+  # GTK dark theme (affects Chrome, Slack, file pickers, all GTK apps)
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+  };
 
   # dconf settings
   dconf.settings = {
+    # System-wide dark mode preference
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = "Adwaita-dark";
+    };
+
     # Shell extensions
     "org/gnome/shell" = {
       disable-user-extensions = false;

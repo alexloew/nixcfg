@@ -10,8 +10,16 @@
 
     # Browsers
     google-chrome
-
-    # Terminals
-    ghostty
   ];
+
+  # Ghostty terminal with Catppuccin Mocha dark theme
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      theme = "catppuccin-mocha";
+      background-opacity = 0.88;
+      background-blur-radius = 20;
+      font-size = 13;
+    };
+  };
 }
