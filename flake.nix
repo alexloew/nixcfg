@@ -65,6 +65,7 @@
         }
 
         # Netflix modules
+        inputs.nflx-nixcfg.nixosModules.newt
         inputs.nflx-nixcfg.nixosModules.pulse-vpn
         inputs.nflx-nixcfg.nixosModules.ai
         inputs.nflx-nixcfg.nixosModules.metatron
