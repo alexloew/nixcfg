@@ -31,6 +31,7 @@
     htop
     btop
     fastfetch
+    osquery
 
     # Text editing (fallback)
     vim
