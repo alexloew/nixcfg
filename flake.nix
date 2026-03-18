@@ -66,6 +66,7 @@ home-manager.users.alexloewenthal = import ./home;
 
         # Netflix modules
         inputs.nflx-nixcfg.nixosModules.pulse-vpn
+        inputs.nflx-nixcfg.nixosModules.ai
         inputs.nflx-nixcfg.nixosModules.metatron
         {
           nflx = {
