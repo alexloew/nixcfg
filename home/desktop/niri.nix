@@ -54,8 +54,8 @@
       # if it does, change `primary` in dms.nix to a darker value)
       focus-ring = {
         width = 2;
-        active-color = "#4a4a4a";
-        inactive-color = "#252525";
+        active.color = "#4a4a4a";
+        inactive.color = "#252525";
       };
 
       # Shadow (not managed by DMS)
@@ -80,30 +80,30 @@
 
     # Animations
     animations = {
-      workspace-switch.spring = {
+      workspace-switch.kind.spring = {
         damping-ratio = 0.8;
         stiffness = 1000;
         epsilon = 0.0001;
       };
-      horizontal-view-movement.spring = {
+      horizontal-view-movement.kind.spring = {
         damping-ratio = 0.8;
         stiffness = 800;
         epsilon = 0.0001;
       };
-      window-open.easing = {
+      window-open.kind.easing = {
         duration-ms = 200;
         curve = "ease-out-cubic";
       };
-      window-close.easing = {
+      window-close.kind.easing = {
         duration-ms = 150;
         curve = "ease-out-cubic";
       };
-      window-movement.spring = {
+      window-movement.kind.spring = {
         damping-ratio = 0.8;
         stiffness = 800;
         epsilon = 0.0001;
       };
-      window-resize.spring = {
+      window-resize.kind.spring = {
         damping-ratio = 0.8;
         stiffness = 800;
         epsilon = 0.0001;
