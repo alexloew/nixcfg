@@ -19,7 +19,9 @@
       theme = "catppuccin-mocha";
       background-opacity = 0.88;
       background-blur-radius = 20;
+      font-family = "JetBrainsMono Nerd Font";
       font-size = 13;
+      font-thicken = true;
     };
   };
 }

@@ -23,6 +23,9 @@
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
     };
 
+    # Remove client-side decorations (cleaner look, matches Wynn-Dots style)
+    prefer-no-csd = true;
+
     # Input configuration
     input = {
       keyboard.xkb.layout = "us";
@@ -53,8 +56,8 @@
         softness = 12;
         spread = 3;
         offset = { x = 0; y = 2; };
-        color = "#1a1a2ecc";
-        inactive-color = "#1a1a2e88";
+        color = "#1e1e2ecc";          # Catppuccin Mocha base
+        inactive-color = "#1e1e2e88";
       };
 
       preset-column-widths = [

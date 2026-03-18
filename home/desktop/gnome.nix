@@ -7,15 +7,19 @@
   # GNOME Extensions
   home.packages = with pkgs; [
     gnomeExtensions.dash-to-dock
-    gnome-themes-extra  # Provides Adwaita-dark
+    catppuccin-gtk  # Catppuccin Mocha GTK theme
   ];
 
-  # GTK dark theme (affects Chrome, Slack, file pickers, all GTK apps)
+  # GTK dark theme — Catppuccin Mocha
   gtk = {
     enable = true;
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "catppuccin-mocha-mauve-standard+default";
+      package = pkgs.catppuccin-gtk;
+    };
+    font = {
+      name = "Inter";
+      size = 11;
     };
   };
 
@@ -24,7 +28,7 @@
     # System-wide dark mode preference
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
-      gtk-theme = "Adwaita-dark";
+      gtk-theme = "catppuccin-mocha-mauve-standard+default";
     };
 
     # Shell extensions
