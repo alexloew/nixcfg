@@ -14,6 +14,7 @@
     ./editors
     ./apps
     ./desktop
+    ./dev
   ];
 
   programs.home-manager.enable = true;
