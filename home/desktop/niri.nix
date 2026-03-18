@@ -125,7 +125,7 @@
       # Browsers and media: always fully opaque
       {
         matches = [
-          { app-id = "^Google-chrome$"; }
+          { app-id = "^google-chrome$"; }
           { app-id = "^firefox$"; }
           { app-id = "^Slack$"; }
           { app-id = "^mpv$"; }
@@ -137,7 +137,7 @@
       {
         matches = [
           { app-id = "^com\\.mitchellh\\.ghostty$"; }
-          { app-id = "^Google-chrome$"; }
+          { app-id = "^google-chrome$"; }
           { app-id = "^Slack$"; }
         ];
         open-maximized = true;
