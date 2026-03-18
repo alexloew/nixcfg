@@ -5,6 +5,32 @@
 
 { config, pkgs, lib, ... }:
 
+let
+  # Catppuccin Mocha palette
+  catppuccin = {
+    rosewater = "#f5e0dc";
+    flamingo  = "#f2cdcd";
+    pink      = "#f5c2e7";
+    mauve     = "#cba6f7";
+    red       = "#f38ba8";
+    maroon    = "#eba0ac";
+    peach     = "#fab387";
+    yellow    = "#f9e2af";
+    green     = "#a6e3a1";
+    teal      = "#94e2d5";
+    sky       = "#89dceb";
+    sapphire  = "#74c7ec";
+    blue      = "#89b4fa";
+    lavender  = "#b4befe";
+    text      = "#cdd6f4";
+    subtext1  = "#bac2de";
+    overlay0  = "#6c7086";
+    surface0  = "#313244";
+    base      = "#1e1e2e";
+    mantle    = "#181825";
+    crust     = "#11111b";
+  };
+in
 {
   # Install supporting tools
   home.packages = with pkgs; [
@@ -55,10 +81,78 @@
       scale = 2.0;
     };
 
-    # Decorations - default window rule
+    # Layout: borders, gaps, shadow
+    layout = {
+      gaps = 8;
+
+      border = {
+        enable = true;
+        width = 2;
+        active.gradient = {
+          from = catppuccin.blue;
+          to = catppuccin.mauve;
+          angle = 45;
+        };
+        inactive.color = "${catppuccin.surface0}aa";
+      };
+
+      focus-ring.enable = false;
+
+      shadow = {
+        enable = true;
+        softness = 12;
+        spread = 3;
+        offset = { x = 0; y = 2; };
+        color = "#1a1a2ecc";
+        inactive-color = "#1a1a2e88";
+      };
+
+      preset-column-widths = [
+        { proportion = 1.0 / 3.0; }
+        { proportion = 1.0 / 2.0; }
+        { proportion = 2.0 / 3.0; }
+        { proportion = 1.0; }
+      ];
+
+      default-column-width.proportion = 1.0 / 2.0;
+    };
+
+    # Animations
+    animations = {
+      workspace-switch.spring = {
+        damping-ratio = 0.8;
+        stiffness = 1000;
+        epsilon = 0.0001;
+      };
+      horizontal-view-movement.spring = {
+        damping-ratio = 0.8;
+        stiffness = 800;
+        epsilon = 0.0001;
+      };
+      window-open.easing = {
+        duration-ms = 200;
+        curve = "ease-out-cubic";
+      };
+      window-close.easing = {
+        duration-ms = 150;
+        curve = "ease-out-cubic";
+      };
+      window-movement.spring = {
+        damping-ratio = 0.8;
+        stiffness = 800;
+        epsilon = 0.0001;
+      };
+      window-resize.spring = {
+        damping-ratio = 0.8;
+        stiffness = 800;
+        epsilon = 0.0001;
+      };
+    };
+
+    # Window rules: default styling + per-app overrides
     window-rules = [
+      # Base rule: rounded corners for all windows
       {
-        opacity = 0.95;
         clip-to-geometry = true;
         geometry-corner-radius = let r = 10.0; in {
           top-left = r;
@@ -66,12 +160,31 @@
           bottom-left = r;
           bottom-right = r;
         };
+        opacity = 0.95;
       }
-      # Force full opacity for browsers and Slack
+      # Inactive windows: more transparent
+      {
+        matches = [{ is-active = false; }];
+        opacity = 0.85;
+      }
+      # Terminals: extra transparency for that dark-mode-through-glass look
+      {
+        matches = [
+          { app-id = "^com\\.mitchellh\\.ghostty$"; }
+          { app-id = "^Alacritty$"; }
+          { app-id = "^kitty$"; }
+          { app-id = "^foot$"; }
+        ];
+        opacity = 0.88;
+      }
+      # Browsers and media: always fully opaque
       {
         matches = [
           { app-id = "^Google-chrome$"; }
+          { app-id = "^firefox$"; }
           { app-id = "^Slack$"; }
+          { app-id = "^mpv$"; }
+          { app-id = "^vlc$"; }
         ];
         opacity = 1.0;
       }
