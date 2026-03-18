@@ -7,15 +7,15 @@
   # GNOME Extensions
   home.packages = with pkgs; [
     gnomeExtensions.dash-to-dock
-    catppuccin-gtk  # Catppuccin Mocha GTK theme
+    gnome-themes-extra
   ];
 
-  # GTK dark theme — Catppuccin Mocha
+  # GTK dark theme — Adwaita dark (neutral black)
   gtk = {
     enable = true;
     theme = {
-      name = "catppuccin-mocha-mauve-standard+default";
-      package = pkgs.catppuccin-gtk;
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
     };
     font = {
       name = "Inter";
@@ -28,7 +28,7 @@
     # System-wide dark mode preference
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
-      gtk-theme = "catppuccin-mocha-mauve-standard+default";
+      gtk-theme = "Adwaita-dark";
     };
 
     # Shell extensions

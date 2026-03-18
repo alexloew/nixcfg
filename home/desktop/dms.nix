@@ -19,7 +19,7 @@
     # Catppuccin Mocha custom theme
     settings = {
       currentThemeName = "custom";
-      customThemeFile = "${config.home.homeDirectory}/.config/DankMaterialShell/themes/catppuccin-mocha.json";
+      customThemeFile = "${config.home.homeDirectory}/.config/DankMaterialShell/themes/pure-dark.json";
     };
 
     # Niri compositor integration
@@ -34,29 +34,29 @@
     };
   };
 
-  # Catppuccin Mocha theme file for DMS
-  home.file.".config/DankMaterialShell/themes/catppuccin-mocha.json".text = builtins.toJSON {
+  # Pure dark theme file for DMS
+  home.file.".config/DankMaterialShell/themes/pure-dark.json".text = builtins.toJSON {
     dark = {
-      name = "Catppuccin Mocha";
-      primary = "#cba6f7";           # mauve
-      primaryText = "#1e1e2e";       # base (dark text on mauve)
-      primaryContainer = "#7c5ea8";  # darker mauve
-      secondary = "#89b4fa";         # blue
-      surfaceTint = "#cba6f7";       # mauve
-      surface = "#181825";           # mantle
-      surfaceText = "#cdd6f4";       # text
-      surfaceVariant = "#313244";    # surface0
-      surfaceVariantText = "#cdd6f4"; # text
-      surfaceContainer = "#181825";  # mantle
-      surfaceContainerHigh = "#313244"; # surface0
-      surfaceContainerHighest = "#45475a"; # surface1
-      background = "#1e1e2e";        # base
-      backgroundText = "#cdd6f4";    # text
-      outline = "#6c7086";           # overlay0
-      error = "#f38ba8";             # red
-      warning = "#f9e2af";           # yellow
-      info = "#89b4fa";              # blue
-      matugen_type = "scheme-tonal-spot";
+      name = "Pure Dark";
+      primary = "#d4d4d4";
+      primaryText = "#0d0d0d";
+      primaryContainer = "#2a2a2a";
+      secondary = "#8a8a8a";
+      surfaceTint = "#d4d4d4";
+      surface = "#161616";
+      surfaceText = "#e0e0e0";
+      surfaceVariant = "#212121";
+      surfaceVariantText = "#e0e0e0";
+      surfaceContainer = "#161616";
+      surfaceContainerHigh = "#212121";
+      surfaceContainerHighest = "#2a2a2a";
+      background = "#0d0d0d";
+      backgroundText = "#e0e0e0";
+      outline = "#3a3a3a";
+      error = "#cf6679";
+      warning = "#c9a84c";
+      info = "#6a9fb5";
+      matugen_type = "scheme-neutral";
     };
   };
 }
