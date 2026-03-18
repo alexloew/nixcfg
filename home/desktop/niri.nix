@@ -5,32 +5,6 @@
 
 { config, pkgs, lib, ... }:
 
-let
-  # Catppuccin Mocha palette
-  catppuccin = {
-    rosewater = "#f5e0dc";
-    flamingo  = "#f2cdcd";
-    pink      = "#f5c2e7";
-    mauve     = "#cba6f7";
-    red       = "#f38ba8";
-    maroon    = "#eba0ac";
-    peach     = "#fab387";
-    yellow    = "#f9e2af";
-    green     = "#a6e3a1";
-    teal      = "#94e2d5";
-    sky       = "#89dceb";
-    sapphire  = "#74c7ec";
-    blue      = "#89b4fa";
-    lavender  = "#b4befe";
-    text      = "#cdd6f4";
-    subtext1  = "#bac2de";
-    overlay0  = "#6c7086";
-    surface0  = "#313244";
-    base      = "#1e1e2e";
-    mantle    = "#181825";
-    crust     = "#11111b";
-  };
-in
 {
   # Install supporting tools
   home.packages = with pkgs; [
@@ -69,23 +43,11 @@ in
       scale = 2.0;
     };
 
-    # Layout: borders, gaps, shadow
+    # Layout: DMS manages gaps, borders, corner-radius, and colors
+    # via included KDL files (layout.kdl, colors.kdl)
+    # Configure those in DMS Settings → Compositor
     layout = {
-      gaps = 8;
-
-      border = {
-        enable = true;
-        width = 2;
-        active.gradient = {
-          from = catppuccin.blue;
-          to = catppuccin.mauve;
-          angle = 45;
-        };
-        inactive.color = "${catppuccin.surface0}aa";
-      };
-
-      focus-ring.enable = false;
-
+      # Shadow (not managed by DMS)
       shadow = {
         enable = true;
         softness = 12;
@@ -137,17 +99,12 @@ in
       };
     };
 
-    # Window rules: default styling + per-app overrides
+    # Window rules: opacity + per-app overrides
+    # DMS manages corner-radius and borders via layout.kdl
     window-rules = [
-      # Base rule: rounded corners for all windows
+      # Base rule: default opacity for all windows
       {
         clip-to-geometry = true;
-        geometry-corner-radius = let r = 10.0; in {
-          top-left = r;
-          top-right = r;
-          bottom-left = r;
-          bottom-right = r;
-        };
         opacity = 0.95;
       }
       # Inactive windows: more transparent
