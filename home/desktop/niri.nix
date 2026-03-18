@@ -133,6 +133,15 @@
         ];
         opacity = 1.0;
       }
+      # Autostarted apps: open maximized
+      {
+        matches = [
+          { app-id = "^com\\.mitchellh\\.ghostty$"; }
+          { app-id = "^Google-chrome$"; }
+          { app-id = "^Slack$"; }
+        ];
+        open-maximized = true;
+      }
     ];
 
     # User key bindings (in addition to DMS-managed binds)
@@ -232,5 +241,12 @@
 
     # Screenshot path
     screenshot-path = "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png";
+
+    # Autostart
+    spawn-at-startup = [
+      { command = [ "ghostty" ]; }
+      { command = [ "google-chrome-stable" ]; }
+      { command = [ "slack" ]; }
+    ];
   };
 }
