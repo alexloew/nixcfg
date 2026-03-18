@@ -110,39 +110,27 @@
       };
     };
 
-    # Layer rules: blur + transparency for DMS bar and overlays
+    # Layer rules: transparency for DMS bar and overlays
     # Opacity 1.0 here — DMS's own `transparency = 0.5` controls bar bg alpha;
     # adding compositor opacity on top would double-reduce it.
     layer-rules = [
       {
         matches = [{ namespace = "^dms:bar$"; }];
-        blur = {
-          enable = true;
-          strength = 30;
-        };
         opacity = 1.0;
       }
       {
         matches = [{ namespace = "^quickshell$"; }];
-        blur = {
-          enable = true;
-          strength = 30;
-        };
         opacity = 1.0;
       }
     ];
 
-    # Window rules: blur + opacity + per-app overrides
+    # Window rules: opacity + per-app overrides
     # DMS manages corner-radius and borders via layout.kdl
     window-rules = [
-      # Base rule: blur + default opacity for all windows
+      # Base rule: default opacity for all windows
       {
         clip-to-geometry = true;
         opacity = 0.95;
-        blur = {
-          enable = true;
-          strength = 30;
-        };
       }
       # Inactive windows: more transparent
       {
