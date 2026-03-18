@@ -50,14 +50,22 @@
     # via included KDL files (layout.kdl, colors.kdl)
     # Configure those in DMS Settings → Compositor
     layout = {
+      # Focus ring: subtle dark border (DMS may override via colors.kdl —
+      # if it does, change `primary` in dms.nix to a darker value)
+      focus-ring = {
+        width = 2;
+        active-color = "#4a4a4a";
+        inactive-color = "#252525";
+      };
+
       # Shadow (not managed by DMS)
       shadow = {
         enable = true;
         softness = 12;
         spread = 3;
         offset = { x = 0; y = 2; };
-        color = "#1e1e2ecc";          # Catppuccin Mocha base
-        inactive-color = "#1e1e2e88";
+        color = "#0d0d0dcc";
+        inactive-color = "#0d0d0d88";
       };
 
       preset-column-widths = [
@@ -102,25 +110,39 @@
       };
     };
 
-    # Layer rules: transparency for DMS bar and overlays
+    # Layer rules: blur + transparency for DMS bar and overlays
+    # Opacity 1.0 here — DMS's own `transparency = 0.5` controls bar bg alpha;
+    # adding compositor opacity on top would double-reduce it.
     layer-rules = [
       {
         matches = [{ namespace = "^dms:bar$"; }];
-        opacity = 0.85;
+        blur = {
+          enable = true;
+          strength = 30;
+        };
+        opacity = 1.0;
       }
       {
         matches = [{ namespace = "^quickshell$"; }];
-        opacity = 0.85;
+        blur = {
+          enable = true;
+          strength = 30;
+        };
+        opacity = 1.0;
       }
     ];
 
-    # Window rules: opacity + per-app overrides
+    # Window rules: blur + opacity + per-app overrides
     # DMS manages corner-radius and borders via layout.kdl
     window-rules = [
-      # Base rule: default opacity for all windows
+      # Base rule: blur + default opacity for all windows
       {
         clip-to-geometry = true;
         opacity = 0.95;
+        blur = {
+          enable = true;
+          strength = 30;
+        };
       }
       # Inactive windows: more transparent
       {
@@ -259,9 +281,13 @@
 
     # Autostart
     spawn-at-startup = [
+      { command = [ "swaybg" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }
       { command = [ "ghostty" ]; }
       { command = [ "google-chrome-stable" ]; }
       { command = [ "slack" ]; }
     ];
   };
+
+  # Wallpaper — KCD2 shepherd scene
+  home.file.".local/share/wallpapers/kcd2-shepherd.jpg".source = ./wallpapers/kcd2-shepherd.jpg;
 }
