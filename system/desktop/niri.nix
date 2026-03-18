@@ -1,11 +1,14 @@
 # Niri Wayland Compositor
 # Scrollable tiling Wayland compositor
 
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
-  # Enable Niri
-  programs.niri.enable = true;
+  # Enable Niri (unstable required: niri-stable v25.08 lacks `include` directive support)
+  programs.niri = {
+    enable = true;
+    package = inputs.niri-flake.packages.${pkgs.system}.niri-unstable;
+  };
 
   # XDG portal for Niri (uses GNOME portal)
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gnome ];

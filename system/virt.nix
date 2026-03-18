@@ -17,6 +17,5 @@
 
   environment.systemPackages = with pkgs; [
     spice-gtk     # USB redirection and clipboard sharing
-    virt-install  # CLI to create VMs from ISOs
   ];
 }

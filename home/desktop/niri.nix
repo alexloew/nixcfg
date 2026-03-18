@@ -41,18 +41,6 @@ in
     swayidle      # Idle management
   ];
 
-  # Ensure DMS include directories exist with empty files
-  # Niri will error if included files are missing
-  xdg.configFile."niri/dms/.keep" = {
-    text = "";
-    onChange = ''
-      mkdir -p ${config.xdg.configHome}/niri/dms
-      for f in colors layout alttab binds; do
-        touch ${config.xdg.configHome}/niri/dms/$f.kdl
-      done
-    '';
-  };
-
   # Niri configuration via niri-flake settings
   programs.niri.settings = {
     # Environment variables for NVIDIA + Wayland
