@@ -102,6 +102,18 @@
       };
     };
 
+    # Layer rules: transparency for DMS bar and overlays
+    layer-rules = [
+      {
+        matches = [{ namespace = "^dms:bar$"; }];
+        opacity = 0.85;
+      }
+      {
+        matches = [{ namespace = "^quickshell$"; }];
+        opacity = 0.85;
+      }
+    ];
+
     # Window rules: opacity + per-app overrides
     # DMS manages corner-radius and borders via layout.kdl
     window-rules = [
