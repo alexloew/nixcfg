@@ -61,7 +61,7 @@
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
           home-manager.backupFileExtension = "bak";
-home-manager.users.alexloewenthal = import ./home;
+          home-manager.users.alexloewenthal = import ./home;
         }
 
         # Netflix modules
