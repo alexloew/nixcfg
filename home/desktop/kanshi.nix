@@ -14,20 +14,20 @@ in
     enable = true;
 
     settings = [
-      # Dual-monitor: ultrawide left, 1440p right, laptop disabled
+      # Dual-monitor: 27-inch left, ultrawide right
       {
         profile.name = "dual";
         profile.outputs = [
           {
-            criteria = ultrawide;
-            mode = "3440x1440@99.982";
+            criteria = alienware;
+            mode = "2560x1440@143.969";
             position = "0,0";
             scale = 1.0;
           }
           {
-            criteria = alienware;
-            mode = "2560x1440@143.969";
-            position = "3440,0";
+            criteria = ultrawide;
+            mode = "3440x1440@99.982";
+            position = "2560,0";
             scale = 1.0;
           }
         ];

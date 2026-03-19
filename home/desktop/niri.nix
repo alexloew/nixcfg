@@ -47,19 +47,19 @@
     };
 
     # Output / monitor configuration — baseline only, kanshi overrides via EDID
-    # Current connector mapping (may swap after NVIDIA resume — kanshi handles it):
-    #   DP-1 = AW2725DF (2560x1440)   position: right  x=3440
-    #   DP-2 = AW3423DWF (ultrawide)  position: left   x=0
+    # Intended connector mapping:
+    #   DP-2 = AW2725DF  27-inch (2560x1440)  position: left   x=0
+    #   DP-1 = AW3423DWF ultrawide (3440x1440) position: right  x=2560
     outputs = {
       "eDP-1" = { scale = 2.0; };
       "DP-2" = {
-        mode = { width = 3440; height = 1440; refresh = 99.982; };
+        mode = { width = 2560; height = 1440; refresh = 143.969; };
         position = { x = 0; y = 0; };
         scale = 1.0;
       };
       "DP-1" = {
-        mode = { width = 2560; height = 1440; refresh = 143.969; };
-        position = { x = 3440; y = 0; };
+        mode = { width = 3440; height = 1440; refresh = 99.982; };
+        position = { x = 2560; y = 0; };
         scale = 1.0;
       };
     };
@@ -289,8 +289,8 @@
     # Autostart
     spawn-at-startup = [
       { command = [ "swaybg"
-          "--output" "DP-2"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill"
-          "--output" "DP-1"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
+          "--output" "DP-1"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill"
+          "--output" "DP-2"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
           "--output" "eDP-1"  "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
         ]; }
       { command = [ "ghostty" ]; }
