@@ -174,7 +174,7 @@
         ];
         opacity = 1.0;
       }
-      # Autostarted apps: open maximized
+      # Autostarted apps: open maximized on DP-1
       {
         matches = [
           { app-id = "^com\\.mitchellh\\.ghostty$"; }
@@ -182,6 +182,7 @@
           { app-id = "^Slack$"; }
         ];
         open-maximized = true;
+        open-on-output = "DP-1";
       }
     ];
 
@@ -285,13 +286,35 @@
 
     # Autostart
     spawn-at-startup = [
-      { command = [ "swaybg" "--output" "DP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill" ]; }
-      { command = [ "swaybg" "--output" "DP-2" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }
-      { command = [ "swaybg" "--output" "eDP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }      
+      { command = [ "swaybg"
+          "--output" "DP-1"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill"
+          "--output" "DP-2"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
+          "--output" "eDP-1"  "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
+        ]; }
       { command = [ "ghostty" ]; }
       { command = [ "google-chrome-stable" ]; }
       { command = [ "slack" ]; }
     ];
+  };
+
+  # Lid-close handler: toggle eDP-1 off/on via niri msg
+  # Triggered by the system udev rule on button/lid change events
+  systemd.user.services.lid-handler = {
+    description = "Toggle eDP-1 output on lid close/open";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = let
+        script = pkgs.writeShellScript "lid-handler" ''
+          state=$(cat /proc/acpi/button/lid/LID0/state 2>/dev/null || \
+                  cat /proc/acpi/button/lid/LID/state 2>/dev/null)
+          if echo "$state" | grep -q "closed"; then
+            ${pkgs.niri}/bin/niri msg output eDP-1 off
+          else
+            ${pkgs.niri}/bin/niri msg output eDP-1 on
+          fi
+        '';
+      in "${script}";
+    };
   };
 
   # Wallpaper — KCD2 shepherd scene
