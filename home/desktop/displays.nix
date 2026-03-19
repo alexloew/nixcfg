@@ -31,20 +31,20 @@ let
     if [ -n "$uw" ] && [ -n "$aw" ]; then
       # Dual: 27-inch left at 0,0 — ultrawide right at 2560,0
       ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
-      ${pkgs.niri}/bin/niri msg output "$aw" position 0 0
+      ${pkgs.niri}/bin/niri msg output "$aw" position 0,0
       ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
-      ${pkgs.niri}/bin/niri msg output "$uw" position 2560 0
+      ${pkgs.niri}/bin/niri msg output "$uw" position 2560,0
       swaybg_args+=(--output "$uw" --image "$wp/kcd2-shepherd-wallpaper-ultrawide.jpg" --mode fill)
       swaybg_args+=(--output "$aw" --image "$wp/kcd2-shepherd.jpg" --mode fill)
     elif [ -n "$uw" ]; then
       # Ultrawide only (lid closed / 27-inch disconnected)
       ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
-      ${pkgs.niri}/bin/niri msg output "$uw" position 0 0
+      ${pkgs.niri}/bin/niri msg output "$uw" position 0,0
       swaybg_args+=(--output "$uw" --image "$wp/kcd2-shepherd-wallpaper-ultrawide.jpg" --mode fill)
     elif [ -n "$aw" ]; then
       # 27-inch only
       ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
-      ${pkgs.niri}/bin/niri msg output "$aw" position 0 0
+      ${pkgs.niri}/bin/niri msg output "$aw" position 0,0
       swaybg_args+=(--output "$aw" --image "$wp/kcd2-shepherd.jpg" --mode fill)
     fi
 
@@ -61,8 +61,9 @@ let
       ${pkgs.niri}/bin/niri msg action focus-monitor "$uw"
       sleep 0.5
       # Chrome first → left column; Ghostty second → right column
+      # Chrome needs ~2s to create its window; if Ghostty wins the race it ends up left
       ${pkgs.niri}/bin/niri msg action spawn -- google-chrome-stable
-      sleep 1
+      sleep 2
       ${pkgs.niri}/bin/niri msg action spawn -- ghostty
       # Wait for Ghostty to open, then refocus Chrome (left column)
       sleep 1
