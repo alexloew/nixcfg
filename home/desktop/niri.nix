@@ -63,11 +63,6 @@
       };
     };
 
-    # Named workspaces
-    workspaces = {
-      "browser" = { };  # ultrawide — Ghostty (left) + Chrome (right)
-      "comms"   = { };  # 27-inch   — Slack
-    };
 
     # Layout: DMS manages gaps, borders, corner-radius, and colors
     # via included KDL files (layout.kdl, colors.kdl)
@@ -181,22 +176,19 @@
         ];
         opacity = 1.0;
       }
-      # Chrome + Ghostty: workspace "browser" (tiled side-by-side on ultrawide)
-      # open-on-output omitted — configure-displays script focuses the correct
-      # output before spawning, creating the workspace on the right display
+      # Chrome + Ghostty: open maximized; configure-displays focuses the correct
+      # output before spawning so they land on the ultrawide
       {
         matches = [
           { app-id = "^google-chrome$"; }
           { app-id = "^com\\.mitchellh\\.ghostty$"; }
         ];
         open-maximized = true;
-        open-on-workspace = "browser";
       }
-      # Slack: workspace "comms" on 27-inch
+      # Slack: open maximized on 27-inch (configure-displays focuses it before spawn)
       {
         matches = [{ app-id = "^Slack$"; }];
         open-maximized = true;
-        open-on-workspace = "comms";
       }
     ];
 
