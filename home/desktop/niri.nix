@@ -47,17 +47,18 @@
     };
 
     # Output / monitor configuration
-    # Physical layout: [DP-2 2560w] [DP-1 ultrawide 3440w]
+    # Physical layout: [DP-1 ultrawide 3440w] [DP-2 2560w]
+    # NOTE: NVIDIA may swap connector names after resume — kanshi handles this via EDID
     outputs = {
       "eDP-1" = { scale = 2.0; };
-      "DP-2" = {
-        mode = { width = 2560; height = 1440; refresh = 143.969; };
+      "DP-1" = {
+        mode = { width = 3440; height = 1440; refresh = 99.982; };
         position = { x = 0; y = 0; };
         scale = 1.0;
       };
-      "DP-1" = {
-        mode = { width = 3440; height = 1440; refresh = 99.982; };
-        position = { x = 2560; y = 0; };
+      "DP-2" = {
+        mode = { width = 2560; height = 1440; refresh = 143.969; };
+        position = { x = 3440; y = 0; };
         scale = 1.0;
       };
     };
