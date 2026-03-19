@@ -77,6 +77,14 @@
     };
   };
 
+  # Auto-restart DMS if it crashes (e.g. on wake from sleep)
+  systemd.user.services.dms = {
+    serviceConfig = {
+      Restart = "on-failure";
+      RestartSec = "3s";
+    };
+  };
+
   # Pure dark theme file for DMS
   home.file.".config/DankMaterialShell/themes/pure-dark.json".text = builtins.toJSON {
     dark = {

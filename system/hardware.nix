@@ -28,4 +28,11 @@
     ACTION=="change", SUBSYSTEM=="button", KERNEL=="button/lid", \
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=alexloewenthal@.host start lid-handler.service"
   '';
+
+  # Restart DMS after wake from sleep — quickshell crashes when PipeWire
+  # tears down audio nodes on suspend, so restart it cleanly after resume.
+  powerManagement.resumeCommands = ''
+    sleep 3
+    ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart dms.service || true
+  '';
 }
