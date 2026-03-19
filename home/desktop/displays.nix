@@ -57,8 +57,8 @@ let
 
     # Launch apps only on first run (not on resume/hotplug restarts)
     if [ -n "$uw" ] && ! pgrep -x "google-chrome" > /dev/null; then
-      # Focus ultrawide — workspaces "browser" and "comms" will be created here
-      ${pkgs.niri}/bin/niri msg action focus-output "$uw"
+      # Focus ultrawide — Chrome and Ghostty will open here
+      ${pkgs.niri}/bin/niri msg action focus-monitor "$uw"
       sleep 0.5
       # Chrome first → left column; Ghostty second → right column
       ${pkgs.niri}/bin/niri msg action spawn -- google-chrome-stable
@@ -67,7 +67,7 @@ let
       # Slack on 27-inch
       if [ -n "$aw" ]; then
         sleep 0.5
-        ${pkgs.niri}/bin/niri msg action focus-output "$aw"
+        ${pkgs.niri}/bin/niri msg action focus-monitor "$aw"
         sleep 0.5
         ${pkgs.niri}/bin/niri msg action spawn -- slack
       fi
