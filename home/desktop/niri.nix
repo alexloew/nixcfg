@@ -300,20 +300,20 @@
   # Lid-close handler: toggle eDP-1 off/on via niri msg
   # Triggered by the system udev rule on button/lid change events
   systemd.user.services.lid-handler = {
-    description = "Toggle eDP-1 output on lid close/open";
-    serviceConfig = {
+    Unit.Description = "Toggle eDP-1 output on lid close/open";
+    Service = let
+      script = pkgs.writeShellScript "lid-handler" ''
+        state=$(cat /proc/acpi/button/lid/LID0/state 2>/dev/null || \
+                cat /proc/acpi/button/lid/LID/state 2>/dev/null)
+        if echo "$state" | grep -q "closed"; then
+          ${pkgs.niri}/bin/niri msg output eDP-1 off
+        else
+          ${pkgs.niri}/bin/niri msg output eDP-1 on
+        fi
+      '';
+    in {
       Type = "oneshot";
-      ExecStart = let
-        script = pkgs.writeShellScript "lid-handler" ''
-          state=$(cat /proc/acpi/button/lid/LID0/state 2>/dev/null || \
-                  cat /proc/acpi/button/lid/LID/state 2>/dev/null)
-          if echo "$state" | grep -q "closed"; then
-            ${pkgs.niri}/bin/niri msg output eDP-1 off
-          else
-            ${pkgs.niri}/bin/niri msg output eDP-1 on
-          fi
-        '';
-      in "${script}";
+      ExecStart = "${script}";
     };
   };
 
