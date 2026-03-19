@@ -63,6 +63,13 @@
       };
     };
 
+    # Named workspaces — per-output; browser/terminal on DP-2, comms on DP-1
+    workspaces = {
+      "browser"  = { };
+      "terminal" = { };
+      "comms"    = { };
+    };
+
     # Layout: DMS manages gaps, borders, corner-radius, and colors
     # via included KDL files (layout.kdl, colors.kdl)
     # Configure those in DMS Settings → Compositor
@@ -175,20 +182,26 @@
         ];
         opacity = 1.0;
       }
-      # Chrome + Ghostty: open maximized on ultrawide (DP-2 = AW3423DWF)
+      # Chrome: workspace "browser" on ultrawide (DP-2 = AW3423DWF)
       {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-        ];
+        matches = [{ app-id = "^google-chrome$"; }];
         open-maximized = true;
         open-on-output = "DP-2";
+        open-on-workspace = "browser";
       }
-      # Slack: open maximized on 27-inch (DP-1 = AW2725DF)
+      # Ghostty: workspace "terminal" on ultrawide (DP-2), below browser
+      {
+        matches = [{ app-id = "^com\\.mitchellh\\.ghostty$"; }];
+        open-maximized = true;
+        open-on-output = "DP-2";
+        open-on-workspace = "terminal";
+      }
+      # Slack: workspace "comms" on 27-inch (DP-1 = AW2725DF)
       {
         matches = [{ app-id = "^Slack$"; }];
         open-maximized = true;
         open-on-output = "DP-1";
+        open-on-workspace = "comms";
       }
     ];
 
