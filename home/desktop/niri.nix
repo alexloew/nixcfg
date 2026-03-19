@@ -9,6 +9,7 @@
   # Install supporting tools
   home.packages = with pkgs; [
     swaylock      # Screen locker
+    swaybg        # Wallpaper setter (per-output)
     grim          # Screenshots
     slurp         # Region selection
     wl-clipboard  # Clipboard support
@@ -46,19 +47,20 @@
     };
 
     # Output / monitor configuration
-     outputs = {
-       "eDP-1" = { scale = 2.0; };
-       "DP-1" = {
-         mode = { width = 3440; height = 1440; refresh = 99.982; };
-         position = { x = 0; y = 0; };
-         scale = 1.0;
-       };
-       "DP-2" = {
-         mode = { width = 2560; height = 1440; refresh = 143.969; };
-         position = { x = 3440; y = 0; };
-         scale = 1.0;
-       };
-     };
+    # Physical layout: [DP-2 2560w] [DP-1 ultrawide 3440w]
+    outputs = {
+      "eDP-1" = { scale = 2.0; };
+      "DP-2" = {
+        mode = { width = 2560; height = 1440; refresh = 143.969; };
+        position = { x = 0; y = 0; };
+        scale = 1.0;
+      };
+      "DP-1" = {
+        mode = { width = 3440; height = 1440; refresh = 99.982; };
+        position = { x = 2560; y = 0; };
+        scale = 1.0;
+      };
+    };
 
     # Layout: DMS manages gaps, borders, corner-radius, and colors
     # via included KDL files (layout.kdl, colors.kdl)
