@@ -11,6 +11,6 @@
     ./gnome.nix
     ./niri.nix
     ./idle.nix
-    ./kanshi.nix
+    ./displays.nix
   ];
 }

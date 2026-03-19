@@ -175,15 +175,20 @@
         ];
         opacity = 1.0;
       }
-      # Autostarted apps: open maximized on DP-1
+      # Chrome + Ghostty: open maximized on ultrawide (DP-2 = AW3423DWF)
       {
         matches = [
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
           { app-id = "^google-chrome$"; }
-          { app-id = "^Slack$"; }
+          { app-id = "^com\\.mitchellh\\.ghostty$"; }
         ];
         open-maximized = true;
         open-on-output = "DP-2";
+      }
+      # Slack: open maximized on 27-inch (DP-1 = AW2725DF)
+      {
+        matches = [{ app-id = "^Slack$"; }];
+        open-maximized = true;
+        open-on-output = "DP-1";
       }
     ];
 

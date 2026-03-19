@@ -27,13 +27,15 @@
   services.udev.extraRules = ''
     ACTION=="change", SUBSYSTEM=="button", KERNEL=="button/lid", \
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=alexloewenthal@.host start lid-handler.service"
+
+    # Reconfigure displays on DRM hotplug (display hub connect/disconnect)
+    ACTION=="change", SUBSYSTEM=="drm", \
+      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=alexloewenthal@.host restart configure-displays.service"
   '';
 
-  # Restart DMS after wake from sleep — quickshell crashes when PipeWire
-  # tears down audio nodes on suspend, so restart it cleanly after resume.
   powerManagement.resumeCommands = ''
     sleep 3
     ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart dms.service || true
-    ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart set-wallpapers.service || true
+    ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart configure-displays.service || true
   '';
 }
