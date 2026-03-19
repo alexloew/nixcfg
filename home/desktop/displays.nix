@@ -55,6 +55,24 @@ let
       exit 1
     fi
 
+    # Launch apps only on first run (not on resume/hotplug restarts)
+    if [ -n "$uw" ] && ! pgrep -x "google-chrome" > /dev/null; then
+      # Focus ultrawide — workspaces "browser" and "comms" will be created here
+      ${pkgs.niri}/bin/niri msg action focus-output "$uw"
+      sleep 0.5
+      # Chrome first → left column; Ghostty second → right column
+      ${pkgs.niri}/bin/niri msg action spawn -- google-chrome-stable
+      sleep 1
+      ${pkgs.niri}/bin/niri msg action spawn -- ghostty
+      # Slack on 27-inch
+      if [ -n "$aw" ]; then
+        sleep 0.5
+        ${pkgs.niri}/bin/niri msg action focus-output "$aw"
+        sleep 0.5
+        ${pkgs.niri}/bin/niri msg action spawn -- slack
+      fi
+    fi
+
     exec ${pkgs.swaybg}/bin/swaybg "''${swaybg_args[@]}"
   '';
 in
@@ -71,6 +89,7 @@ in
       Restart = "on-failure";
       RestartSec = "2";
       Environment = "WAYLAND_DISPLAY=wayland-1";
+      KillMode = "process";  # only kill swaybg on restart; leave spawned apps running
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
