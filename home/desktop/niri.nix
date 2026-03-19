@@ -287,12 +287,8 @@
     screenshot-path = "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png";
 
     # Autostart
+    # Wallpapers are set by kanshi via exec after each profile activation
     spawn-at-startup = [
-      { command = [ "swaybg"
-          "--output" "DP-2"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill"
-          "--output" "DP-1"   "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
-          "--output" "eDP-1"  "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill"
-        ]; }
       { command = [ "ghostty" ]; }
       { command = [ "google-chrome-stable" ]; }
       { command = [ "slack" ]; }
