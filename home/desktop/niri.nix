@@ -34,6 +34,10 @@
         natural-scroll = true;
         tap = true;
       };
+      
+      mouse = {
+          natural-scroll = true;
+        }; 
 
       focus-follows-mouse = {
         enable = true;
@@ -42,9 +46,19 @@
     };
 
     # Output / monitor configuration
-    outputs."eDP-1" = {
-      scale = 2.0;
-    };
+     outputs = {
+       "eDP-1" = { scale = 2.0; };
+       "DP-1" = {
+         mode = { width = 2560; height = 1440; refresh = 143.969; };
+         position = { x = 0; y = 0; };
+         scale = 1.0;
+       };
+       "DP-2" = {
+         mode = { width = 3440; height = 1440; refresh = 99.982; };
+         position = { x = 2560; y = 0; };
+         scale = 1.0;
+       };
+     };
 
     # Layout: DMS manages gaps, borders, corner-radius, and colors
     # via included KDL files (layout.kdl, colors.kdl)
@@ -269,7 +283,9 @@
 
     # Autostart
     spawn-at-startup = [
-      { command = [ "swaybg" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }
+      { command = [ "swaybg" "--output" "DP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }
+      { command = [ "swaybg" "--output" "DP-2" "--image" "${config.home.homeDirectory}/Downloads/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill" ]; }
+      { command = [ "swaybg" "--output" "eDP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }      
       { command = [ "ghostty" ]; }
       { command = [ "google-chrome-stable" ]; }
       { command = [ "slack" ]; }
