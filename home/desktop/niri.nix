@@ -46,18 +46,15 @@
       };
     };
 
-    # Output / monitor configuration — baseline only, kanshi overrides via EDID
-    # Hardware connector mapping:
-    #   DP-1 = AW2725DF  27-inch (2560x1440)  position: left   x=0
-    #   DP-2 = AW3423DWF ultrawide (3440x1440) position: right  x=2560
+    # Output configuration matched by EDID — survives connector rename after resume
     outputs = {
-      "eDP-1" = { scale = 2.0; };
-      "DP-1" = {
+      "Samsung Display Corp. 0x4165 Unknown" = { scale = 2.0; };
+      "Dell Inc. AW2725DF 92Q6ZZ3" = {
         mode = { width = 2560; height = 1440; refresh = 143.969; };
         position = { x = 0; y = 0; };
         scale = 1.0;
       };
-      "DP-2" = {
+      "Dell Inc. AW3423DWF GF0C2S3" = {
         mode = { width = 3440; height = 1440; refresh = 99.982; };
         position = { x = 2560; y = 0; };
         scale = 1.0;
