@@ -1,31 +1,31 @@
 # Kanshi — dynamic output configuration
-# Identifies displays by EDID (make/model/serial) so connector name swaps
-# (common with NVIDIA after resume) don't break the layout.
-# Reapplies config on every output change, including wake from sleep.
-#
-# To get EDID-based criteria, run: niri msg outputs
-# Then replace the "DP-*" connector strings below with the
-# "Make Model Serial" strings shown for each display.
+# Uses EDID (make/model/serial) so connector name swaps after NVIDIA resume
+# don't break the layout. Reapplies config on every output change.
 
 { ... }:
 
+let
+  ultrawide = "Dell Inc. AW3423DWF GF0C2S3";  # 3440x1440 — left
+  alienware  = "Dell Inc. AW2725DF 92Q6ZZ3";   # 2560x1440 — right
+  laptop     = "Samsung Display Corp. 0x4165 Unknown";
+in
 {
   services.kanshi = {
     enable = true;
 
     settings = [
-      # Dual-monitor: ultrawide left, 1440p right
+      # Dual-monitor: ultrawide left, 1440p right, laptop disabled
       {
         profile.name = "dual";
         profile.outputs = [
           {
-            criteria = "DP-1";  # ultrawide — replace with EDID string from `niri msg outputs`
+            criteria = ultrawide;
             mode = "3440x1440@99.982";
             position = "0,0";
             scale = 1.0;
           }
           {
-            criteria = "DP-2";  # 1440p — replace with EDID string from `niri msg outputs`
+            criteria = alienware;
             mode = "2560x1440@143.969";
             position = "3440,0";
             scale = 1.0;
@@ -38,7 +38,7 @@
         profile.name = "laptop";
         profile.outputs = [
           {
-            criteria = "eDP-1";
+            criteria = laptop;
             scale = 2.0;
           }
         ];
@@ -49,7 +49,7 @@
         profile.name = "ultrawide-only";
         profile.outputs = [
           {
-            criteria = "DP-1";  # replace with EDID string
+            criteria = ultrawide;
             mode = "3440x1440@99.982";
             position = "0,0";
             scale = 1.0;
