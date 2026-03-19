@@ -12,14 +12,15 @@ let
   laptop     = "Samsung Display Corp. 0x4165 Unknown";
 
   wallpaperScript = pkgs.writeShellScript "set-wallpapers" ''
-    pkill swaybg || true
+    pkill swaybg 2>/dev/null || true
+    sleep 1  # wait for outputs to settle after profile switch
 
-    uw=$(${pkgs.niri}/bin/niri msg --json outputs \
-      | ${pkgs.jq}/bin/jq -r '.[] | select(.model == "AW3423DWF") | .name')
-    aw=$(${pkgs.niri}/bin/niri msg --json outputs \
-      | ${pkgs.jq}/bin/jq -r '.[] | select(.model == "AW2725DF") | .name')
-    edp=$(${pkgs.niri}/bin/niri msg --json outputs \
-      | ${pkgs.jq}/bin/jq -r '.[] | select(.make | startswith("Samsung")) | .name')
+    outputs=$(${pkgs.niri}/bin/niri msg outputs 2>/dev/null)
+
+    # Extract connector name from lines like: Output "Dell Inc. AW3423DWF GF0C2S3" (DP-2)
+    uw=$(echo  "$outputs" | grep "AW3423DWF" | awk -F'[()]' '{print $2}')
+    aw=$(echo  "$outputs" | grep "AW2725DF"  | awk -F'[()]' '{print $2}')
+    edp=$(echo "$outputs" | grep "Samsung"   | awk -F'[()]' '{print $2}')
 
     wp="$HOME/.local/share/wallpapers"
     args=()
@@ -27,7 +28,8 @@ let
     [ -n "$aw"  ] && args+=(--output "$aw"  --image "$wp/kcd2-shepherd.jpg" --mode fill)
     [ -n "$edp" ] && args+=(--output "$edp" --image "$wp/kcd2-shepherd.jpg" --mode fill)
 
-    [ ''${#args[@]} -gt 0 ] && exec ${pkgs.swaybg}/bin/swaybg "''${args[@]}"
+    # Run swaybg detached so kanshi's exec returns immediately
+    [ ''${#args[@]} -gt 0 ] && nohup ${pkgs.swaybg}/bin/swaybg "''${args[@]}" >/dev/null 2>&1 &
   '';
 in
 {
