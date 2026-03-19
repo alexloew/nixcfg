@@ -49,13 +49,13 @@
      outputs = {
        "eDP-1" = { scale = 2.0; };
        "DP-1" = {
-         mode = { width = 2560; height = 1440; refresh = 143.969; };
+         mode = { width = 3440; height = 1440; refresh = 99.982; };
          position = { x = 0; y = 0; };
          scale = 1.0;
        };
        "DP-2" = {
-         mode = { width = 3440; height = 1440; refresh = 99.982; };
-         position = { x = 2560; y = 0; };
+         mode = { width = 2560; height = 1440; refresh = 143.969; };
+         position = { x = 3440; y = 0; };
          scale = 1.0;
        };
      };
@@ -283,8 +283,8 @@
 
     # Autostart
     spawn-at-startup = [
-      { command = [ "swaybg" "--output" "DP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }
-      { command = [ "swaybg" "--output" "DP-2" "--image" "${config.home.homeDirectory}/Downloads/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill" ]; }
+      { command = [ "swaybg" "--output" "DP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg" "--mode" "fill" ]; }
+      { command = [ "swaybg" "--output" "DP-2" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }
       { command = [ "swaybg" "--output" "eDP-1" "--image" "${config.home.homeDirectory}/.local/share/wallpapers/kcd2-shepherd.jpg" "--mode" "fill" ]; }      
       { command = [ "ghostty" ]; }
       { command = [ "google-chrome-stable" ]; }

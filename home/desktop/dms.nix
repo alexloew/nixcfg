@@ -21,6 +21,10 @@
       currentThemeName = "custom";
       customThemeFile = "${config.home.homeDirectory}/.config/DankMaterialShell/themes/pure-dark.json";
 
+      use24HourClock = false;
+      useFahrenheit = true;
+      windSpeedUnit = "mph";
+
       barConfigs = [
         {
           id = "default";
