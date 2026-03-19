@@ -56,7 +56,7 @@ let
     fi
 
     # Launch apps only on first run (not on resume/hotplug restarts)
-    if [ -n "$uw" ] && ! pgrep -x "google-chrome" > /dev/null; then
+    if [ -n "$uw" ] && ! pgrep -f "google-chrome" > /dev/null; then
       # Focus ultrawide — Chrome and Ghostty will open here
       ${pkgs.niri}/bin/niri msg action focus-monitor "$uw"
       sleep 0.5
@@ -64,6 +64,9 @@ let
       ${pkgs.niri}/bin/niri msg action spawn -- google-chrome-stable
       sleep 1
       ${pkgs.niri}/bin/niri msg action spawn -- ghostty
+      # Wait for Ghostty to open, then refocus Chrome (left column)
+      sleep 1
+      ${pkgs.niri}/bin/niri msg action focus-column-left
       # Slack on 27-inch
       if [ -n "$aw" ]; then
         sleep 0.5
