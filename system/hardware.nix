@@ -34,5 +34,6 @@
   powerManagement.resumeCommands = ''
     sleep 3
     ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart dms.service || true
+    ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart set-wallpapers.service || true
   '';
 }
