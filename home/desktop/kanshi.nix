@@ -12,14 +12,12 @@ let
   alienware  = "Dell Inc. AW2725DF 92Q6ZZ3";   # 2560x1440 — left
   laptop     = "Samsung Display Corp. 0x4165 Unknown";
 
-  # Detects current connector names by EDID and sets wallpapers via swaybg.
-  # Uses text output of `niri msg outputs` — more stable across niri versions.
+  # Detects connector names by EDID and execs swaybg as the service process.
+  # Type=simple keeps swaybg running; restarting the service replaces it cleanly.
+  # Exits 1 if niri isn't ready yet — Restart=on-failure will retry.
   wallpaperScript = pkgs.writeShellScript "set-wallpapers" ''
     export WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-wayland-1}
     export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
-
-    pkill swaybg 2>/dev/null || true
-    sleep 1
 
     outputs=$(${pkgs.niri}/bin/niri msg outputs 2>/dev/null)
 
@@ -34,11 +32,17 @@ let
     [ -n "$aw"  ] && args+=(--output "$aw"  --image "$wp/kcd2-shepherd.jpg" --mode fill)
     [ -n "$edp" ] && args+=(--output "$edp" --image "$wp/kcd2-shepherd.jpg" --mode fill)
 
-    [ ''${#args[@]} -gt 0 ] && nohup ${pkgs.swaybg}/bin/swaybg "''${args[@]}" >/dev/null 2>&1 &
+    if [ ''${#args[@]} -eq 0 ]; then
+      echo "No outputs found — niri not ready yet" >&2
+      exit 1
+    fi
+
+    exec ${pkgs.swaybg}/bin/swaybg "''${args[@]}"
   '';
 in
 {
-  # Systemd user service — started at login, restartable after resume/profile switch
+  # Wallpaper service — Type=simple so swaybg IS the service process.
+  # Restartable by kanshi exec and after resume via powerManagement.resumeCommands.
   systemd.user.services.set-wallpapers = {
     Unit = {
       Description = "Set per-output wallpapers";
@@ -46,8 +50,10 @@ in
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      Type = "oneshot";
+      Type = "simple";
       ExecStart = "${wallpaperScript}";
+      Restart = "on-failure";
+      RestartSec = "2";
       Environment = "WAYLAND_DISPLAY=wayland-1";
     };
     Install.WantedBy = [ "graphical-session.target" ];

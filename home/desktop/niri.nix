@@ -46,15 +46,17 @@
       };
     };
 
-    # Output configuration matched by EDID — survives connector rename after resume
+    # Output configuration — niri requires connector names (not EDID strings).
+    # Kanshi overrides modes/positions via EDID after startup.
+    # Current hardware: DP-1=AW2725DF (27-inch), DP-2=AW3423DWF (ultrawide)
     outputs = {
-      "Samsung Display Corp. 0x4165 Unknown" = { scale = 2.0; };
-      "Dell Inc. AW2725DF 92Q6ZZ3" = {
+      "eDP-1" = { scale = 2.0; };
+      "DP-1" = {
         mode = { width = 2560; height = 1440; refresh = 143.969; };
         position = { x = 0; y = 0; };
         scale = 1.0;
       };
-      "Dell Inc. AW3423DWF GF0C2S3" = {
+      "DP-2" = {
         mode = { width = 3440; height = 1440; refresh = 99.982; };
         position = { x = 2560; y = 0; };
         scale = 1.0;
