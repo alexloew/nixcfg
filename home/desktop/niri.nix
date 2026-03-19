@@ -294,4 +294,5 @@
 
   # Wallpaper — KCD2 shepherd scene
   home.file.".local/share/wallpapers/kcd2-shepherd.jpg".source = ./wallpapers/kcd2-shepherd.jpg;
+  home.file.".local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg".source = ./wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg;
 }
