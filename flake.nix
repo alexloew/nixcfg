@@ -69,6 +69,7 @@
         inputs.nflx-nixcfg.nixosModules.pulse-vpn
         inputs.nflx-nixcfg.nixosModules.ai
         inputs.nflx-nixcfg.nixosModules.metatron
+        inputs.nflx-nixcfg.nixosModules.python
         {
           nflx = {
             username = "alexloewenthal";
