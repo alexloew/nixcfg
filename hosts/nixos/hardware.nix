@@ -33,9 +33,9 @@
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
-  # Swap (also encrypted)
+  # Swap (random encryption key per boot — no persistent data in swap)
   swapDevices = [
-    { device = "/dev/mapper/luks-a974ef85-8d19-4ef1-a7e4-cbdd1637fe52"; }
+    { device = "/dev/disk/by-uuid/a974ef85-8d19-4ef1-a7e4-cbdd1637fe52"; randomEncryption.enable = true; }
   ];
 
   # Platform
