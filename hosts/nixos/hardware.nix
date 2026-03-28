@@ -18,7 +18,7 @@
   boot.initrd.luks.devices."luks-e82e45af-c075-4c87-b310-c65de4d33949" = {
     device = "/dev/disk/by-uuid/e82e45af-c075-4c87-b310-c65de4d33949";
     # Allow TPM2 unlock; enroll with: sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+7 /dev/disk/by-uuid/e82e45af-c075-4c87-b310-c65de4d33949
-    crypttabExtraOptions = [ "tpm2-device=auto" "tpm2-pcrs=0+7" ];
+    crypttabExtraOpts = [ "tpm2-device=auto" "tpm2-pcrs=0+7" ];
   };
 
   # Filesystems
