@@ -7,6 +7,8 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
 ```
 .
 ├── flake.nix                # Entry point
+├── docs/
+│   └── cheatsheet.md        # Tmux + Helix keybind reference
 ├── hosts/
 │   └── nixos/
 │       ├── default.nix      # System entry point
@@ -28,8 +30,8 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
 │   └── virt.nix             # Virtualization (libvirt/QEMU/KVM)
 └── home/                    # Home-manager modules
     ├── apps/
-    │   ├── cli.nix          # CLI tools
-    │   └── gui.nix          # Desktop apps
+    │   ├── cli.nix          # CLI tools (lazygit, yazi, gh, ripgrep, fzf…)
+    │   └── gui.nix          # Desktop apps (Ghostty, Slack, Spotify…)
     ├── desktop/
     │   ├── dms.nix          # DankMaterialShell + Niri integration
     │   ├── fonts.nix        # Nerd fonts
@@ -38,8 +40,7 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
     │   ├── idle.nix         # Idle management
     │   └── niri.nix         # Niri config + DMS includes
     ├── editors/
-    │   ├── cursor.nix       # Cursor editor
-    │   └── helix.nix        # Helix editor
+    │   └── helix.nix        # Helix editor + LSPs
     └── shell/
         ├── bash.nix         # Shell aliases
         ├── git.nix          # Git config
@@ -87,6 +88,27 @@ DMS manages layout (gaps, radius), colors, keybinds, and alt-tab via config incl
 | `Super+H/J/K/L` | Vim-style focus |
 | `Super+Shift+H/J/K/L` | Vim-style move |
 | `Super+Shift+S` | Screenshot region to clipboard |
+
+## Editor & Terminal Workflow
+
+**Editor**: Helix (modal, LSP-first, no plugins needed)  
+**Multiplexer**: tmux with `Ctrl+\` prefix  
+**File manager**: yazi — open with `Ctrl+\` then `y`  
+**Git TUI**: lazygit — open with `Ctrl+\` then `g`  
+**GitHub CLI**: `gh` for PRs, issues, and CI from the terminal
+
+See [`docs/cheatsheet.md`](./docs/cheatsheet.md) for the full keybind reference.
+
+### Helix LSPs
+
+| Language | Servers |
+|----------|---------|
+| Python | ruff, basedpyright, harper-ls |
+| Rust | rust-analyzer, harper-ls |
+| Nix | nil |
+| Markdown | marksman, harper-ls |
+| YAML | yaml-language-server |
+| SQL | sqlfluff (formatter) |
 
 ## Virtualization
 
