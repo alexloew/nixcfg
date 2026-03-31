@@ -21,6 +21,7 @@
         trim-trailing-whitespace = true;
         end-of-line-diagnostics = "hint";
         color-modes = true;
+        rainbow-brackets = true;
 
         inline-diagnostics.cursor-line = "warning";
 
@@ -150,6 +151,11 @@
             settings.run = "onSave";
           };
         };
+        basedpyright = {
+          command = "basedpyright-langserver";
+          args = [ "--stdio" ];
+          config.python.analysis.typeCheckingMode = "standard";
+        };
         rust-analyzer.config = {
           cargo.features = "all";
           check.command = "clippy";
@@ -174,7 +180,7 @@
           auto-format = true;
           language-servers = [
             { name = "ruff"; }
-            { name = "pyright"; }
+            { name = "basedpyright"; }
             { name = "harper-ls"; }
           ];
           roots = [ "pyproject.toml" "setup.py" "poetry.lock" ".git" ".venv/" ];
@@ -188,6 +194,17 @@
           language-servers = [ "nil" ];
           auto-format = true;
         }
+        {
+          name = "sql";
+          formatter = {
+            command = "sqlfluff";
+            args = [ "format" "--dialect" "ansi" "-" ];
+          };
+        }
+        {
+          name = "cython";
+          language-servers = [ "harper-ls" ];
+        }
       ];
     };
 
@@ -198,12 +215,13 @@
       harper              # Grammar checking (provides harper-ls)
       nil                 # Nix
       rust-analyzer       # Rust
-      pyright             # Python
+      basedpyright        # Python type checker
       ruff                # Python linter/formatter
       yaml-language-server
 
       # Formatters
       nixfmt-rfc-style    # Nix formatter
+      sqlfluff            # SQL formatter
     ];
   };
 
