@@ -14,7 +14,7 @@
 
   # Ensure swtpm directories exist before swtpm_setup runs
   systemd.tmpfiles.rules = [
-    "d /var/lib/swtpm-localca          0755 root root -"
+    "d /var/lib/swtpm-localca          0750 tss  tss  -"
     "d /var/lib/libvirt/swtpm          0755 root root -"
     "d /var/log/swtpm                  0755 root root -"
     "d /var/log/swtpm/libvirt          0755 root root -"
