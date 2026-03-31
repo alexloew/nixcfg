@@ -16,8 +16,9 @@
     # File manager
     yazi
 
-    # Git TUI
+    # Git TUI + GitHub CLI
     lazygit
+    gh
 
     # Screenshots (Wayland)
     grim              # screenshot tool
