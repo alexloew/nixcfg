@@ -186,6 +186,7 @@
         }
         {
           name = "go";
+          auto-format = true;
           language-servers = [ "gopls" "harper-ls" ];
         }
         {
@@ -219,7 +220,6 @@
       marksman            # Markdown
       harper              # Grammar checking (provides harper-ls)
       nil                 # Nix
-      gopls               # Go
       rust-analyzer       # Rust
       basedpyright        # Python type checker
       ruff                # Python linter/formatter
