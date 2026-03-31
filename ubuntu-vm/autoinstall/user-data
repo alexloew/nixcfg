@@ -1,0 +1,42 @@
+#cloud-config
+autoinstall:
+  version: 1
+
+  locale: en_US.UTF-8
+
+  keyboard:
+    layout: us
+
+  identity:
+    hostname: ncsetest
+    username: test
+    password: "$6$68Qwp0iUyKnoR3Jh$qxCa4Gg2KuTrrn3Kw2i1OYm8z1dosqAahKs3ILdIJ.lhrAzxeLjR7A3hFG3Zze8bgCg4LUDVzqrQx3ZHHCmNL."
+
+  ssh:
+    install-server: false
+    allow-pw: true
+
+  source:
+    id: ubuntu-desktop-minimal
+    search_drivers: false
+
+  storage:
+    layout:
+      name: lvm
+
+  packages:
+    - git
+    - curl
+    - vim
+
+  late-commands:
+    # Enable auto-login for testuser
+    - |
+      cat > /target/etc/gdm3/custom.conf << 'EOF'
+      [daemon]
+      AutomaticLoginEnable=True
+      AutomaticLogin=test
+      EOF
+
+  user-data:
+    disable_root: true
