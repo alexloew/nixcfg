@@ -200,10 +200,6 @@
             args = [ "format" "--dialect" "ansi" "-" ];
           };
         }
-        {
-          name = "cython";
-          language-servers = [ "harper-ls" ];
-        }
       ];
     };
 
