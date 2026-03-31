@@ -10,7 +10,7 @@
     defaultEditor = true;
 
     settings = {
-      theme = "tokyonight";
+      theme = "onedarker";
 
       editor = {
         line-number = "relative";
