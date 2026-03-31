@@ -73,8 +73,9 @@
       bind-key -T copy-mode-vi 'v' send-keys -X begin-selection
       bind-key -T copy-mode-vi 'y' send -X copy-selection-and-cancel
 
-      # Terminal overrides
+      # Terminal overrides (cursor shape + true color passthrough)
       set -ga terminal-overrides ',*:Ss=\E[%p1%d q:Se=\E[2 q'
+      set -as terminal-overrides ',xterm*:RGB'
 
       # Yazi file manager popup (prefix + y)
       bind-key y display-popup -d '#{pane_current_path}' -x R -h 95% -w 95% -E 'tmux new-session yazi \; set status off'
