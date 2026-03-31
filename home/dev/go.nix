@@ -4,9 +4,11 @@
 {
   home.packages = with pkgs; [
     go
-    gopls          # language server
-    golangci-lint  # linter
-    delve          # debugger
+    gopls                    # language server
+    golangci-lint            # linter
+    golangci-lint-langserver # linter language server
+    delve                    # debugger
+    gotools                  # provides goimports formatter
   ];
 
   home.sessionVariables = {
