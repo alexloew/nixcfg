@@ -34,8 +34,7 @@
         "12=#6a9fb5" "13=#9a7fbf" "14=#5a9fa8" "15=#e0e0e0"
       ];
 
-      background-opacity = 0.88;
-      background-blur-radius = 20;
+      background-opacity = 1.0;
       font-family = "JetBrainsMono Nerd Font";
       font-size = 13;
       font-thicken = true;

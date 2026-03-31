@@ -10,7 +10,7 @@
     defaultEditor = true;
 
     settings = {
-      theme = "catppuccin_mocha";
+      theme = "base16_default_dark";
 
       editor = {
         line-number = "relative";
@@ -21,7 +21,6 @@
         trim-trailing-whitespace = true;
         end-of-line-diagnostics = "hint";
         color-modes = true;
-        rainbow-brackets = true;
 
         inline-diagnostics.cursor-line = "warning";
 
