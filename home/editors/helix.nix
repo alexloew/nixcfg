@@ -193,7 +193,7 @@
           name = "go";
           auto-format = true;
           formatter = { command = "goimports"; };
-          language-servers = [ "gopls" "golangci-lint-langserver" "harper-ls" ];
+          language-servers = [ "gopls" "harper-ls" ];
         }
         {
           name = "rust";
