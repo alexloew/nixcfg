@@ -21,8 +21,14 @@
     "d /var/log/swtpm/libvirt/qemu     0755 root root -"
   ];
 
-  # Allow libvirt NAT network traffic through the firewall
+  # Allow libvirt NAT network traffic through the firewall.
+  # trustedInterfaces covers INPUT; extraCommands covers FORWARD so VM
+  # traffic can be routed from virbr0 out to the host's upstream interface.
   networking.firewall.trustedInterfaces = [ "virbr0" ];
+  networking.firewall.extraCommands = ''
+    iptables -A FORWARD -i virbr0 -j ACCEPT
+    iptables -A FORWARD -o virbr0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+  '';
 
   # virt-manager GUI
   programs.virt-manager.enable = true;
