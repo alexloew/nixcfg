@@ -185,6 +185,10 @@
           roots = [ "pyproject.toml" "setup.py" "poetry.lock" ".git" ".venv/" ];
         }
         {
+          name = "go";
+          language-servers = [ "gopls" "harper-ls" ];
+        }
+        {
           name = "rust";
           language-servers = [ "rust-analyzer" "harper-ls" ];
         }
@@ -215,6 +219,7 @@
       marksman            # Markdown
       harper              # Grammar checking (provides harper-ls)
       nil                 # Nix
+      gopls               # Go
       rust-analyzer       # Rust
       basedpyright        # Python type checker
       ruff                # Python linter/formatter
