@@ -13,6 +13,9 @@
 
     # Browsers
     google-chrome
+
+    # Notes
+    obsidian
   ];
 
   # Ghostty terminal with Catppuccin Mocha dark theme
