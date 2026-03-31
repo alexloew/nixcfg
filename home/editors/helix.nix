@@ -10,7 +10,7 @@
     defaultEditor = true;
 
     settings = {
-      theme = "dark_plus";
+      theme = "tokyonight";
 
       editor = {
         line-number = "relative";
@@ -141,6 +141,7 @@
         harper-ls = {
           command = "harper-ls";
           args = [ "--stdio" ];
+          config = {};
         };
         ruff = {
           command = "ruff";
@@ -187,7 +188,8 @@
         {
           name = "go";
           auto-format = true;
-          language-servers = [ "gopls" "harper-ls" ];
+          formatter = { command = "goimports"; };
+          language-servers = [ "gopls" "golangci-lint-langserver" "harper-ls" ];
         }
         {
           name = "rust";
@@ -259,17 +261,6 @@
       (#match? @injection.content
         "(?ism)^(SELECT|INSERT|UPDATE|DELETE).*?(FROM|INTO|VALUES|SET)(.|\n)*?(WHERE|GROUP BY)?")
       (#set! injection.language "sql"))
-  '';
-
-  home.file.".config/helix/runtime/queries/go/injections.scm".text = ''
-    (([
-       (interpreted_string_literal_content)
-       (raw_string_literal_content)
-     ] @injection.content
-     (#match? @injection.content "(?ism)(SELECT|select|INSERT|insert|UPDATE|update|DELETE|delete).+(FROM|from|INTO|into|VALUES|values|SET|set).*(WHERE|where|GROUP BY|group by)?")
-     )
-    (#set! injection.language "sql")
-    )
   '';
 
   home.file.".config/helix/runtime/queries/markdown/injections.scm".text = ''
