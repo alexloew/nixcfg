@@ -9,10 +9,6 @@
     qemu = {
       package = pkgs.qemu_kvm;
       swtpm.enable = true;  # Software TPM for VMs
-      ovmf = {
-        enable = true;
-        packages = [ pkgs.OVMFFull.fd ];  # Full OVMF with TPM2 support
-      };
     };
   };
 
