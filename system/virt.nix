@@ -21,6 +21,9 @@
     "d /var/log/swtpm/libvirt/qemu     0755 root root -"
   ];
 
+  # Allow libvirt NAT network traffic through the firewall
+  networking.firewall.trustedInterfaces = [ "virbr0" ];
+
   # virt-manager GUI
   programs.virt-manager.enable = true;
 
