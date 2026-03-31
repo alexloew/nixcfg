@@ -6,7 +6,6 @@
     go
     gopls                    # language server
     golangci-lint            # linter
-    golangci-lint-langserver # linter language server
     delve                    # debugger
     gotools                  # provides goimports formatter
   ];
