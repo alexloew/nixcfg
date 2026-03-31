@@ -9,8 +9,17 @@
     qemu = {
       package = pkgs.qemu_kvm;
       swtpm.enable = true;  # Software TPM for VMs
+      ovmf = {
+        enable = true;
+        packages = [ pkgs.OVMFFull.fd ];  # Full OVMF with TPM2 support
+      };
     };
   };
+
+  # Ensure swtpm CA state directory exists with correct permissions
+  systemd.tmpfiles.rules = [
+    "d /var/lib/swtpm-localca 0755 root root -"
+  ];
 
   # virt-manager GUI
   programs.virt-manager.enable = true;
