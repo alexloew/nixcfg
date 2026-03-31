@@ -10,7 +10,7 @@
     defaultEditor = true;
 
     settings = {
-      theme = "base16_default_dark";
+      theme = "dark_plus";
 
       editor = {
         line-number = "relative";
