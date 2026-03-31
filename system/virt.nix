@@ -28,6 +28,9 @@
   networking.firewall.extraCommands = ''
     iptables -A FORWARD -i virbr0 -j ACCEPT
     iptables -A FORWARD -o virbr0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    # Clamp TCP MSS to PMTU so VM packets fit through the VPN tunnel (tun0 MTU=1400)
+    iptables -t mangle -A FORWARD -i virbr0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+    iptables -t mangle -A FORWARD -o virbr0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
   '';
 
   # virt-manager GUI
