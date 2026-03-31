@@ -200,6 +200,12 @@
             args = [ "format" "--dialect" "ansi" "-" ];
           };
         }
+        {
+          name = "cython";
+          scope = "source.cython";
+          file-types = [ "pyx" "pxd" "pxi" ];
+          language-servers = [ "harper-ls" ];
+        }
       ];
     };
 
