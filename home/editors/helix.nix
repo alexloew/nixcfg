@@ -5,12 +5,15 @@
 { pkgs, ... }:
 
 {
+  # Ensure Helix can find its bundled grammars and queries from the Nix store
+  home.sessionVariables.HELIX_RUNTIME = "${pkgs.helix}/lib/helix/runtime";
+
   programs.helix = {
     enable = true;
     defaultEditor = true;
 
     settings = {
-      theme = "dark_plus";
+      theme = "tokyonight";
 
       editor = {
         line-number = "relative";
