@@ -143,10 +143,6 @@
           args = [ "--stdio" ];
           config."harper-ls" = {};
         };
-        golangci-lint-langserver = {
-          command = "golangci-lint-langserver";
-          config.command = [ "golangci-lint" "run" "--out-format" "json" "--issues-exit-code=1" ];
-        };
         ruff = {
           command = "ruff";
           args = [ "server" ];
