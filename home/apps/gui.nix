@@ -8,6 +8,9 @@
     # Communication
     slack
 
+    # Music
+    spotify
+
     # Browsers
     google-chrome
   ];
