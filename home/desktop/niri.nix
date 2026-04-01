@@ -150,12 +150,12 @@
         clip-to-geometry = true;
         opacity = 0.95;
       }
-      # Inactive windows: more transparent
+      # Inactive windows
       {
         matches = [{ is-active = false; }];
-        opacity = 0.85;
+        opacity = 0.90;
       }
-      # Terminals: extra transparency for that dark-mode-through-glass look
+      # Terminals: match active baseline
       {
         matches = [
           { app-id = "^com\\.mitchellh\\.ghostty$"; }
@@ -163,7 +163,7 @@
           { app-id = "^kitty$"; }
           { app-id = "^foot$"; }
         ];
-        opacity = 0.88;
+        opacity = 0.95;
       }
       # Browsers and media: always fully opaque
       {
