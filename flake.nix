@@ -33,50 +33,63 @@
     };
   };
 
-  outputs = { self, nixpkgs, determinate, fh, home-manager, niri-flake, dms, dgop, ... }@inputs:
-  let
-    system = "x86_64-linux";
-    pkgs-unstable = import inputs.nixpkgs-unstable {
-      inherit system;
-      config.allowUnfree = true;
+  outputs =
+    {
+      self,
+      nixpkgs,
+      determinate,
+      fh,
+      home-manager,
+      niri-flake,
+      dms,
+      dgop,
+      ...
+    }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs-unstable = import inputs.nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    in
+    {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs pkgs-unstable; };
+        modules = [
+          # Host configuration (branches to system modules)
+          ./hosts/nixos
+
+          # Niri compositor (provides config.lib.niri.actions for DMS)
+          niri-flake.nixosModules.niri
+
+          # Determinate Systems Nix
+          determinate.nixosModules.default
+          { environment.systemPackages = [ fh.packages.x86_64-linux.default ]; }
+
+          # Home Manager
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
+            home-manager.backupFileExtension = "bak";
+            home-manager.users.alexloewenthal = import ./home;
+          }
+
+          # Netflix modules
+          inputs.nflx-nixcfg.nixosModules.newt
+          inputs.nflx-nixcfg.nixosModules.pulse-vpn
+          inputs.nflx-nixcfg.nixosModules.ai
+          inputs.nflx-nixcfg.nixosModules.metatron
+          inputs.nflx-nixcfg.nixosModules.python
+          inputs.nflx-nixcfg.nixosModules.git
+          {
+            nflx = {
+              username = "alexloewenthal";
+              nix-ld.enable = true;
+            };
+          }
+        ];
+      };
     };
-  in {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs pkgs-unstable; };
-      modules = [
-        # Host configuration (branches to system modules)
-        ./hosts/nixos
-
-        # Niri compositor (provides config.lib.niri.actions for DMS)
-        niri-flake.nixosModules.niri
-
-        # Determinate Systems Nix
-        determinate.nixosModules.default
-        { environment.systemPackages = [ fh.packages.x86_64-linux.default ]; }
-
-        # Home Manager
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
-          home-manager.backupFileExtension = "bak";
-          home-manager.users.alexloewenthal = import ./home;
-        }
-
-        # Netflix modules
-        inputs.nflx-nixcfg.nixosModules.newt
-        inputs.nflx-nixcfg.nixosModules.pulse-vpn
-        inputs.nflx-nixcfg.nixosModules.ai
-        inputs.nflx-nixcfg.nixosModules.metatron
-        inputs.nflx-nixcfg.nixosModules.python
-        {
-          nflx = {
-            username = "alexloewenthal";
-            nix-ld.enable = true;
-          };
-        }
-      ];
-    };
-  };
 }
