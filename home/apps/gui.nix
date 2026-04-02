@@ -7,6 +7,7 @@
   home.packages = with pkgs; [
     # Communication
     slack
+    zoom-us
 
     # Music
     spotify
