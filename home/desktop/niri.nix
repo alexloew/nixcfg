@@ -204,7 +204,7 @@
       # Screenshots — uses niri native actions (DMS manages path via screenshot-path)
       "Mod+S".action.screenshot-screen = [];       # Current screen → file
       "Mod+Alt+S".action.screenshot = [];          # Interactive region select → file
-      "Mod+Shift+Alt+S".action.spawn = [ "dms" "ipc" "call" "screenshotWindow" ]; # Focused window → file
+      "Mod+Shift+Alt+S".action.screenshot-window = []; # Focused window → file
       # Region screenshot to clipboard (grim/slurp still needed for this)
       "Mod+Shift+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
 
