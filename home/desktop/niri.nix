@@ -199,10 +199,12 @@
       "Mod+B".action.spawn = "firefox";
 
       # Screenshots (saved to ~/Pictures/Screenshots)
-      "Print".action.spawn = [ "sh" "-c" "grim ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
-      "Mod+Print".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
+      "Mod+S".action.spawn = [ "sh" "-c" "grim ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
+      "Mod+Alt+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
       # Screenshot to clipboard
       "Mod+Shift+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
+      # Focused window screenshot
+      "Mod+Shift+Alt+S".action.spawn = [ "sh" "-c" "grim -g \"$(niri msg focused-window --json | jq -r '\"\\(.x),\\(.y) \\(.width)x\\(.height)\"')\" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
 
       # Window management
       "Mod+Q".action.close-window = [];

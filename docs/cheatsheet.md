@@ -4,9 +4,10 @@
 
 | Key | Action |
 |-----|--------|
-| `Print` | Full screen → `~/Pictures/Screenshots/` |
-| `Super+Print` | Region select → `~/Pictures/Screenshots/` |
+| `Super+S` | Full screen → `~/Pictures/Screenshots/` |
+| `Super+Alt+S` | Region select → `~/Pictures/Screenshots/` |
 | `Super+Shift+S` | Region select → clipboard |
+| `Super+Shift+Alt+S` | Focused window → `~/Pictures/Screenshots/` |
 
 ---
 
