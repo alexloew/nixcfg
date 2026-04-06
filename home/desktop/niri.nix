@@ -291,9 +291,6 @@
       size = 24;
     };
 
-    # Screenshot path
-    screenshot-path = "~/Pictures/Screenshots/%Y%m%d_%H%M%S.png";
-
     # Apps are launched by configure-displays.service (displays.nix) so it can
     # focus the correct output before spawning, bypassing unstable connector names
     spawn-at-startup = [];
