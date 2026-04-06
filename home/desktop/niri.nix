@@ -11,6 +11,7 @@
     swaylock      # Screen locker
     swaybg        # Wallpaper setter (per-output)
     grim          # Screenshots
+    grimblast     # Screenshot helper (active window support)
     slurp         # Region selection
     wl-clipboard  # Clipboard support
     swayidle      # Idle management
@@ -204,7 +205,7 @@
       # Screenshot to clipboard
       "Mod+Shift+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
       # Focused window screenshot
-      "Mod+Shift+Alt+S".action.spawn = [ "sh" "-c" "grim -g \"$(niri msg --json focused-window | jq -r '\"\\(.layout.tile_pos_in_workspace_view[0]),\\(.layout.tile_pos_in_workspace_view[1]) \\(.layout.tile_size[0])x\\(.layout.tile_size[1])\"')\" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
+      "Mod+Shift+Alt+S".action.spawn = [ "sh" "-c" "grimblast save active ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
 
       # Window management
       "Mod+Q".action.close-window = [];
