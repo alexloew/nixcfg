@@ -10,9 +10,8 @@
   home.packages = with pkgs; [
     swaylock      # Screen locker
     swaybg        # Wallpaper setter (per-output)
-    grim          # Screenshots
-    grimblast     # Screenshot helper (active window support)
-    slurp         # Region selection
+    grim          # Screenshots (used for region-to-clipboard)
+    slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
     swayidle      # Idle management
   ];
@@ -27,6 +26,9 @@
 
     # Remove client-side decorations (cleaner look, matches Wynn-Dots style)
     prefer-no-csd = true;
+
+    # Screenshot output path
+    screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
 
     # Input configuration
     input = {
@@ -199,13 +201,12 @@
       "Mod+Return".action.spawn = "ghostty";
       "Mod+B".action.spawn = "firefox";
 
-      # Screenshots (saved to ~/Pictures/Screenshots)
-      "Mod+S".action.spawn = [ "sh" "-c" "grim ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
-      "Mod+Alt+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
-      # Screenshot to clipboard
+      # Screenshots — uses niri native actions (DMS manages path via screenshot-path)
+      "Mod+S".action.screenshot-screen = [];       # Current screen → file
+      "Mod+Alt+S".action.screenshot = [];          # Interactive region select → file
+      "Mod+Shift+Alt+S".action.screenshot-window = []; # Focused window → file
+      # Region screenshot to clipboard (grim/slurp still needed for this)
       "Mod+Shift+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
-      # Focused window screenshot
-      "Mod+Shift+Alt+S".action.spawn = [ "sh" "-c" "grimblast save active ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png" ];
 
       # Window management
       "Mod+Q".action.close-window = [];

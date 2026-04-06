@@ -87,8 +87,8 @@ DMS manages layout (gaps, radius), colors, keybinds, and alt-tab via config incl
 | `Super+Shift+1-9` | Move window to workspace |
 | `Super+H/J/K/L` | Vim-style focus |
 | `Super+Shift+H/J/K/L` | Vim-style move |
-| `Super+S` | Screenshot full screen to file |
-| `Super+Alt+S` | Screenshot region to file |
+| `Super+S` | Screenshot current screen to file |
+| `Super+Alt+S` | Screenshot interactive region to file |
 | `Super+Shift+S` | Screenshot region to clipboard |
 | `Super+Shift+Alt+S` | Screenshot focused window to file |
 

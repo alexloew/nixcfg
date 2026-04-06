@@ -4,8 +4,8 @@
 
 | Key | Action |
 |-----|--------|
-| `Super+S` | Full screen → `~/Pictures/Screenshots/` |
-| `Super+Alt+S` | Region select → `~/Pictures/Screenshots/` |
+| `Super+S` | Current screen → `~/Pictures/Screenshots/` |
+| `Super+Alt+S` | Interactive region select → `~/Pictures/Screenshots/` |
 | `Super+Shift+S` | Region select → clipboard |
 | `Super+Shift+Alt+S` | Focused window → `~/Pictures/Screenshots/` |
 
