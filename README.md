@@ -77,12 +77,12 @@ DMS manages layout (gaps, radius), colors, keybinds, and alt-tab via config incl
 | Keys | Action |
 |------|--------|
 | `Super+Return` | Terminal (Ghostty) |
-| `Super+D` | App launcher (DMS Spotlight) |
+| `Super+Space` | App launcher (DMS Spotlight) |
 | `Super+B` | Firefox |
 | `Super+Q` | Close window |
 | `Super+F` | Maximize column |
 | `Super+Shift+F` | Fullscreen |
-| `Super+V` | Toggle floating |
+| `Super+Shift+V` | Toggle floating |
 | `Super+1-9` | Switch workspace |
 | `Super+Shift+1-9` | Move window to workspace |
 | `Super+H/J/K/L` | Vim-style focus |

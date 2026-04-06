@@ -1,3 +1,15 @@
+# Cheat Sheet
+
+## Screenshots (Niri)
+
+| Key | Action |
+|-----|--------|
+| `Print` | Full screen → `~/Pictures/Screenshots/` |
+| `Super+Print` | Region select → `~/Pictures/Screenshots/` |
+| `Super+Shift+S` | Region select → clipboard |
+
+---
+
 # Tmux + Helix Cheat Sheet
 
 ## Tmux
