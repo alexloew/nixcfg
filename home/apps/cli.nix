@@ -16,9 +16,9 @@
     # File manager
     yazi
 
-    # Git TUI + GitHub CLI
+    # Git TUI
+    # Note: gh is provided by nflx-nixcfg's git module (gh-netflix-wrapper)
     lazygit
-    gh
 
     # Screenshots (Wayland)
     grim              # screenshot tool

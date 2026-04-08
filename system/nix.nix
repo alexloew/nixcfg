@@ -12,8 +12,7 @@
 
   # opencode-desktop is in nixpkgs-unstable but not yet in the stable channel
   nixpkgs.overlays = [
-    # opencode-desktop depends on gh from unstable; align gh to avoid buildEnv conflict
-    (_final: _prev: { inherit (pkgs-unstable) opencode-desktop gh; })
+    (_final: _prev: { inherit (pkgs-unstable) opencode-desktop; })
   ];
 
   # System state version - DO NOT CHANGE without reading the docs
