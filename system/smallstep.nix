@@ -6,5 +6,6 @@
 {
   environment.systemPackages = [
     inputs.smallstep-nur.packages.${pkgs.system}.step-agent
+    inputs.smallstep-nur.packages.${pkgs.system}.step-agent-plugin
   ];
 }
