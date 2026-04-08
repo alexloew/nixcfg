@@ -2,13 +2,9 @@
 # This is the main branch for all NixOS system-level configuration.
 # Each sub-module handles a specific concern.
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
-  environment.systemPackages = [
-    inputs.smallstep-nur.packages.${pkgs.system}.step-agent
-  ];
-
   imports = [
     ./boot.nix
     ./desktop
@@ -17,6 +13,7 @@
     ./network.nix
     ./nix.nix
     ./nvidia.nix
+    ./smallstep.nix
     ./tpm.nix
     ./users.nix
     ./virt.nix
