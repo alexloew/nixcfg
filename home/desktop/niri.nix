@@ -13,7 +13,8 @@
     grim          # Screenshots (used for region-to-clipboard)
     slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
-    swayidle      # Idle management
+    swayidle            # Idle management
+    xwayland-satellite  # X11 app support for niri (needed for Zoom, etc.)
   ];
 
   # Niri configuration via niri-flake settings
@@ -22,6 +23,7 @@
     environment = {
       NIXOS_OZONE_WL = "1";
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
+      DISPLAY = ":0";  # XWayland display for X11 apps (xwayland-satellite)
     };
 
     # Remove client-side decorations (cleaner look, matches Wynn-Dots style)
@@ -294,6 +296,21 @@
     # Apps are launched by configure-displays.service (displays.nix) so it can
     # focus the correct output before spawning, bypassing unstable connector names
     spawn-at-startup = [];
+  };
+
+  # XWayland support for X11 apps (Zoom, etc.) via xwayland-satellite
+  systemd.user.services.xwayland-satellite = {
+    Unit = {
+      Description = "Xwayland outside your Wayland compositor";
+      BindsTo = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   # Lid-close handler: toggle eDP-1 off/on via niri msg
