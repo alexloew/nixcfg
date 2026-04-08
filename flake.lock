@@ -681,7 +681,8 @@
         "niri-flake": "niri-flake",
         "nixpkgs": "nixpkgs_6",
         "nixpkgs-stable": "nixpkgs-stable_2",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "smallstep-nur": "smallstep-nur"
       }
     },
     "rust-analyzer-src": {
@@ -698,6 +699,26 @@
         "owner": "rust-lang",
         "ref": "nightly",
         "repo": "rust-analyzer",
+        "type": "github"
+      }
+    },
+    "smallstep-nur": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775257961,
+        "narHash": "sha256-jY3d2bRvQ5MERa9jOfo64NhN135nMyvnl8FhmJG5B10=",
+        "owner": "smallstep",
+        "repo": "nur",
+        "rev": "dfe71f34c7321c82f43defc8d05aea2f77354a75",
+        "type": "github"
+      },
+      "original": {
+        "owner": "smallstep",
+        "repo": "nur",
         "type": "github"
       }
     },
