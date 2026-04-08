@@ -5,6 +5,10 @@
 
 let
   stepAgentPkg = inputs.smallstep-nur.packages.${pkgs.system}.step-agent;
+  agentYaml = pkgs.writeText "step-agent.yaml" ''
+    team: netflix-pilot
+    fingerprint: b31d6d51394ddef9086ffc290dc02a1410eef0ebcad2f5114710e7b380d80ffa
+  '';
 in
 {
   environment.systemPackages = [ stepAgentPkg ];
@@ -15,6 +19,13 @@ in
     group = "step-agent";
     home = "/var/lib/step-agent";
   };
+
+  # Copies agent.yaml to the real /etc (ext4) so ConditionPathIsReadWrite passes.
+  # Uses 'C' rule (copy-if-absent) so step-agent can modify it at runtime.
+  systemd.tmpfiles.rules = [
+    "d /etc/step-agent 0755 step-agent step-agent -"
+    "C /etc/step-agent/agent.yaml 0640 step-agent step-agent - ${agentYaml}"
+  ];
 
   systemd.services.step-agent = {
     description = "Smallstep Agent";
