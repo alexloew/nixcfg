@@ -31,6 +31,12 @@
       url = "github:AvengeMedia/dgop";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Smallstep NUR - step-ca, step-cli, step-agent, etc.
+    smallstep-nur = {
+      url = "github:smallstep/nur";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs =
