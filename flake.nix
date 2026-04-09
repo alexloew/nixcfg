@@ -2,12 +2,10 @@
   description = "NixOS Baseline flake with DetSys and Home Manager";
 
   inputs = {
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
-    home-manager.url = "github:nix-community/home-manager/release-25.11";
+    home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
 
@@ -35,7 +33,7 @@
     # Smallstep NUR - step-ca, step-cli, step-agent, etc.
     smallstep-nur = {
       url = "github:smallstep/nur";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -53,14 +51,10 @@
     }@inputs:
     let
       system = "x86_64-linux";
-      pkgs-unstable = import inputs.nixpkgs-unstable {
-        inherit system;
-        config.allowUnfree = true;
-      };
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs pkgs-unstable; };
+        specialArgs = { inherit inputs; };
         modules = [
           # Host configuration (branches to system modules)
           ./hosts/nixos
@@ -77,7 +71,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs pkgs-unstable; };
+            home-manager.extraSpecialArgs = { inherit inputs; };
             home-manager.backupFileExtension = "bak";
             home-manager.users.alexloewenthal = import ./home;
           }
