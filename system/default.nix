@@ -13,7 +13,6 @@
     ./network.nix
     ./nix.nix
     ./nvidia.nix
-    ./smallstep.nix
     ./tpm.nix
     ./users.nix
     ./virt.nix

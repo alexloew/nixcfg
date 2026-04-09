@@ -27,10 +27,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Smallstep NUR - step-ca, step-cli, step-agent, etc.
-    smallstep-nur = {
-      url = "github:smallstep/nur";
-      inputs.nixpkgs.follows = "nixpkgs";
+    # Smallstep - certificate/identity tooling (private)
+    smallstep = {
+      url = "git+ssh://git@github.com/alexloew/smallstep-nixos-flake";
     };
   };
 
@@ -72,6 +71,9 @@
             home-manager.backupFileExtension = "bak";
             home-manager.users.alexloewenthal = import ./home;
           }
+
+          # Smallstep step-agent
+          inputs.smallstep.nixosModules.default
 
           # Netflix modules
           inputs.nflx-nixcfg.nixosModules.newt
