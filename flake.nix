@@ -82,6 +82,7 @@
           inputs.nflx-nixcfg.nixosModules.metatron
           inputs.nflx-nixcfg.nixosModules.python
           inputs.nflx-nixcfg.nixosModules.git
+          inputs.nflx-nixcfg.nixosModules.ssh-agent
           {
             nflx = {
               username = "alexloewenthal";
