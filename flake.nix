@@ -87,6 +87,7 @@
             nflx = {
               username = "alexloewenthal";
               nix-ld.enable = true;
+              ssh-agent.enable = true;
             };
           }
         ];
