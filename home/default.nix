@@ -18,4 +18,7 @@
   ];
 
   programs.home-manager.enable = true;
+
+  # Export DISPLAY for X11 apps via xwayland-satellite (fixed to :0)
+  home.sessionVariables.DISPLAY = ":0";
 }
