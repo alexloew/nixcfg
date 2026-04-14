@@ -19,6 +19,7 @@
     # Git TUI
     # Note: gh is provided by nflx-nixcfg's git module (gh-netflix-wrapper)
     lazygit
+    pre-commit
     v4l-utils
 
     # Screenshots (Wayland)
