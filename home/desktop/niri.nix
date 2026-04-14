@@ -307,9 +307,7 @@
       After = [ "graphical-session.target" ];
     };
     Service = {
-      Type = "notify";
-      NotifyAccess = "all";
-      ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite :0";
+      ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "graphical-session.target" ];
