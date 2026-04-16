@@ -77,4 +77,14 @@
   environment.systemPackages = with pkgs; [
     spice-gtk     # USB redirection and clipboard sharing
   ];
+
+  # spice-client-glib-usb-acl-helper must run as root to set ACLs on USB
+  # device nodes (/dev/bus/usb/…) so QEMU can access redirected devices.
+  # Without this wrapper it fails with "Error setting facl: Operation not permitted".
+  security.wrappers.spice-client-glib-usb-acl-helper = {
+    source = "${pkgs.spice-gtk}/bin/spice-client-glib-usb-acl-helper";
+    owner = "root";
+    group = "root";
+    setuid = true;
+  };
 }
