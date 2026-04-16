@@ -33,6 +33,9 @@
     iptables -t mangle -A FORWARD -o virbr0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
   '';
 
+  # Required for libvirt NAT networking (VM traffic forwarded to host uplink)
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
+
   # virt-manager GUI
   programs.virt-manager.enable = true;
 
