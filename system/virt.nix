@@ -12,6 +12,41 @@
     };
   };
 
+  # Bootstrap the default NAT network on first boot (or after /var/lib wipe).
+  # libvirtd doesn't auto-create it on NixOS, so we define/start/autostart it
+  # idempotently via a oneshot service that runs after libvirtd is ready.
+  systemd.services.libvirt-default-network = {
+    description = "Bootstrap libvirt default NAT network";
+    requires = [ "libvirtd.service" ];
+    after = [ "libvirtd.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    serviceConfig.RemainAfterExit = true;
+    script = let
+      virsh = "${pkgs.libvirt}/bin/virsh";
+      defaultNetXml = pkgs.writeText "libvirt-default-net.xml" ''
+        <network>
+          <name>default</name>
+          <bridge name="virbr0"/>
+          <forward/>
+          <ip address="192.168.122.1" netmask="255.255.255.0">
+            <dhcp>
+              <range start="192.168.122.2" end="192.168.122.254"/>
+            </dhcp>
+          </ip>
+        </network>
+      '';
+    in ''
+      if ! ${virsh} net-list --all | grep -q default; then
+        ${virsh} net-define ${defaultNetXml}
+        ${virsh} net-autostart default
+      fi
+      if ! ${virsh} net-list | grep -q "default.*active"; then
+        ${virsh} net-start default
+      fi
+    '';
+  };
+
   # Ensure swtpm directories exist before swtpm_setup runs
   systemd.tmpfiles.rules = [
     "d /var/lib/swtpm-localca          0750 tss  tss  -"
