@@ -88,6 +88,7 @@
               username = "alexloewenthal";
               nix-ld.enable = true;
               ssh-agent.enable = true;
+              vpn.pulse.browser-extensions = [];
             };
           }
         ];
