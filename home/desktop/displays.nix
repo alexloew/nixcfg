@@ -21,9 +21,14 @@ let
     uw=$(echo  "$outputs" | grep "AW3423DWF" | awk -F'[()]' '{print $2}')  # ultrawide 3440
     aw=$(echo  "$outputs" | grep "AW2725DF"  | awk -F'[()]' '{print $2}')  # 27-inch 2560
 
+    # Wallpaper — set on all outputs regardless of which are connected
+    wp="$HOME/.local/share/wallpapers/earthrise.JPG"
+    pkill -x swaybg 2>/dev/null || true
+    ${pkgs.swaybg}/bin/swaybg --image "$wp" --mode fill &
+
+    # External display mode config — skip if no external monitors connected
     if [ -z "$uw" ] && [ -z "$aw" ]; then
-      echo "No external outputs found — niri not ready" >&2
-      exit 1
+      exit 0
     fi
 
     # Apply modes
@@ -35,11 +40,6 @@ let
     elif [ -n "$aw" ]; then
       ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
     fi
-
-    # Wallpaper — kill any previous instance before starting fresh
-    wp="$HOME/.local/share/wallpapers/earthrise.JPG"
-    pkill -x swaybg 2>/dev/null || true
-    ${pkgs.swaybg}/bin/swaybg --image "$wp" --mode fill &
 
     # Launch apps only on first run (not on resume/hotplug restarts)
     if [ -n "$uw" ] && ! pgrep -f "google-chrome" > /dev/null; then
