@@ -3,6 +3,9 @@
 
 { config, pkgs, ... }:
 
+let
+  username = "alexloewenthal";
+in
 {
   # Audio - PipeWire
   services.pulseaudio.enable = false;
@@ -12,7 +15,6 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # jack.enable = true;  # Uncomment for JACK applications
   };
 
   # Printing - CUPS
@@ -26,16 +28,16 @@
   # Fire the user-level lid-handler service when the lid state changes
   services.udev.extraRules = ''
     ACTION=="change", SUBSYSTEM=="button", KERNEL=="button/lid", \
-      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=alexloewenthal@.host start lid-handler.service"
+      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host start lid-handler.service"
 
     # Reconfigure displays on DRM hotplug (display hub connect/disconnect)
     ACTION=="change", SUBSYSTEM=="drm", \
-      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=alexloewenthal@.host restart configure-displays.service"
+      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host restart configure-displays.service"
   '';
 
   powerManagement.resumeCommands = ''
     sleep 3
-    ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart dms.service || true
-    ${pkgs.systemd}/bin/systemctl --user -M alexloewenthal@ restart configure-displays.service || true
+    ${pkgs.systemd}/bin/systemctl --user -M ${username}@ restart dms.service || true
+    ${pkgs.systemd}/bin/systemctl --user -M ${username}@ restart configure-displays.service || true
   '';
 }
