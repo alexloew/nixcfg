@@ -12,7 +12,7 @@
     escapeTime = 50;
     historyLimit = 1000000;
     keyMode = "vi";
-    mouse = false;
+    mouse = true;
     terminal = "xterm-256color";
 
     extraConfig = ''
