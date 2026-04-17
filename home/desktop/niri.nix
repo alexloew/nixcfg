@@ -9,6 +9,7 @@
   # Install supporting tools
   home.packages = with pkgs; [
     swaylock      # Screen locker
+    swaybg        # Wallpaper renderer
     grim          # Screenshots (used for region-to-clipboard)
     slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
@@ -65,23 +66,6 @@
         position = { x = 2560; y = 0; };
         scale = 1.0;
       };
-    };
-
-    # Workspaces pinned to outputs
-    # DP-2 (ultrawide): Slack, Obsidian, Spotify, empty
-    # DP-1 (27-inch):   Chrome, Files, empty
-    # eDP-1 (laptop):   Terminal, Virt-manager, empty
-    workspaces = {
-      "01" = { open-on-output = "DP-2"; };
-      "02" = { open-on-output = "DP-2"; };
-      "03" = { open-on-output = "DP-2"; };
-      "04" = { open-on-output = "DP-2"; };
-      "05" = { open-on-output = "DP-1"; };
-      "06" = { open-on-output = "DP-1"; };
-      "07" = { open-on-output = "DP-1"; };
-      "08" = { open-on-output = "eDP-1"; };
-      "09" = { open-on-output = "eDP-1"; };
-      "10" = { open-on-output = "eDP-1"; };
     };
 
     # Layout: DMS manages gaps, borders, corner-radius, and colors

@@ -36,6 +36,11 @@ let
       ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
     fi
 
+    # Wallpaper — kill any previous instance before starting fresh
+    wp="$HOME/.local/share/wallpapers/earthrise.JPG"
+    pkill -x swaybg 2>/dev/null || true
+    ${pkgs.swaybg}/bin/swaybg --image "$wp" --mode fill &
+
     # Launch apps only on first run (not on resume/hotplug restarts)
     if [ -n "$uw" ] && ! pgrep -f "google-chrome" > /dev/null; then
       # Focus ultrawide — Chrome and Ghostty will open here
