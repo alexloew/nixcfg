@@ -72,7 +72,7 @@
       # Don't use enableSpawn since systemd.enable = true
       includes = {
         enable = true;
-        filesToInclude = [ "alttab" "binds" "layout" "outputs" "windowrules" ];
+        filesToInclude = [ "alttab" "binds" "layout" "outputs" ];
       };
     };
   };
