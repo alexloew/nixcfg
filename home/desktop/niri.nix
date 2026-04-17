@@ -147,55 +147,7 @@
       }
     ];
 
-    # Window rules: opacity + per-app overrides
-    # DMS manages corner-radius and borders via layout.kdl
-    window-rules = [
-      # Base rule: default opacity for all windows
-      {
-        clip-to-geometry = true;
-        opacity = 0.95;
-      }
-      # Inactive windows
-      {
-        matches = [{ is-active = false; }];
-        opacity = 0.90;
-      }
-      # Terminals: match active baseline
-      {
-        matches = [
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-          { app-id = "^Alacritty$"; }
-          { app-id = "^kitty$"; }
-          { app-id = "^foot$"; }
-        ];
-        opacity = 0.95;
-      }
-      # Browsers and media: always fully opaque
-      {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^firefox$"; }
-          { app-id = "^Slack$"; }
-          { app-id = "^mpv$"; }
-          { app-id = "^vlc$"; }
-        ];
-        opacity = 1.0;
-      }
-      # Chrome + Ghostty: open maximized; configure-displays focuses the correct
-      # output before spawning so they land on the ultrawide
-      {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-        ];
-        open-maximized = true;
-      }
-      # Slack: open maximized on 27-inch (configure-displays focuses it before spawn)
-      {
-        matches = [{ app-id = "^Slack$"; }];
-        open-maximized = true;
-      }
-    ];
+    # Window rules are managed in windowrules.kdl (included via DMS)
 
     # User key bindings (in addition to DMS-managed binds)
     binds = {
@@ -338,6 +290,9 @@
       ExecStart = "${script}";
     };
   };
+
+  # Window rules — managed as KDL, included via DMS
+  home.file.".config/niri/dms/windowrules.kdl".source = ./windowrules.kdl;
 
   # Wallpaper — KCD2 shepherd scene
   home.file.".local/share/wallpapers/kcd2-shepherd.jpg".source = ./wallpapers/kcd2-shepherd.jpg;
