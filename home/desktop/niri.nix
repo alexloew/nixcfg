@@ -9,7 +9,6 @@
   # Install supporting tools
   home.packages = with pkgs; [
     swaylock      # Screen locker
-    swaybg        # Wallpaper setter (per-output)
     grim          # Screenshots (used for region-to-clipboard)
     slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
@@ -310,7 +309,31 @@
   # Window rules — managed as KDL, included via DMS
   home.file.".config/niri/dms/windowrules.kdl".source = ./windowrules.kdl;
 
-  # Wallpaper — KCD2 shepherd scene
-  home.file.".local/share/wallpapers/kcd2-shepherd.jpg".source = ./wallpapers/kcd2-shepherd.jpg;
-  home.file.".local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg".source = ./wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg;
+  # Wallpapers — deployed to share path, then wired into DMS session.json via activation
+  home.file.".local/share/wallpapers/earthrise.JPG".source = ./wallpapers/earthrise.JPG;
+
+  # Merge wallpaper keys into DMS session.json without clobbering other settings
+  home.activation.dmsWallpapers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    state_dir="$HOME/.local/state/DankMaterialShell"
+    session="$state_dir/session.json"
+    wp="$HOME/.local/share/wallpapers/earthrise.JPG"
+
+    mkdir -p "$state_dir"
+
+    if [ -f "$session" ]; then
+      tmp=$(${pkgs.coreutils}/bin/mktemp)
+      ${pkgs.jq}/bin/jq \
+        --arg wp "$wp" \
+        '.wallpaperPath = $wp
+         | .wallpaperFillMode = "PreserveAspectCrop"
+         | .monitorWallpapers = {"DP-1": $wp, "DP-2": $wp, "eDP-1": $wp}' \
+        "$session" > "$tmp" && mv "$tmp" "$session"
+    else
+      ${pkgs.jq}/bin/jq -n \
+        --arg wp "$wp" \
+        '{wallpaperPath: $wp, wallpaperFillMode: "PreserveAspectCrop",
+          monitorWallpapers: {"DP-1": $wp, "DP-2": $wp, "eDP-1": $wp}}' \
+        > "$session"
+    fi
+  '';
 }
