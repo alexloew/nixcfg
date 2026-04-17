@@ -2,7 +2,7 @@
 # Uses EDID (make/model/serial) so connector name swaps after NVIDIA resume
 # don't break the layout. Reapplies config on every output change.
 
-{ ... }:
+{ pkgs, ... }:
 
 let
   ultrawide = "Dell Inc. AW3423DWF GF0C2S3";  # 3440x1440 — right
@@ -17,6 +17,7 @@ in
       # Dual-monitor: 27-inch left, ultrawide right
       {
         profile.name = "dual";
+        profile.exec = [ "${pkgs.systemd}/bin/systemctl --user restart configure-displays.service" ];
         profile.outputs = [
           {
             criteria = alienware;
@@ -36,6 +37,7 @@ in
       # Laptop only (lid open, no externals)
       {
         profile.name = "laptop";
+        profile.exec = [ "${pkgs.systemd}/bin/systemctl --user restart configure-displays.service" ];
         profile.outputs = [
           {
             criteria = laptop;
@@ -47,6 +49,7 @@ in
       # Ultrawide only (lid closed)
       {
         profile.name = "ultrawide-only";
+        profile.exec = [ "${pkgs.systemd}/bin/systemctl --user restart configure-displays.service" ];
         profile.outputs = [
           {
             criteria = ultrawide;
