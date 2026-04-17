@@ -18,7 +18,6 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
 │   ├── desktop/
 │   │   ├── common.nix       # Shared desktop settings
 │   │   ├── gnome.nix        # GNOME + GDM
-│   │   ├── hyprland.nix     # Hyprland compositor
 │   │   └── niri.nix         # Niri compositor
 │   ├── hardware.nix         # Audio (PipeWire), printing
 │   ├── locale.nix           # Timezone, i18n
@@ -33,10 +32,10 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
     │   ├── cli.nix          # CLI tools (lazygit, yazi, gh, ripgrep, fzf…)
     │   └── gui.nix          # Desktop apps (Ghostty, Slack, Spotify…)
     ├── desktop/
+    │   ├── displays.nix     # EDID-based display + wallpaper service
     │   ├── dms.nix          # DankMaterialShell + Niri integration
     │   ├── fonts.nix        # Nerd fonts
     │   ├── gnome.nix        # GNOME extensions
-    │   ├── hyprland.nix     # Hyprland config
     │   ├── idle.nix         # Idle management
     │   └── niri.nix         # Niri config + DMS includes
     ├── editors/

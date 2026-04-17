@@ -52,7 +52,7 @@
     };
 
     # Output configuration — niri requires connector names (not EDID strings).
-    # Kanshi overrides modes/positions via EDID after startup.
+    # configure-displays.service overrides modes/positions via EDID after startup.
     # Current hardware: DP-1=AW2725DF (27-inch), DP-2=AW3423DWF (ultrawide)
     outputs = {
       "eDP-1" = { scale = 2.0; };
