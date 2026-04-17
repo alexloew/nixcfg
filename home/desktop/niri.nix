@@ -278,6 +278,9 @@
       "Mod+Shift+9".action.move-column-to-workspace = 9;
       "Mod+Shift+0".action.move-column-to-workspace = 10;
 
+      # Overview
+      "MouseMiddle".action.toggle-overview = {};
+
       # Scroll through workspaces
       "Mod+WheelScrollDown".action.focus-workspace-down = [];
       "Mod+WheelScrollUp".action.focus-workspace-up = [];
@@ -286,6 +289,9 @@
       "Mod+WheelScrollRight".action.focus-column-right = [];
       "Mod+WheelScrollLeft".action.focus-column-left = [];
     };
+
+    # Disable top-left hot corner (overview triggered via MouseMiddle instead)
+    gestures.hot-corners.enable = false;
 
     # Cursor settings
     cursor = {
