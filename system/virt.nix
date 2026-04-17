@@ -47,23 +47,11 @@
     '';
   };
 
-  # Ensure swtpm directories exist before swtpm_setup runs
-  systemd.tmpfiles.rules = [
-    "d /var/lib/swtpm-localca          0750 tss  tss  -"
-    "d /var/lib/libvirt/swtpm          0755 root root -"
-    "d /var/log/swtpm                  0755 root root -"
-    "d /var/log/swtpm/libvirt          0755 root root -"
-    "d /var/log/swtpm/libvirt/qemu     0755 root root -"
-  ];
-
-  # Allow libvirt NAT network traffic through the firewall.
-  # trustedInterfaces covers INPUT; extraCommands covers FORWARD so VM
-  # traffic can be routed from virbr0 out to the host's upstream interface.
+  # libvirt installs its own FORWARD/NAT rules when the default network starts;
+  # trustedInterfaces covers INPUT. The TCPMSS clamp is custom — it shrinks VM
+  # packet MSS to fit through the VPN tunnel (tun0 MTU=1400).
   networking.firewall.trustedInterfaces = [ "virbr0" ];
   networking.firewall.extraCommands = ''
-    iptables -A FORWARD -i virbr0 -j ACCEPT
-    iptables -A FORWARD -o virbr0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-    # Clamp TCP MSS to PMTU so VM packets fit through the VPN tunnel (tun0 MTU=1400)
     iptables -t mangle -A FORWARD -i virbr0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
     iptables -t mangle -A FORWARD -o virbr0 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
   '';
@@ -74,17 +62,7 @@
   # virt-manager GUI
   programs.virt-manager.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    spice-gtk     # USB redirection and clipboard sharing
-  ];
-
-  # spice-client-glib-usb-acl-helper must run as root to set ACLs on USB
-  # device nodes (/dev/bus/usb/…) so QEMU can access redirected devices.
-  # Without this wrapper it fails with "Error setting facl: Operation not permitted".
-  security.wrappers.spice-client-glib-usb-acl-helper = {
-    source = "${pkgs.spice-gtk}/bin/spice-client-glib-usb-acl-helper";
-    owner = "root";
-    group = "root";
-    setuid = true;
-  };
+  # Installs spice-gtk and sets up the setuid spice-client-glib-usb-acl-helper
+  # wrapper declaratively. Required for USB redirection to VMs.
+  virtualisation.spiceUSBRedirection.enable = true;
 }
