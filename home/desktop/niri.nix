@@ -9,7 +9,6 @@
   # Install supporting tools
   home.packages = with pkgs; [
     swaylock      # Screen locker
-    swaybg        # Wallpaper setter (per-output)
     grim          # Screenshots (used for region-to-clipboard)
     slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
@@ -68,6 +67,22 @@
       };
     };
 
+    # Workspaces pinned to outputs
+    # DP-2 (ultrawide): Slack, Obsidian, Spotify, empty
+    # DP-1 (27-inch):   Chrome, Files, empty
+    # eDP-1 (laptop):   Terminal, Virt-manager, empty
+    workspaces = {
+      "01" = { open-on-output = "DP-2"; };
+      "02" = { open-on-output = "DP-2"; };
+      "03" = { open-on-output = "DP-2"; };
+      "04" = { open-on-output = "DP-2"; };
+      "05" = { open-on-output = "DP-1"; };
+      "06" = { open-on-output = "DP-1"; };
+      "07" = { open-on-output = "DP-1"; };
+      "08" = { open-on-output = "eDP-1"; };
+      "09" = { open-on-output = "eDP-1"; };
+      "10" = { open-on-output = "eDP-1"; };
+    };
 
     # Layout: DMS manages gaps, borders, corner-radius, and colors
     # via included KDL files (layout.kdl, colors.kdl)
@@ -147,55 +162,7 @@
       }
     ];
 
-    # Window rules: opacity + per-app overrides
-    # DMS manages corner-radius and borders via layout.kdl
-    window-rules = [
-      # Base rule: default opacity for all windows
-      {
-        clip-to-geometry = true;
-        opacity = 0.95;
-      }
-      # Inactive windows
-      {
-        matches = [{ is-active = false; }];
-        opacity = 0.90;
-      }
-      # Terminals: match active baseline
-      {
-        matches = [
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-          { app-id = "^Alacritty$"; }
-          { app-id = "^kitty$"; }
-          { app-id = "^foot$"; }
-        ];
-        opacity = 0.95;
-      }
-      # Browsers and media: always fully opaque
-      {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^firefox$"; }
-          { app-id = "^Slack$"; }
-          { app-id = "^mpv$"; }
-          { app-id = "^vlc$"; }
-        ];
-        opacity = 1.0;
-      }
-      # Chrome + Ghostty: open maximized; configure-displays focuses the correct
-      # output before spawning so they land on the ultrawide
-      {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-        ];
-        open-maximized = true;
-      }
-      # Slack: open maximized on 27-inch (configure-displays focuses it before spawn)
-      {
-        matches = [{ app-id = "^Slack$"; }];
-        open-maximized = true;
-      }
-    ];
+    # Window rules are managed in windowrules.kdl (included via DMS)
 
     # User key bindings (in addition to DMS-managed binds)
     binds = {
@@ -339,7 +306,34 @@
     };
   };
 
-  # Wallpaper — KCD2 shepherd scene
-  home.file.".local/share/wallpapers/kcd2-shepherd.jpg".source = ./wallpapers/kcd2-shepherd.jpg;
-  home.file.".local/share/wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg".source = ./wallpapers/kcd2-shepherd-wallpaper-ultrawide.jpg;
+  # Window rules — managed as KDL, included via DMS
+  home.file.".config/niri/dms/windowrules.kdl".source = ./windowrules.kdl;
+
+  # Wallpapers — deployed to share path, then wired into DMS session.json via activation
+  home.file.".local/share/wallpapers/earthrise.JPG".source = ./wallpapers/earthrise.JPG;
+
+  # Merge wallpaper keys into DMS session.json without clobbering other settings
+  home.activation.dmsWallpapers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    state_dir="$HOME/.local/state/DankMaterialShell"
+    session="$state_dir/session.json"
+    wp="$HOME/.local/share/wallpapers/earthrise.JPG"
+
+    mkdir -p "$state_dir"
+
+    if [ -f "$session" ]; then
+      tmp=$(${pkgs.coreutils}/bin/mktemp)
+      ${pkgs.jq}/bin/jq \
+        --arg wp "$wp" \
+        '.wallpaperPath = $wp
+         | .wallpaperFillMode = "PreserveAspectCrop"
+         | .monitorWallpapers = {"DP-1": $wp, "DP-2": $wp, "eDP-1": $wp}' \
+        "$session" > "$tmp" && mv "$tmp" "$session"
+    else
+      ${pkgs.jq}/bin/jq -n \
+        --arg wp "$wp" \
+        '{wallpaperPath: $wp, wallpaperFillMode: "PreserveAspectCrop",
+          monitorWallpapers: {"DP-1": $wp, "DP-2": $wp, "eDP-1": $wp}}' \
+        > "$session"
+    fi
+  '';
 }

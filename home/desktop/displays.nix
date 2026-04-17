@@ -1,9 +1,6 @@
 # Display configuration service
-# Detects connected outputs by EDID, applies modes/positions via `niri msg output`,
-# and runs swaybg for wallpapers. Triggered at login, on DRM hotplug, and after resume.
-#
-# Type=simple: swaybg becomes the service process so it persists.
-# Restart=on-failure: retries if niri isn't ready yet at startup.
+# Detects connected outputs by EDID, applies modes via `niri msg output`,
+# and launches apps on first login. Triggered at login, on DRM hotplug, and after resume.
 
 { pkgs, ... }:
 
@@ -23,33 +20,20 @@ let
     # Extract connector names by model
     uw=$(echo  "$outputs" | grep "AW3423DWF" | awk -F'[()]' '{print $2}')  # ultrawide 3440
     aw=$(echo  "$outputs" | grep "AW2725DF"  | awk -F'[()]' '{print $2}')  # 27-inch 2560
-    edp=$(echo "$outputs" | grep "Samsung"   | awk -F'[()]' '{print $2}')  # laptop
 
-    wp="$HOME/.local/share/wallpapers"
-    swaybg_args=()
-
-    if [ -n "$uw" ] && [ -n "$aw" ]; then
-      # Dual: 27-inch left at 0,0 — ultrawide right at 2560,0
-      # Positions are set statically in niri.nix; only mode needs dynamic override
-      ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
-      ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
-      swaybg_args+=(--output "$uw" --image "$wp/kcd2-shepherd-wallpaper-ultrawide.jpg" --mode fill)
-      swaybg_args+=(--output "$aw" --image "$wp/kcd2-shepherd.jpg" --mode fill)
-    elif [ -n "$uw" ]; then
-      # Ultrawide only (lid closed / 27-inch disconnected)
-      ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
-      swaybg_args+=(--output "$uw" --image "$wp/kcd2-shepherd-wallpaper-ultrawide.jpg" --mode fill)
-    elif [ -n "$aw" ]; then
-      # 27-inch only
-      ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
-      swaybg_args+=(--output "$aw" --image "$wp/kcd2-shepherd.jpg" --mode fill)
+    if [ -z "$uw" ] && [ -z "$aw" ]; then
+      echo "No external outputs found — niri not ready" >&2
+      exit 1
     fi
 
-    [ -n "$edp" ] && swaybg_args+=(--output "$edp" --image "$wp/kcd2-shepherd.jpg" --mode fill)
-
-    if [ ''${#swaybg_args[@]} -eq 0 ]; then
-      echo "No outputs found — niri not ready" >&2
-      exit 1
+    # Apply modes
+    if [ -n "$uw" ] && [ -n "$aw" ]; then
+      ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
+      ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
+    elif [ -n "$uw" ]; then
+      ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
+    elif [ -n "$aw" ]; then
+      ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
     fi
 
     # Launch apps only on first run (not on resume/hotplug restarts)
@@ -74,7 +58,6 @@ let
       fi
     fi
 
-    exec ${pkgs.swaybg}/bin/swaybg "''${swaybg_args[@]}"
   '';
 in
 {
@@ -85,12 +68,11 @@ in
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      Type = "simple";
+      Type = "oneshot";
       ExecStart = "${configureDisplays}";
       Restart = "on-failure";
       RestartSec = "2";
       Environment = "WAYLAND_DISPLAY=wayland-1";
-      KillMode = "process";  # only kill swaybg on restart; leave spawned apps running
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };
