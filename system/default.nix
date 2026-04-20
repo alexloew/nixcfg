@@ -13,6 +13,7 @@
     ./network.nix
     ./nix.nix
     ./nvidia.nix
+    ./orbit.nix
     ./tpm.nix
     ./users.nix
     ./virt.nix
