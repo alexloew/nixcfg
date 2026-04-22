@@ -1,21 +1,24 @@
 # GUI Applications
 # Graphical desktop applications
 
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
-  home.packages = with pkgs; [
+  home.packages = [
     # Communication
-    slack
+    pkgs.slack
 
     # Music
-    spotify
+    pkgs.spotify
 
     # Browsers
-    google-chrome
+    pkgs.google-chrome
 
     # Notes
-    obsidian
+    pkgs.obsidian
+
+    # Multi-agent orchestration desktop app (from the jumpgate flake)
+    inputs.jumpgate.packages.${pkgs.system}.default
   ];
 
   # Ghostty terminal with Catppuccin Mocha dark theme
