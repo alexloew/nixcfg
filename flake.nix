@@ -37,12 +37,6 @@
       url = "github:alexloew/fleet-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Jumpgate / emdash — multi-agent orchestration desktop app
-    jumpgate = {
-      url = "git+https://github.netflix.net/alexloewenthal/jumpgate";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
