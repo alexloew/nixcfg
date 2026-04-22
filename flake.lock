@@ -369,11 +369,11 @@
         "rev": "df3d316be18fa49dd5eb8a6f66e813c41d042103",
         "revCount": 4165,
         "type": "git",
-        "url": "ssh://git@github.netflix.net/alexloewenthal/jumpgate"
+        "url": "https://github.netflix.net/alexloewenthal/jumpgate"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@github.netflix.net/alexloewenthal/jumpgate"
+        "url": "https://github.netflix.net/alexloewenthal/jumpgate"
       }
     },
     "netflix-tv-launcher": {
