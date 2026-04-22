@@ -40,7 +40,7 @@
 
     # Jumpgate / emdash — multi-agent orchestration desktop app
     jumpgate = {
-      url = "git+ssh://git@github.netflix.net/alexloewenthal/jumpgate";
+      url = "git+https://github.netflix.net/alexloewenthal/jumpgate";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
