@@ -8,6 +8,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Track the latest mainline kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # Use systemd in initrd (required for TPM2-based LUKS unlock)
   boot.initrd.systemd.enable = true;
 
