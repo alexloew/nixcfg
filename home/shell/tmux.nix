@@ -15,6 +15,17 @@
     mouse = true;
     terminal = "xterm-256color";
 
+    plugins = with pkgs.tmuxPlugins; [
+      resurrect
+      {
+        plugin = continuum;
+        extraConfig = ''
+          set -g @continuum-restore 'on'
+          set -g @continuum-save-interval '15'
+        '';
+      }
+    ];
+
     extraConfig = ''
       # Secondary prefix
       set-option -g prefix2 C-b
