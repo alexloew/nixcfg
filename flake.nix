@@ -33,7 +33,7 @@
     };
 
     # Fleet / Orbit agent (osquery-based host agent)
-    fleet-nix = {
+    fleet-nixos = {
       url = "git+ssh://git@github.com/alexloew/fleet-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -82,7 +82,7 @@
           inputs.smallstep.nixosModules.default
 
           # Fleet / Orbit agent
-          inputs.fleet-nix.nixosModules.fleet-nixos
+          inputs.fleet-nixos.nixosModules.fleet-nixos
 
           # Netflix modules
           inputs.nflx-nixcfg.nixosModules.newt
