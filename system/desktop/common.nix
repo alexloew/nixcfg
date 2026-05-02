@@ -15,4 +15,7 @@
 
   # XDG Portal (required for screen sharing, file dialogs in Wayland)
   xdg.portal.enable = true;
+
+  # Pin dbus-broker explicitly; nixpkgs upstream default changed to "dbus"
+  services.dbus.implementation = "broker";
 }
