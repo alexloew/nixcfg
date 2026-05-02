@@ -249,7 +249,7 @@
         "type": "github"
       }
     },
-    "fleet-nix": {
+    "fleet-nixos": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -257,11 +257,11 @@
         "nixpkgs-osquery": "nixpkgs-osquery"
       },
       "locked": {
-        "lastModified": 1777734424,
-        "narHash": "sha256-dBxpfP9aUu7W2j+fXFJFqRvWkSUsET9BOKBkBvICiwc=",
+        "lastModified": 1777740917,
+        "narHash": "sha256-6MH6qwS9QunDcQBH++qjhE+62Xl5T4fiP+rcYCRQok8=",
         "ref": "refs/heads/main",
-        "rev": "784c5ef4c30b53327094754b7e74448c56ac9536",
-        "revCount": 137,
+        "rev": "371d4327c29799271fcc9a7c2d5f0c56f6ad6f36",
+        "revCount": 138,
         "type": "git",
         "url": "ssh://git@github.com/alexloew/fleet-nixos"
       },
@@ -758,7 +758,7 @@
         "dgop": "dgop",
         "dms": "dms",
         "fh": "fh",
-        "fleet-nix": "fleet-nix",
+        "fleet-nixos": "fleet-nixos",
         "home-manager": "home-manager",
         "nflx-nixcfg": "nflx-nixcfg",
         "niri-flake": "niri-flake",
