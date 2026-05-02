@@ -1,10 +1,10 @@
 # Go Development
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 
 {
   home.packages = with pkgs; [
     go
-    gopls                    # language server
+    (lib.hiPrio gopls)       # language server (priority over gotools for shared binaries like `modernize`)
     golangci-lint            # linter
     delve                    # debugger
     gotools                  # provides goimports formatter

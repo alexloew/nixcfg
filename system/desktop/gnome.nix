@@ -8,7 +8,7 @@
   services.xserver.enable = true;
 
   # GDM Display Manager
-  services.xserver.displayManager.gdm.enable = true;
+  services.displayManager.gdm.enable = true;
 
   # GNOME Desktop
   services.xserver.desktopManager.gnome.enable = true;
