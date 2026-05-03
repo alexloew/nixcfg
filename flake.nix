@@ -87,7 +87,7 @@
           # Netflix modules
           inputs.nflx-nixcfg.nixosModules.newt
           inputs.nflx-nixcfg.nixosModules.pulse-vpn
-          # inputs.nflx-nixcfg.nixosModules.ai
+          inputs.nflx-nixcfg.nixosModules.ai
           inputs.nflx-nixcfg.nixosModules.metatron
           inputs.nflx-nixcfg.nixosModules.python
           inputs.nflx-nixcfg.nixosModules.git
@@ -100,6 +100,7 @@
               ssh-agent.enable = true;
               vpn.pulse.browser-extensions = [ ];
               vpn.pulse-official.enable = true;
+              genai.disable-project-id-warning = true;
             };
           }
         ];
