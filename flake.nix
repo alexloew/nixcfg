@@ -99,6 +99,7 @@
               nix-ld.enable = true;
               ssh-agent.enable = true;
               vpn.pulse.browser-extensions = [ ];
+              vpn.pulse-official.enable = true;
             };
           }
         ];
