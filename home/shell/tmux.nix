@@ -13,7 +13,7 @@ let
     tmux split-window -h -c "$dir" -l 30%
     tmux send-keys 'claude' Enter
     tmux select-pane -L
-    tmux split-window -v -c "$dir" -l 20%
+    tmux split-window -v -c "$dir" -l 25%
     tmux select-pane -U
     tmux send-keys 'yazi' Enter
     tmux select-pane -D
