@@ -13,11 +13,12 @@ let
     tmux split-window -h -c "$dir" -l 30%
     tmux send-keys 'claude' Enter
     tmux select-pane -L
-    tmux split-window -v -c "$dir" -l 30%
+    tmux split-window -v -c "$dir" -l 20%
     tmux select-pane -U
     tmux send-keys 'yazi' Enter
     tmux select-pane -D
-    tmux send-keys -t:. C-u
+    shell=$(tmux display-message -p "#{pane_id}")
+    (sleep 0.5 && tmux send-keys -t "$shell" C-u) &
   '';
 in
 
