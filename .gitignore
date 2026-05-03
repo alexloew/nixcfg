@@ -16,6 +16,9 @@ result-*
 # macOS
 .DS_Store
 
+# Local Claude guidelines (machine-specific, not for repo)
+CLAUDE.local.md
+
 # Secrets (never commit these)
 secrets/
 *.age
