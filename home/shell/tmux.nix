@@ -94,7 +94,7 @@ in
       bind c command-prompt -p "Directory:" -I "#{pane_current_path}" "run-shell '${workspaceLayout} %1'"
 
       # Reload config
-      bind r source-file ~/.tmux.conf \; display "Reloaded!"
+      bind r source-file ~/.config/tmux/tmux.conf \; display "Reloaded!"
 
       # Vi copy mode
       bind-key / copy-mode \; send-key ?
