@@ -4,6 +4,20 @@
 
 { pkgs, ... }:
 
+let
+  workspaceLayout = pkgs.writeShellScript "tmux-workspace" ''
+    dir="$1"
+    tmux new-window -c "$dir"
+    tmux split-window -h -c "$dir" -l 50%
+    tmux send-keys 'claude' Enter
+    tmux select-pane -L
+    tmux split-window -v -c "$dir"
+    tmux select-pane -U
+    tmux send-keys 'yazi' Enter
+    tmux select-pane -D
+  '';
+in
+
 {
   programs.tmux = {
     enable = true;
@@ -75,15 +89,7 @@
       # Splits (open in current path)
       bind-key v split-window -v -c "#{pane_current_path}"
       bind-key s split-window -h -c "#{pane_current_path}"
-      bind c command-prompt -p "Directory:" -I "#{pane_current_path}" \
-        "new-window -c '%1' \; \
-        split-window -h -c '%1' -l 50%% \; \
-        send-keys 'claude' Enter \; \
-        select-pane -L \; \
-        split-window -v -c '%1' \; \
-        select-pane -U \; \
-        send-keys 'yazi' Enter \; \
-        select-pane -D"
+      bind c command-prompt -p "Directory:" -I "#{pane_current_path}" "run-shell '${workspaceLayout} %1'"
 
       # Reload config
       bind r source-file ~/.tmux.conf \; display "Reloaded!"
