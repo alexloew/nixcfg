@@ -9,19 +9,15 @@ let
     dir="$1"
     name="$(basename "$dir")"
 
-    # Create window named after directory; capture index for explicit pane targeting
-    win=$(tmux new-window -c "$dir" -n "$name" -P -F "#{window_index}")
-
-    # Pane layout after both splits:
-    #   0 = top-left  (yazi)
-    #   1 = right     (claude, 40% width)
-    #   2 = bottom-left (shell, 30% of left height)
-    tmux split-window -h -t "$win".0 -c "$dir" -l 40%
-    tmux split-window -v -t "$win".0 -c "$dir" -l 30%
-
-    tmux send-keys -t "$win".1 'claude' Enter
-    tmux send-keys -t "$win".0 'yazi' Enter
-    tmux select-pane -t "$win".2
+    tmux new-window -c "$dir" -n "$name"
+    tmux split-window -h -c "$dir" -l 40%
+    tmux send-keys 'claude' Enter
+    tmux select-pane -L
+    tmux split-window -v -c "$dir" -l 30%
+    tmux select-pane -U
+    tmux send-keys 'yazi' Enter
+    tmux select-pane -D
+    tmux send-keys C-u ''
   '';
 in
 
