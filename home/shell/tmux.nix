@@ -10,13 +10,14 @@ let
     name="$(basename "$dir")"
 
     tmux new-window -c "$dir" -n "$name"
-    tmux split-window -h -c "$dir" -l 40%
+    tmux split-window -h -c "$dir" -l 30%
     tmux send-keys 'claude' Enter
     tmux select-pane -L
     tmux split-window -v -c "$dir" -l 30%
     tmux select-pane -U
     tmux send-keys 'yazi' Enter
     tmux select-pane -D
+    tmux send-keys -t:. C-u
   '';
 in
 
