@@ -17,7 +17,7 @@ let
     tmux select-pane -U
     tmux send-keys 'yazi' Enter
     tmux select-pane -D
-    tmux send-keys C-u ''
+    tmux send-keys C-u
   '';
 in
 
