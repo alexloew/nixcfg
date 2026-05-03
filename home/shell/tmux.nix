@@ -16,7 +16,12 @@
     terminal = "xterm-256color";
 
     plugins = with pkgs.tmuxPlugins; [
-      resurrect
+      {
+        plugin = resurrect;
+        extraConfig = ''
+          set -g @resurrect-capture-pane-contents 'on'
+        '';
+      }
       {
         plugin = continuum;
         extraConfig = ''
