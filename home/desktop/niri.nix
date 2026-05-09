@@ -340,4 +340,30 @@
 
   # Wallpaper
   home.file.".local/share/wallpapers/earthrise.JPG".source = ./wallpapers/earthrise.JPG;
+
+  # Niri 26.04+ blur (https://github.com/niri-wm/niri/wiki/Window-Effects#blur).
+  # niri-flake doesn't yet expose a typed `blur` / `background-effect` option, so
+  # we append raw KDL to the rendered config. DMS surfaces (bar, popouts, modals,
+  # notifications) get blur automatically via the ext-background-effect protocol
+  # — toggle in DMS Settings → Personalization → Theme & Colors.
+  xdg.configFile.niri-config.source = lib.mkForce (pkgs.writeText "config.kdl" ''
+    ${config.programs.niri.finalConfig}
+
+    blur {
+        passes 3
+        offset 3.0
+        noise 0.02
+        saturation 1.5
+    }
+
+    window-rule {
+        match app-id="^com\.mitchellh\.ghostty$"
+        match app-id="^Alacritty$"
+        match app-id="^kitty$"
+        match app-id="^foot$"
+        background-effect {
+            blur true
+        }
+    }
+  '');
 }
