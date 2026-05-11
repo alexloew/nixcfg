@@ -25,6 +25,11 @@
       useFahrenheit = true;
       windSpeedUnit = "mph";
 
+      # Compositor blur on DMS surfaces (bar, popouts, modals, notifications).
+      # Niri 26.04+ implements ext-background-effect-v1; DMS asks the compositor
+      # to blur its surfaces at runtime when this is true.
+      blurEnabled = true;
+
       barConfigs = [
         {
           id = "default";
