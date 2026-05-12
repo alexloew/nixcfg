@@ -134,6 +134,9 @@ in
 
       # Focus events (for editor auto-save)
       set -g focus-events on
+
+      # Pass Ctrl+Arrow (word-jump) through to the shell
+      set-window-option -g xterm-keys on
     '';
   };
 }
