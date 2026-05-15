@@ -20,10 +20,14 @@ in
   # Printing - CUPS
   services.printing.enable = true;
 
-  # Lid-close: disable eDP-1, keep DP-1 as primary when external displays are connected
-  # logind must not act on lid events — the systemd user service handles output toggling
-  services.logind.lidSwitch = "ignore";
-  services.logind.lidSwitchExternalPower = "ignore";
+  # Lid-close behavior:
+  # - Docked (external displays connected): ignore — lid-handler turns off eDP-1
+  #   so the docked workflow keeps running on external monitors.
+  # - Undocked (battery or AC, no external displays): suspend, so the laptop
+  #   doesn't burn its battery sitting in a bag with the lid closed.
+  services.logind.lidSwitch = "suspend";
+  services.logind.lidSwitchExternalPower = "suspend";
+  services.logind.lidSwitchDocked = "ignore";
 
   # Fire the user-level lid-handler service when the lid state changes
   services.udev.extraRules = ''
