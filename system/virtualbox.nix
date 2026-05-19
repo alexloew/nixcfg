@@ -14,7 +14,7 @@
   };
 
   # USB passthrough and access to /dev/vboxdrv require membership in vboxusers.
-  users.extraGroups.vboxusers.members = [ "alexloewenthal" ];
+  users.groups.vboxusers.members = [ "alexloewenthal" ];
 
   # Kernel modules ship with the VirtualBox host package; nothing extra to load.
 }
