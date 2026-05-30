@@ -15,7 +15,21 @@
   services.xserver.videoDrivers = [ "modesetting" "nvidia" ];
 
   hardware.nvidia = {
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    # Pin the driver to 595.58.03 (built against the current kernel via mkDriver).
+    # NVIDIA 595.71.05 — which nixpkgs nvidiaPackages.{production,stable,latest}
+    # now points to — hangs this Meteor Lake + RTX 500 Ada laptop at a frozen
+    # cursor before console handoff. The hang tracks the driver, not the kernel:
+    # 595.58.03 boots on both 6.18.26 and 6.12.85, while 595.71.05 hangs on both
+    # 6.18.33 and 6.12.91. Hashes copied from nixpkgs production at rev 15f4ee45.
+    # Revisit when a newer driver boots; then drop back to nvidiaPackages.stable.
+    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+      version = "595.58.03";
+      sha256_64bit = "sha256-jA1Plnt5MsSrVxQnKu6BAzkrCnAskq+lVRdtNiBYKfk=";
+      sha256_aarch64 = "sha256-hzzIKY1Te8QkCBWR+H5k1FB/HK1UgGhai6cl3wEaPT8=";
+      openSha256 = "sha256-6LvJyT0cMXGS290Dh8hd9rc+nYZqBzDIlItOFk8S4n8=";
+      settingsSha256 = "sha256-2vLF5Evl2D6tRQJo0uUyY3tpWqjvJQ0/Rpxan3NOD3c=";
+      persistencedSha256 = "sha256-AtjM/ml/ngZil8DMYNH+P111ohuk9mWw5t4z7CHjPWw=";
+    };
     modesetting.enable = true;
     nvidiaSettings = true;
 
