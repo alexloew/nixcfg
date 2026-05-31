@@ -23,20 +23,6 @@
   # #115 HOTPLUG gate, #116 idempotent modeset. The single discriminating
   # variable is the kernel: 6.12.85 good, 6.18.26 bad.
 
-  # Pin linux-firmware to the 04-30 tree, matching the known-good gen. Likely
-  # unnecessary now that the kernel is the identified cause, but held constant
-  # for one confirming boot — change one variable at a time. Already in the
-  # store (good gens use it), so no heavy rebuild.
-  nixpkgs.overlays = [
-    (final: prev: {
-      linux-firmware =
-        (import inputs.nixpkgs-goodkernel {
-          inherit (prev.stdenv.hostPlatform) system;
-          inherit (prev) config;
-        }).linux-firmware;
-    })
-  ];
-
   # THE FIX: pin the kernel to 6.12.85 — the exact LTS the known-good 04-30 gen
   # boots. The previous pin took `.linuxPackages` from the 04-30 tree, which is
   # 6.18.26 (the bad kernel) — not 6.12.85. We have NO data on 05-23's 6.12.91,
