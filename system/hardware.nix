@@ -34,8 +34,12 @@ in
     ACTION=="change", SUBSYSTEM=="button", KERNEL=="button/lid", \
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host start lid-handler.service"
 
-    # Reconfigure displays on DRM hotplug (display hub connect/disconnect)
-    ACTION=="change", SUBSYSTEM=="drm", \
+    # Reconfigure displays on DRM hotplug (display hub connect/disconnect).
+    # Gate on HOTPLUG=1: only genuine connector hotplug carries it. configure-displays
+    # itself issues KMS modesets (niri msg output … mode …), which emit bare
+    # ACTION=change drm uevents with no HOTPLUG — without this gate those re-fire the
+    # rule and restart the service in an infinite loop (DRM uevent storm → boot livelock).
+    ACTION=="change", SUBSYSTEM=="drm", ENV{HOTPLUG}=="1", \
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host restart configure-displays.service"
   '';
 
