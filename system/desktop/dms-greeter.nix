@@ -17,7 +17,21 @@
 
 { config, pkgs, ... }:
 
+let
+  greeterLog = "/var/log/dms-greeter.log";
+in
 {
+  # The greeter's `dms-greeter-start` script (run as the unprivileged
+  # `dms-greeter` user) redirects its output with `> ${greeterLog}`. The
+  # nixpkgs module never creates that file, and /var/log is root-owned 0755,
+  # so the redirect dies with "Permission denied". Pre-create the file owned by
+  # the greeter user so the shell can open (and truncate) it on each start.
+  systemd.tmpfiles.settings."10-dms-greeter-log".${greeterLog}.f = {
+    user = "dms-greeter";
+    group = "dms-greeter";
+    mode = "0644";
+  };
+
   services.displayManager = {
     # Pre-select the niri (DMS) session in the greeter; GNOME stays available
     # as a fallback the user can pick from the session list.
@@ -39,7 +53,7 @@
       # Safe to drop once login is confirmed stable across a few boots.
       logs = {
         save = true;
-        path = "/var/log/dms-greeter.log";
+        path = greeterLog;
       };
     };
   };
