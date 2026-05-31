@@ -44,6 +44,34 @@ in
       # simpler KMS path than mutter-50, and our daily driver.
       compositor.name = "niri";
 
+      # Replace the dms-shell greeter's built-in niri config.
+      #
+      # The bundled default (dms-shell 1.4.6) emits `debug {
+      # keep-max-bpc-unchanged }` and `layout { background-color }`, options the
+      # 2026-05-29 niri-unstable we run no longer accepts. niri then rejects the
+      # greeter config, falls back to its built-in defaults, and never spawns the
+      # DMS login UI — so the login screen is a bare gray niri with a "failed to
+      # parse the config file" banner. (The niri_overrides hook only *appends*
+      # via include, so it can't remove the bad lines; customConfig *replaces*
+      # the default, and the greeter wrapper still auto-appends the login-UI
+      # spawn-at-startup.) Keep only options valid on current niri;
+      # DMS_RUN_GREETER signals greeter mode to quickshell.
+      compositor.customConfig = ''
+        hotkey-overlay {
+            skip-at-startup
+        }
+
+        environment {
+            DMS_RUN_GREETER "1"
+        }
+
+        gestures {
+            hot-corners {
+                off
+            }
+        }
+      '';
+
       # Carry the user's DMS theme/wallpaper/colors into the greeter by
       # copying the standard XDG config files (settings.json, session.json,
       # dms-colors.json) into /var/lib/dms-greeter at greetd preStart.
