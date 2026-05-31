@@ -22,7 +22,6 @@
   # only ever tuned downstream symptoms): #113 verbose run, #114 firmware pin,
   # #115 HOTPLUG gate, #116 idempotent modeset. The single discriminating
   # variable is the kernel: 6.12.85 good, 6.18.26 bad.
-  hardware.cpu.intel.updateMicrocode = false;
 
   # Pin linux-firmware to the 04-30 tree, matching the known-good gen. Likely
   # unnecessary now that the kernel is the identified cause, but held constant
