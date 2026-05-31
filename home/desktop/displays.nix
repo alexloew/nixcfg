@@ -12,6 +12,23 @@ let
     export WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-wayland-1}
     export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 
+    # Idempotent modeset. Only issue `niri msg output … mode …` when the output is
+    # NOT already in the target mode. Every KMS modeset emits a HOTPLUG=1 drm `change`
+    # uevent, and the udev rule (system/hardware.nix) restarts this service on that
+    # uevent — so re-applying a mode that is already current self-triggers an infinite
+    # restart loop (DRM uevent storm → boot livelock). Skipping the redundant modeset
+    # breaks the loop at its source. `want` is "WxH@<refresh_in_mHz>" (niri reports
+    # refresh_rate in millihertz; 143.969 Hz == 143969).
+    set_mode() {
+      local conn="$1" want="$2" arg="$3" cur
+      cur=$(${pkgs.niri}/bin/niri msg --json outputs 2>/dev/null \
+        | ${pkgs.jq}/bin/jq -r --arg c "$conn" \
+            '.[] | select(.name == $c) | if .current_mode == null then "none"
+                   else .modes[.current_mode] | "\(.width)x\(.height)@\(.refresh_rate)" end')
+      [ "$cur" = "$want" ] && return 0
+      ${pkgs.niri}/bin/niri msg output "$conn" mode "$arg"
+    }
+
     # Wait for niri to be ready (up to 10 seconds)
     for i in $(seq 1 10); do
       ${pkgs.niri}/bin/niri msg outputs &>/dev/null && break
@@ -31,17 +48,17 @@ let
     if [ -n "$uw" ] && [ -n "$aw" ]; then
       # Dual: 27-inch left at 0,0 — ultrawide right at 2560,0
       # Positions are set statically in niri.nix; only mode needs dynamic override
-      ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
-      ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
+      set_mode "$aw" "2560x1440@143969" 2560x1440@143.969
+      set_mode "$uw" "3440x1440@99982"  3440x1440@99.982
       swaybg_args+=(--output "$uw" --image "$wp/earthrise.JPG" --mode fill)
       swaybg_args+=(--output "$aw" --image "$wp/earthrise.JPG" --mode fill)
     elif [ -n "$uw" ]; then
       # Ultrawide only (lid closed / 27-inch disconnected)
-      ${pkgs.niri}/bin/niri msg output "$uw" mode 3440x1440@99.982
+      set_mode "$uw" "3440x1440@99982" 3440x1440@99.982
       swaybg_args+=(--output "$uw" --image "$wp/earthrise.JPG" --mode fill)
     elif [ -n "$aw" ]; then
       # 27-inch only
-      ${pkgs.niri}/bin/niri msg output "$aw" mode 2560x1440@143.969
+      set_mode "$aw" "2560x1440@143969" 2560x1440@143.969
       swaybg_args+=(--output "$aw" --image "$wp/earthrise.JPG" --mode fill)
     fi
 
@@ -83,6 +100,12 @@ in
       Description = "Configure display modes, positions, and wallpapers";
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
+      # Hard backstop against a DRM uevent restart storm (boot livelock): if the
+      # idempotency guard in the script ever fails to suppress a self-triggered
+      # modeset, cap restarts so systemd refuses runaway cycling instead of hanging
+      # the boot. Real use restarts this far less often than 6×/30s.
+      StartLimitIntervalSec = 30;
+      StartLimitBurst = 6;
     };
     Service = {
       Type = "simple";
