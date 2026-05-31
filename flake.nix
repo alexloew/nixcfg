@@ -90,6 +90,7 @@
           inputs.nflx-nixcfg.nixosModules.pulse-vpn
           inputs.nflx-nixcfg.nixosModules.ai
           inputs.nflx-nixcfg.nixosModules.metatron
+          inputs.nflx-nixcfg.nixosModules.gh
           inputs.nflx-nixcfg.nixosModules.python
           inputs.nflx-nixcfg.nixosModules.git
           inputs.nflx-nixcfg.nixosModules.ssh-agent
