@@ -17,8 +17,18 @@
     nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
 
     # Niri compositor (provides config.lib.niri.actions, required by DMS)
+    #
+    # BISECT (issue #111): pinned to the gen-196 (04-30) niri-flake revision,
+    # which sources niri-unstable 2026-05-02-1f07cff. The 05-23 userspace bump
+    # — NOT the kernel — is the boot-hang variable: gen 196 (04-30) and gen 205
+    # (05-23) share the IDENTICAL 6.12.85 kernel, yet 196 boots 8/8 and 205 hangs.
+    # niri (05-02 -> 05-29) is the prime suspect (compositor; fits both the DRM
+    # uevent storm and the no-desktop failure). This holds niri at 04-30 while the
+    # rest of the tree stays at 05-23, niri-flake still following the 05-23 nixpkgs
+    # — so niri's version is the only changed variable vs. gen 205. Validate over
+    # ~5 boots (the hang is intermittent). Revert to bare url once bisect concludes.
     niri-flake = {
-      url = "github:sodiboo/niri-flake";
+      url = "github:sodiboo/niri-flake/945748d71d3422d4f1dada2cd10222e34ed9d767";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
