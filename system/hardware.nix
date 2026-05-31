@@ -35,10 +35,13 @@ in
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host start lid-handler.service"
 
     # Reconfigure displays on DRM hotplug (display hub connect/disconnect).
-    # Gate on HOTPLUG=1: only genuine connector hotplug carries it. configure-displays
-    # itself issues KMS modesets (niri msg output … mode …), which emit bare
-    # ACTION=change drm uevents with no HOTPLUG — without this gate those re-fire the
-    # rule and restart the service in an infinite loop (DRM uevent storm → boot livelock).
+    # NOTE: the HOTPLUG=1 gate does NOT prevent the self-trigger loop — on this
+    # hardware configure-displays' own KMS modesets emit ACTION=change uevents that
+    # ALSO carry HOTPLUG=1, so they pass this gate (proven from journalctl -b -1 of a
+    # failed 20260523 boot: gate present, rule still fired 132×). The loop is broken in
+    # configure-displays itself (home/desktop/displays.nix): it now skips the modeset
+    # when the output is already in the target mode, so no redundant uevent is emitted.
+    # The gate is kept only to drop unrelated non-hotplug drm change events.
     ACTION=="change", SUBSYSTEM=="drm", ENV{HOTPLUG}=="1", \
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host restart configure-displays.service"
   '';
