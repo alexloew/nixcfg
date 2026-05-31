@@ -27,6 +27,9 @@
       NIXOS_OZONE_WL = "1";
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
       DISPLAY = ":0";  # XWayland display for X11 apps (xwayland-satellite)
+      # niri isn't launched with `--session` here (greetd/dms-greeter), so it
+      # doesn't set this itself; portals and apps use it to pick a backend.
+      XDG_CURRENT_DESKTOP = "niri";
     };
 
     # Remove client-side decorations (cleaner look, matches Wynn-Dots style)
@@ -301,9 +304,47 @@
       size = 24;
     };
 
-    # Apps are launched by configure-displays.service (displays.nix) so it can
-    # focus the correct output before spawning, bypassing unstable connector names
-    spawn-at-startup = [];
+    # Bring up the systemd graphical session ourselves.
+    #
+    # niri only manages graphical-session.target when launched as `niri
+    # --session`. The greetd/dms-greeter login path (system/desktop/
+    # dms-greeter.nix) does not start niri in session mode, so the target never
+    # activated and every WantedBy=graphical-session.target unit — DMS (bar +
+    # wallpaper), configure-displays, xwayland-satellite, idle-suspend — stayed
+    # dead, leaving a bare gray niri screen.
+    #
+    # graphical-session.target sets RefuseManualStart=yes, so we cannot start it
+    # directly ("Operation refused … may be requested by dependency only"). The
+    # standard compositor-without-a-DM pattern is to start an intermediate
+    # niri-session.target (defined below) that BindsTo graphical-session.target;
+    # dependency activation is allowed and pulls in graphical-session.target and
+    # everything wired to it. First import the Wayland env so those user units
+    # can reach the compositor. Idempotent. Apps themselves are still launched
+    # by configure-displays.service (displays.nix).
+    spawn-at-startup = [
+      {
+        command = [
+          "sh"
+          "-c"
+          "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET DISPLAY; systemctl --user start niri-session.target"
+        ];
+      }
+    ];
+  };
+
+  # Intermediate target started from niri's spawn-at-startup (above). It exists
+  # only to pull in graphical-session.target, which refuses a direct manual
+  # start. BindsTo gives dependency-driven activation (allowed) and tears the
+  # session down with it; Wants/After graphical-session-pre.target matches the
+  # convention used by sway/Hyprland systemd sessions.
+  systemd.user.targets.niri-session = {
+    Unit = {
+      Description = "niri session";
+      Documentation = [ "man:systemd.special(7)" ];
+      BindsTo = [ "graphical-session.target" ];
+      Wants = [ "graphical-session-pre.target" ];
+      After = [ "graphical-session-pre.target" ];
+    };
   };
 
   # XWayland support for X11 apps (Zoom, etc.) via xwayland-satellite
