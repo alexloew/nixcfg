@@ -9,16 +9,37 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Background: this Meteor Lake (Core Ultra 7 165H, model 170 stepping 4)
-  # laptop hangs at boot — black screen, lone cursor, no console output — on
-  # every build from the nixpkgs 20260523 bump, regardless of kernel
-  # (6.12.91 / 6.18.33) or NVIDIA driver (pinning 595.58.03 did not help).
-  # All 20260430 builds boot. `nomodeset` did not help, so the hang is
-  # pre-console, not a GPU issue.
+  # laptop hangs at boot on every build from the nixpkgs 20260523 bump. The
+  # max-verbosity diagnostic run (PR #113) DISPROVED the "pre-console" theory:
+  # it showed systemd PID 1 alive in userspace at ~1400s, stuck in an infinite
+  # loop of single getgrnam() lookups for device-node groups (render, sgx,
+  # audio, lp, disk...) — i.e. udev re-applying device-node ownership over and
+  # over, a uevent/probe storm. The varlink GetGroupRecord spam is the symptom;
+  # a driver re-probing is the cause. The earlier "black screen, no output" was
+  # this same loop with no console configured.
   #
-  # Ruled out so far (held constant below): microcode-intel — disabling the
-  # initrd late-load did NOT fix the hang. Kept off as the held-constant
-  # baseline for this test, so only one variable (the kernel) changes.
+  # Ruled out (held constant below): kernel (pinned good 6.18.26 — still loops),
+  # systemd (260.1) and glibc (2.42) — byte-identical across trees, so the
+  # userdb code itself is not the bug. microcode-intel — late-load disabled,
+  # still hangs. The one untested early-boot delta that fits a probe storm is
+  # linux-firmware (20260410 good -> 20260519 bad): a regressed/renamed blob
+  # makes a driver fail-probe-loop. THIS TEST pins it to the good tree.
   hardware.cpu.intel.updateMicrocode = false;
+
+  # TEST (issue #111): pin linux-firmware to the known-good 04-30 tree while the
+  # rest of the system stays on 05-23. Single changed variable vs the current
+  # hanging baseline. If this boots, the firmware bump is confirmed as the
+  # culprit and we can unpin the kernel next. Already in the store (good gens
+  # used it), so no heavy rebuild.
+  nixpkgs.overlays = [
+    (final: prev: {
+      linux-firmware =
+        (import inputs.nixpkgs-goodkernel {
+          inherit (prev.stdenv.hostPlatform) system;
+          inherit (prev) config;
+        }).linux-firmware;
+    })
+  ];
 
   # TEST: pin the kernel to the 04-30 tree's 6.18.26 while keeping the rest of
   # the system on the current 05-23 tree. Same diff across two unrelated kernel
@@ -34,33 +55,22 @@
       inherit (pkgs) config;
     }).linuxPackages;
 
-  # DIAGNOSTIC (issue #111): the kernel pin above still hangs with no console
-  # output, which exonerates the kernel — the identical 6.18.26 binary boots on
-  # the 04-30 tree. We are now flying blind, so this run trades the silent hang
-  # for maximum early-boot verbosity to capture the last line before it dies (or
-  # to prove there is *no* kernel output at all, which would localize the hang
-  # pre-kernel: bootloader / EFI stub / firmware handoff).
-  #   - earlycon=efifb + earlyprintk=efi,keep + keep_bootcon: drive the EFI
-  #     framebuffer as a console from the earliest possible moment and keep it
-  #     after the real console comes up, so pre-fbcon messages are visible.
-  #   - ignore_loglevel / loglevel=7 / consoleLogLevel: print everything.
-  #   - rd.systemd.show_status + systemd.log_level=debug + log_target=kmsg:
-  #     this uses systemd-in-initrd (below), so route its debug to the ring
-  #     buffer/console too.
-  # This changes only verbosity, not the (known-hanging) baseline. Revert once
-  # the hang is localized.
+  # DIAGNOSTIC (issue #111): kept on so that if the firmware pin does NOT fix
+  # it, the next boot names the culprit. The pre-console theory is dead (boot
+  # reaches userspace), so the framebuffer-throttle flags (earlycon=efifb,
+  # earlyprintk, keep_bootcon, ignore_loglevel) are dropped — they forced every
+  # debug line through the unaccelerated EFI framebuffer at ~120ms/line, turning
+  # the loop into a 20-minute crawl with no extra signal. udev.log_level=debug
+  # is added so a still-looping boot shows which device is re-probing (the storm
+  # source) rather than only the downstream group-lookup spam.
   boot.consoleLogLevel = 7;
   boot.initrd.verbose = true;
   boot.kernelParams = [
-    "earlycon=efifb"
-    "earlyprintk=efi,keep"
-    "keep_bootcon"
-    "ignore_loglevel"
     "loglevel=7"
     "rd.systemd.show_status=true"
     "systemd.log_level=debug"
     "systemd.log_target=kmsg"
-    "udev.log_level=info"
+    "udev.log_level=debug"
   ];
 
   # Use systemd in initrd (required for TPM2-based LUKS unlock)
