@@ -92,9 +92,13 @@
     };
   };
 
-  # Auto-restart DMS if it crashes (e.g. on wake from sleep)
+  # Auto-restart DMS if it crashes (e.g. on wake from sleep).
+  # home-manager maps this to the unit's [Service] section, so the key must be
+  # `Service` — `serviceConfig` produced a bogus [serviceConfig] section that
+  # systemd ignored ("Unknown section 'serviceConfig'"), so the override never
+  # applied.
   systemd.user.services.dms = {
-    serviceConfig = {
+    Service = {
       Restart = "on-failure";
       RestartSec = "3s";
     };
