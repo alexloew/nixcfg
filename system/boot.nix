@@ -35,17 +35,6 @@
       inherit (pkgs) config;
     }).linuxPackages_6_12;
 
-  # Modest console verbosity. The heavy diagnostic flags (systemd.log_level=debug,
-  # udev.log_level=debug) are dropped now that the cause is known — they slowed
-  # boot and added no further signal. A confirming boot just needs to reach
-  # multi-user with ~0 configure-displays restarts.
-  boot.consoleLogLevel = 7;
-  boot.initrd.verbose = true;
-  boot.kernelParams = [
-    "loglevel=7"
-    "rd.systemd.show_status=true"
-  ];
-
   # Use systemd in initrd (required for TPM2-based LUKS unlock)
   boot.initrd.systemd.enable = true;
 
