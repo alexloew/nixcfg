@@ -71,13 +71,23 @@
     };
 
     # Niri compositor integration
-    # DMS manages keybinds, layout, colors, and alt-tab via include files
+    # DMS manages layout, colors, alt-tab, and outputs via include files.
+    #
+    # Keybinds come from ONE source only: the niri-flake settings, which merge
+    # our binds (niri.nix) with DMS's IPC binds (enableKeybinds — Mod+Space,
+    # Mod+V, etc.). We deliberately do NOT include "binds" here: that pulls in
+    # DMS's runtime-generated dms/binds.kdl, whose default binds collide with
+    # the binds already in config.kdl. niri >= 26.05 rejects duplicate binds to
+    # the same key with a hard "failed to parse the config file" error (older
+    # niri silently kept the first bind). Including both sources is what DMS's
+    # own module warns against ("not recommended to use both enableKeybinds and
+    # includes.enable at the same time").
     niri = {
       enableKeybinds = true;
       # Don't use enableSpawn since systemd.enable = true
       includes = {
         enable = true;
-        filesToInclude = [ "alttab" "binds" "layout" "outputs" ];
+        filesToInclude = [ "alttab" "layout" "outputs" ];
       };
     };
   };
