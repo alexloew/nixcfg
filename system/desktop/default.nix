@@ -1,6 +1,9 @@
 # Desktop Environments - Aggregator
 # Display servers and desktop environment configurations
-# GNOME provides GDM login, Niri provides the compositor for DMS
+# Login: DankMaterialShell greeter on greetd (./dms-greeter.nix) — GDM disabled
+# (its GNOME-50 Wayland greeter is broken here, issue #111). Niri is the
+# compositor for both the greeter and the DMS desktop session; GNOME remains a
+# selectable fallback session.
 
 { config, pkgs, ... }:
 
@@ -9,5 +12,6 @@
     ./common.nix
     ./gnome.nix
     ./niri.nix
+    ./dms-greeter.nix
   ];
 }
