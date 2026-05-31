@@ -17,7 +17,6 @@
     slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
     swayidle            # Idle management
-    xwayland-satellite  # X11 app support for niri (needed for Zoom, etc.)
   ];
 
   # Niri configuration via niri-flake settings
@@ -26,7 +25,6 @@
     environment = {
       NIXOS_OZONE_WL = "1";
       ELECTRON_OZONE_PLATFORM_HINT = "auto";
-      DISPLAY = ":0";  # XWayland display for X11 apps (xwayland-satellite)
       # niri isn't launched with `--session` here (greetd/dms-greeter), so it
       # doesn't set this itself; portals and apps use it to pick a backend.
       XDG_CURRENT_DESKTOP = "niri";
@@ -310,8 +308,8 @@
     # --session`. The greetd/dms-greeter login path (system/desktop/
     # dms-greeter.nix) does not start niri in session mode, so the target never
     # activated and every WantedBy=graphical-session.target unit — DMS (bar +
-    # wallpaper), configure-displays, xwayland-satellite, idle-suspend — stayed
-    # dead, leaving a bare gray niri screen.
+    # wallpaper), configure-displays, idle-suspend — stayed dead, leaving a
+    # bare gray niri screen.
     #
     # graphical-session.target sets RefuseManualStart=yes, so we cannot start it
     # directly ("Operation refused … may be requested by dependency only"). The
@@ -326,7 +324,7 @@
         command = [
           "sh"
           "-c"
-          "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET DISPLAY; systemctl --user start niri-session.target"
+          "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET; systemctl --user start niri-session.target"
         ];
       }
     ];
@@ -345,21 +343,6 @@
       Wants = [ "graphical-session-pre.target" ];
       After = [ "graphical-session-pre.target" ];
     };
-  };
-
-  # XWayland support for X11 apps (Zoom, etc.) via xwayland-satellite
-  systemd.user.services.xwayland-satellite = {
-    Unit = {
-      Description = "Xwayland outside your Wayland compositor";
-      BindsTo = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = {
-      ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
-      Restart = "on-failure";
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
   };
 
   # Idle-suspend on battery: after 10 min of inactivity, suspend — but only if
