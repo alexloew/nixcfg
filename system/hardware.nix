@@ -34,16 +34,15 @@ in
     ACTION=="change", SUBSYSTEM=="button", KERNEL=="button/lid", \
       RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host start lid-handler.service"
 
-    # Reconfigure displays on DRM hotplug (display hub connect/disconnect).
-    # NOTE: the HOTPLUG=1 gate does NOT prevent the self-trigger loop — on this
-    # hardware configure-displays' own KMS modesets emit ACTION=change uevents that
-    # ALSO carry HOTPLUG=1, so they pass this gate (proven from journalctl -b -1 of a
-    # failed 20260523 boot: gate present, rule still fired 132×). The loop is broken in
-    # configure-displays itself (home/desktop/displays.nix): it now skips the modeset
-    # when the output is already in the target mode, so no redundant uevent is emitted.
-    # The gate is kept only to drop unrelated non-hotplug drm change events.
-    ACTION=="change", SUBSYSTEM=="drm", ENV{HOTPLUG}=="1", \
-      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host restart configure-displays.service"
+    # NOTE (issue #111): there is deliberately NO `ACTION=change, SUBSYSTEM=drm`
+    # rule restarting configure-displays. That rule was the boot livelock: at boot
+    # the DRM nodes re-probe and re-enumerate racily, firing change uevents that
+    # restarted configure-displays, whose `niri msg output … mode …` modeset emitted
+    # a fresh change uevent (carrying HOTPLUG=1, so the gate could not filter it) →
+    # infinite restart storm → hang. The #115 HOTPLUG gate and #116 idempotency
+    # guard both failed to hold during the boot enumeration race. Modes/positions
+    # are now applied natively by niri's own output config (home/desktop/niri.nix)
+    # on output connect — including real hotplug — so this rule is unnecessary.
   '';
 
   powerManagement.resumeCommands = ''

@@ -1,6 +1,16 @@
-# Display configuration service
-# Detects connected outputs by EDID, applies modes/positions via `niri msg output`,
-# and runs swaybg for wallpapers. Triggered at login, on DRM hotplug, and after resume.
+# Display wallpaper + first-login app-launch service.
+#
+# Modes/positions/scale are NOT set here — niri applies them natively from its
+# own output config (home/desktop/niri.nix) whenever an output connects. This
+# service only (a) maps each connected EDID model to its niri connector name,
+# (b) launches the startup apps on the correct monitors on first login, and
+# (c) execs swaybg for wallpapers. It issues NO `niri msg output … mode …`, so
+# it cannot emit a KMS modeset and therefore cannot self-trigger the DRM
+# `change` uevent → restart loop that livelocked boot (issue #111).
+#
+# It is started once by graphical-session.target. It is no longer wired to a
+# DRM-hotplug udev rule (that rule is removed in system/hardware.nix) — the only
+# thing real hotplug would re-do here is wallpaper, and niri handles the modes.
 #
 # Type=simple: swaybg becomes the service process so it persists.
 # Restart=on-failure: retries if niri isn't ready yet at startup.
@@ -11,23 +21,6 @@ let
   configureDisplays = pkgs.writeShellScript "configure-displays" ''
     export WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-wayland-1}
     export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
-
-    # Idempotent modeset. Only issue `niri msg output … mode …` when the output is
-    # NOT already in the target mode. Every KMS modeset emits a HOTPLUG=1 drm `change`
-    # uevent, and the udev rule (system/hardware.nix) restarts this service on that
-    # uevent — so re-applying a mode that is already current self-triggers an infinite
-    # restart loop (DRM uevent storm → boot livelock). Skipping the redundant modeset
-    # breaks the loop at its source. `want` is "WxH@<refresh_in_mHz>" (niri reports
-    # refresh_rate in millihertz; 143.969 Hz == 143969).
-    set_mode() {
-      local conn="$1" want="$2" arg="$3" cur
-      cur=$(${pkgs.niri}/bin/niri msg --json outputs 2>/dev/null \
-        | ${pkgs.jq}/bin/jq -r --arg c "$conn" \
-            '.[] | select(.name == $c) | if .current_mode == null then "none"
-                   else .modes[.current_mode] | "\(.width)x\(.height)@\(.refresh_rate)" end')
-      [ "$cur" = "$want" ] && return 0
-      ${pkgs.niri}/bin/niri msg output "$conn" mode "$arg"
-    }
 
     # Wait for niri to be ready (up to 10 seconds)
     for i in $(seq 1 10); do
@@ -45,20 +38,12 @@ let
     wp="$HOME/.local/share/wallpapers"
     swaybg_args=()
 
-    if [ -n "$uw" ] && [ -n "$aw" ]; then
-      # Dual: 27-inch left at 0,0 — ultrawide right at 2560,0
-      # Positions are set statically in niri.nix; only mode needs dynamic override
-      set_mode "$aw" "2560x1440@143969" 2560x1440@143.969
-      set_mode "$uw" "3440x1440@99982"  3440x1440@99.982
+    # Modes and positions come from niri's native output config (niri.nix); this
+    # only assigns wallpapers per connected output.
+    if [ -n "$uw" ]; then
       swaybg_args+=(--output "$uw" --image "$wp/earthrise.JPG" --mode fill)
-      swaybg_args+=(--output "$aw" --image "$wp/earthrise.JPG" --mode fill)
-    elif [ -n "$uw" ]; then
-      # Ultrawide only (lid closed / 27-inch disconnected)
-      set_mode "$uw" "3440x1440@99982" 3440x1440@99.982
-      swaybg_args+=(--output "$uw" --image "$wp/earthrise.JPG" --mode fill)
-    elif [ -n "$aw" ]; then
-      # 27-inch only
-      set_mode "$aw" "2560x1440@143969" 2560x1440@143.969
+    fi
+    if [ -n "$aw" ]; then
       swaybg_args+=(--output "$aw" --image "$wp/earthrise.JPG" --mode fill)
     fi
 
@@ -69,7 +54,7 @@ let
       exit 1
     fi
 
-    # Launch apps only on first run (not on resume/hotplug restarts)
+    # Launch apps only on first run (not on resume restarts)
     if [ -n "$uw" ] && ! pgrep -f "google-chrome" > /dev/null; then
       # Focus ultrawide — Chrome and Ghostty will open here
       ${pkgs.niri}/bin/niri msg action focus-monitor "$uw"
@@ -97,13 +82,12 @@ in
 {
   systemd.user.services.configure-displays = {
     Unit = {
-      Description = "Configure display modes, positions, and wallpapers";
+      Description = "Set wallpapers and launch first-login apps";
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
-      # Hard backstop against a DRM uevent restart storm (boot livelock): if the
-      # idempotency guard in the script ever fails to suppress a self-triggered
-      # modeset, cap restarts so systemd refuses runaway cycling instead of hanging
-      # the boot. Real use restarts this far less often than 6×/30s.
+      # Defensive backstop: this service no longer issues KMS modesets, so the
+      # DRM-uevent self-trigger loop is gone — but keep a restart cap so any
+      # future regression refuses to runaway-cycle instead of hanging boot.
       StartLimitIntervalSec = 30;
       StartLimitBurst = 6;
     };
