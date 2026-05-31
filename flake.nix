@@ -3,6 +3,13 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # TEST: pinned 2026-04-30 tree (rev 15f4ee45), used only to source a
+    # known-good kernel (6.18.26) in system/boot.nix. The 2026-05-23 bump
+    # (current nixpkgs) hangs at early boot on every default kernel; the
+    # 04-30 tree's 6.18.26 boots. Isolates kernel vs. the rest of the bump.
+    nixpkgs-goodkernel.url =
+      "github:NixOS/nixpkgs/15f4ee454b1dce334612fa6843b3e05cf546efab";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
     home-manager.url = "github:nix-community/home-manager";
