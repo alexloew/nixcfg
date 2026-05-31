@@ -1,6 +1,9 @@
 # Niri Home Configuration
 # Window manager settings and keybinds
-# DankMaterialShell handles layout, colors, keybinds, bar, launcher, notifications
+# DankMaterialShell handles layout, colors, bar, launcher, notifications, and its
+# own IPC keybinds; window/navigation keybinds live in the `binds` block below.
+# Keybinds must come from a single source — see dms.nix for why "binds" is not
+# included from DMS (niri rejects duplicate binds to the same key).
 # See: https://danklinux.com/docs/dankmaterialshell/compositors
 
 { config, pkgs, lib, ... }:
