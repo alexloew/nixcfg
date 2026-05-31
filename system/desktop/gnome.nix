@@ -1,35 +1,23 @@
 # GNOME Desktop Environment
 # X11/Wayland GNOME configuration
+#
+# Login is handled by the DankMaterialShell greeter on greetd (see
+# ./dms-greeter.nix), NOT GDM. GDM-50's Wayland greeter is broken on this
+# tree (issue #111: gdm-wayland-session can't exec `gnome-session` — ENOENT,
+# the binary is absent from the PAM-reset greeter PATH — so it exits 70 six
+# times and never presents a desktop). GNOME stays installed as a *fallback
+# session* the greeter can launch; it is just no longer the display manager.
 
 { config, pkgs, ... }:
 
 {
-  # Enable X11 windowing system
+  # Enable X11 windowing system (also drives the GNOME desktopManager wiring)
   services.xserver.enable = true;
 
-  # GDM Display Manager
-  services.displayManager.gdm.enable = true;
+  # GDM is DISABLED — its GNOME-50 Wayland greeter never starts here (#111).
+  # The DMS/greetd greeter in ./dms-greeter.nix replaces it.
+  services.displayManager.gdm.enable = false;
 
-  # GNOME Desktop
+  # GNOME Desktop — kept as a selectable fallback session in the greeter.
   services.xserver.desktopManager.gnome.enable = true;
-
-  # DIAGNOSTIC (issue #111) — capture WHY the GDM Wayland greeter bails on the
-  # 05-23 tree. After #119 killed the DRM-uevent storm, gen 207 reaches
-  # graphical.target cleanly but `gdm-wayland-session` exits nonzero 6× with NO
-  # log line, no coredump, no kernel trap, and GDM never falls back to X11 — so
-  # the default-level journal can't explain the failure. This turns the greeter
-  # verbose so the next failed boot self-documents (read via `journalctl -b -1`).
-  # REVERT once the root cause is identified.
-  services.displayManager.gdm.debug = true;
-
-  # The greeter compositor (gnome-shell/mutter) is spawned as a child of
-  # display-manager.service, so it inherits this environment. MUTTER_DEBUG
-  # surfaces the KMS/GPU-selection path (the prime suspect: mutter-50 tripping
-  # on the crtc-less NVIDIA offload node or simpledrm card0); G_MESSAGES_DEBUG
-  # unmutes GLib/GObject warnings the greeter would otherwise swallow.
-  systemd.services.display-manager.environment = {
-    G_MESSAGES_DEBUG = "all";
-    MUTTER_DEBUG = "backend,kms,render";
-    MUTTER_DEBUG_DUMP_OPENGL_INFO = "1";
-  };
 }
