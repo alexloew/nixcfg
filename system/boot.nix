@@ -34,6 +34,35 @@
       inherit (pkgs) config;
     }).linuxPackages;
 
+  # DIAGNOSTIC (issue #111): the kernel pin above still hangs with no console
+  # output, which exonerates the kernel — the identical 6.18.26 binary boots on
+  # the 04-30 tree. We are now flying blind, so this run trades the silent hang
+  # for maximum early-boot verbosity to capture the last line before it dies (or
+  # to prove there is *no* kernel output at all, which would localize the hang
+  # pre-kernel: bootloader / EFI stub / firmware handoff).
+  #   - earlycon=efifb + earlyprintk=efi,keep + keep_bootcon: drive the EFI
+  #     framebuffer as a console from the earliest possible moment and keep it
+  #     after the real console comes up, so pre-fbcon messages are visible.
+  #   - ignore_loglevel / loglevel=7 / consoleLogLevel: print everything.
+  #   - rd.systemd.show_status + systemd.log_level=debug + log_target=kmsg:
+  #     this uses systemd-in-initrd (below), so route its debug to the ring
+  #     buffer/console too.
+  # This changes only verbosity, not the (known-hanging) baseline. Revert once
+  # the hang is localized.
+  boot.consoleLogLevel = 7;
+  boot.initrd.verbose = true;
+  boot.kernelParams = [
+    "earlycon=efifb"
+    "earlyprintk=efi,keep"
+    "keep_bootcon"
+    "ignore_loglevel"
+    "loglevel=7"
+    "rd.systemd.show_status=true"
+    "systemd.log_level=debug"
+    "systemd.log_target=kmsg"
+    "udev.log_level=info"
+  ];
+
   # Use systemd in initrd (required for TPM2-based LUKS unlock)
   boot.initrd.systemd.enable = true;
 
