@@ -94,6 +94,7 @@
           inputs.nflx-nixcfg.nixosModules.git
           inputs.nflx-nixcfg.nixosModules.ssh-agent
           inputs.nflx-nixcfg.nixosModules.pulse-official
+          inputs.nflx-nixcfg.nixosModules.gh
           {
             nflx = {
               username = "alexloewenthal";
