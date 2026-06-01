@@ -47,9 +47,10 @@ in
       # Replace the dms-shell greeter's built-in niri config.
       #
       # The bundled default (dms-shell 1.4.6) emits `debug {
-      # keep-max-bpc-unchanged }` and `layout { background-color }`, options the
-      # 2026-05-29 niri-unstable we run no longer accepts. niri then rejects the
-      # greeter config, falls back to its built-in defaults, and never spawns the
+      # keep-max-bpc-unchanged }` and `layout { background-color }`, options our
+      # niri rejected (originally surfaced on niri-unstable 2026-05-29). niri then
+      # rejected the greeter config, fell back to its built-in defaults, and never
+      # spawned the
       # DMS login UI — so the login screen is a bare gray niri with a "failed to
       # parse the config file" banner. (The niri_overrides hook only *appends*
       # via include, so it can't remove the bad lines; customConfig *replaces*
