@@ -10,9 +10,18 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
 
-    # Niri compositor (provides config.lib.niri.actions, required by DMS)
+    # Niri compositor (provides config.lib.niri.actions, required by DMS).
+    #
+    # Pinned to an explicit niri-flake rev so its bundled niri-unstable can't
+    # drift on `nix flake update`. We track niri-unstable (niri-flake's
+    # niri-stable is still v25.08, which predates the `include` directive DMS
+    # needs), and unstable's parser tightens mid-cycle — duplicate binds made
+    # fatal, debug/layout options dropped — which repeatedly broke DMS-generated
+    # configs (#111 fallout: #128, #130). Pinning freezes the exact niri that is
+    # confirmed working; bump this rev deliberately, with a reboot test, not as a
+    # side effect of a routine lock update.
     niri-flake = {
-      url = "github:sodiboo/niri-flake";
+      url = "github:sodiboo/niri-flake/3cb351d73c357a4e413f59c4551d219118791c14";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
