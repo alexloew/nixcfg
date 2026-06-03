@@ -16,6 +16,9 @@
 
     # Notes
     obsidian
+
+    # Tools
+    suspicious-package
   ];
 
   # Ghostty terminal with Catppuccin Mocha dark theme
