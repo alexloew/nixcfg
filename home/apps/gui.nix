@@ -16,6 +16,9 @@
 
     # Notes
     obsidian
+
+    # Tools
+    popsicle
   ];
 
   # Ghostty terminal with Catppuccin Mocha dark theme
