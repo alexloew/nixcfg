@@ -345,32 +345,9 @@
     };
   };
 
-  # Idle-suspend on battery: after 10 min of inactivity, suspend — but only if
-  # not plugged into AC. swayidle speaks ext_idle_notify, which niri supports.
-  systemd.user.services.idle-suspend = {
-    Unit = {
-      Description = "Suspend after 10 min idle when on battery";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
-    };
-    Service = let
-      onBatterySuspend = pkgs.writeShellScript "idle-suspend-on-battery" ''
-        # /sys/class/power_supply/AC*/online reports 1 on AC, 0 on battery.
-        # If any AC adapter is online, skip suspend.
-        for ac in /sys/class/power_supply/A{C,DP}*/online; do
-          [ -e "$ac" ] || continue
-          if [ "$(cat "$ac")" = "1" ]; then
-            exit 0
-          fi
-        done
-        ${pkgs.systemd}/bin/systemctl suspend
-      '';
-    in {
-      ExecStart = "${pkgs.swayidle}/bin/swayidle -w timeout 600 ${onBatterySuspend}";
-      Restart = "on-failure";
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
-  };
+  # Idle-suspend is handled by the single swayidle instance in idle.nix
+  # (display-off at 5 min, suspend-on-battery at 10 min), so there's no
+  # standalone service here anymore.
 
   # Lid-close handler: toggle eDP-1 off/on via niri msg
   # Triggered by the system udev rule on button/lid change events
