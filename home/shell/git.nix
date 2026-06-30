@@ -12,6 +12,13 @@
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
+      # Use gh as the credential helper, resolved from PATH rather than a
+      # pinned /nix/store path. `gh auth setup-git` bakes an absolute store
+      # path into ~/.gitconfig, which breaks on every rebuild/GC once that
+      # store path is collected. Referencing `gh` on PATH survives rebuilds.
+      "credential \"https://github.com\"".helper = "!gh auth git-credential";
+      "credential \"https://gist.github.com\"".helper = "!gh auth git-credential";
+      "credential \"https://github.netflix.net\"".helper = "!gh auth git-credential";
     };
     aliases = {
       gp  = "pull";
