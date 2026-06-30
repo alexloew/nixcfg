@@ -38,6 +38,12 @@
       url = "git+ssh://git@github.com/alexloew/fleet-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # herdr - terminal workspace manager / multiplexer for AI coding agents
+    herdr = {
+      url = "github:ogulcancelik/herdr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
