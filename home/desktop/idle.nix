@@ -10,10 +10,17 @@
 let
   # Suspend only when running on battery. /sys/class/power_supply/A{C,DP}*/online
   # reports 1 on AC, 0 on battery; skip suspend if any adapter is online.
+  #
+  # swayidle's systemd user unit pins Environment=PATH to only bash-interactive's
+  # bin, so external commands (cat, loginctl, ...) are NOT on PATH. Use the bash
+  # `read` builtin instead of `cat`, and absolute paths for everything else —
+  # otherwise the read fails, the "on AC" check is skipped, and the laptop
+  # suspends on AC too.
   onBatterySuspend = pkgs.writeShellScript "idle-suspend-on-battery" ''
     for ac in /sys/class/power_supply/A{C,DP}*/online; do
       [ -e "$ac" ] || continue
-      if [ "$(cat "$ac")" = "1" ]; then
+      read -r online < "$ac" || continue
+      if [ "$online" = "1" ]; then
         exit 0
       fi
     done
@@ -25,7 +32,7 @@ in
     enable = true;
 
     events = [
-      { event = "before-sleep"; command = "loginctl lock-session"; }
+      { event = "before-sleep"; command = "${pkgs.systemd}/bin/loginctl lock-session"; }
       { event = "lock"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
     ];
 
