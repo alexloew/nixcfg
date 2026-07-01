@@ -416,6 +416,26 @@
         "url": "https://flakehub.com/f/cachix/git-hooks.nix/0.1.941"
       }
     },
+    "herdr": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782843332,
+        "narHash": "sha256-nVcW9Tc3zNHPZ8G/pikbE4gSHg2Dwhi4LCePV/OuuQw=",
+        "owner": "ogulcancelik",
+        "repo": "herdr",
+        "rev": "659c3f51ece42b7b761084bca0152fe4db56ebf6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ogulcancelik",
+        "repo": "herdr",
+        "type": "github"
+      }
+    },
     "hermes-agent": {
       "inputs": {
         "flake-parts": "flake-parts_3",
@@ -1115,6 +1135,7 @@
         "dms": "dms",
         "fh": "fh",
         "fleet-nixos": "fleet-nixos",
+        "herdr": "herdr",
         "home-manager": "home-manager",
         "nflx-nixcfg": "nflx-nixcfg",
         "niri-flake": "niri-flake",
