@@ -6,8 +6,12 @@
 # included from DMS (niri rejects duplicate binds to the same key).
 # See: https://danklinux.com/docs/dankmaterialshell/compositors
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
+let
+  # Same niri build as the running compositor (pinned in system/desktop/niri.nix).
+  niri = inputs.niri-flake.packages.${pkgs.system}.niri-unstable;
+in
 {
   # Install supporting tools
   home.packages = with pkgs; [
@@ -358,9 +362,9 @@
         state=$(cat /proc/acpi/button/lid/LID0/state 2>/dev/null || \
                 cat /proc/acpi/button/lid/LID/state 2>/dev/null)
         if echo "$state" | grep -q "closed"; then
-          ${pkgs.niri}/bin/niri msg output eDP-1 off
+          ${niri}/bin/niri msg output eDP-1 off
         else
-          ${pkgs.niri}/bin/niri msg output eDP-1 on
+          ${niri}/bin/niri msg output eDP-1 on
         fi
       '';
     in {
