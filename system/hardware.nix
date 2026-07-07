@@ -25,9 +25,12 @@ in
   #   so the docked workflow keeps running on external monitors.
   # - Undocked (battery or AC, no external displays): suspend, so the laptop
   #   doesn't burn its battery sitting in a bag with the lid closed.
-  services.logind.lidSwitch = "suspend";
-  services.logind.lidSwitchExternalPower = "suspend";
-  services.logind.lidSwitchDocked = "ignore";
+  # logind lid options moved under services.logind.settings.Login in nixpkgs.
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "suspend";
+    HandleLidSwitchDocked = "ignore";
+  };
 
   # Fire the user-level lid-handler service when the lid state changes
   services.udev.extraRules = ''
