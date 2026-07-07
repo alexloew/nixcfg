@@ -27,6 +27,9 @@
     slurp             # region selection
     wl-clipboard      # clipboard support (wl-copy)
 
+    # Build tools
+    gnumake           # make
+
     # Hardware info
     pciutils          # lspci
 
