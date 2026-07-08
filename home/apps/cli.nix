@@ -31,6 +31,9 @@
     gcc               # C compiler for native Python/other extensions (e.g. fastavro)
     gnumake           # make
 
+    # Atlassian CLI
+    acli
+
     # Hardware info
     pciutils          # lspci
 
