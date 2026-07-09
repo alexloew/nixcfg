@@ -3,11 +3,10 @@
 # https://github.com/ogulcancelik/herdr
 #
 # Local patch: agent-detection for wrapped launchers. Our `claude` runs inside
-# the newt/dropship bubblewrap sandbox (`bwrap … -- claude`) and execs a
-# version-named binary (`…/claude/versions/2.1.204`), neither of which herdr's
-# process-name matching recognizes, so panes report `unknown` and get pruned.
-# Tracks https://github.com/ogulcancelik/herdr/issues/803 — drop the override
-# once a fix lands upstream and this input is bumped past it.
+# a bubblewrap sandbox (`bwrap … -- claude`) and execs a version-named binary
+# (`…/claude/versions/2.1.204`), neither of which herdr's process-name matching
+# recognizes, so panes report `unknown` and get pruned. Drop the override once
+# a fix lands upstream and this input is bumped past it.
 
 { pkgs, inputs, ... }:
 
