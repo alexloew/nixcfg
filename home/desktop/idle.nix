@@ -5,9 +5,12 @@
 # this module and a hand-rolled systemd service in niri.nix, which left two
 # swayidle processes racing for the same ext_idle_notify events.)
 
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
+  # Same niri build as the running compositor (see displays.nix / niri.nix).
+  niri = inputs.niri-flake.packages.${pkgs.system}.niri-unstable;
+
   # Suspend only when running on battery. /sys/class/power_supply/A{C,DP}*/online
   # reports 1 on AC, 0 on battery; skip suspend if any adapter is online.
   #
@@ -31,16 +34,17 @@ in
   services.swayidle = {
     enable = true;
 
-    events = [
-      { event = "before-sleep"; command = "${pkgs.systemd}/bin/loginctl lock-session"; }
-      { event = "lock"; command = "${pkgs.swaylock}/bin/swaylock -f"; }
-    ];
+    # events is now an attrset keyed by event name (the list form is deprecated).
+    events = {
+      before-sleep = "${pkgs.systemd}/bin/loginctl lock-session";
+      lock = "${pkgs.swaylock}/bin/swaylock -f";
+    };
 
     timeouts = [
       {
         timeout = 300;
-        command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
-        resumeCommand = "${pkgs.niri}/bin/niri msg action power-on-monitors";
+        command = "${niri}/bin/niri msg action power-off-monitors";
+        resumeCommand = "${niri}/bin/niri msg action power-on-monitors";
       }
       {
         # Suspend after 10 min idle, but only on battery (the script no-ops on AC).

@@ -6,9 +6,11 @@
 {
   programs.git = {
     enable = true;
-    userName = "Alex Loewenthal";
-    userEmail = "alexloewenthal@netflix.com";
-    extraConfig = {
+    # userName/userEmail/extraConfig/aliases were folded into `settings`
+    # (freeform git config) in home-manager; the old options are deprecated.
+    settings = {
+      user.name = "Alex Loewenthal";
+      user.email = "alexloewenthal@netflix.com";
       init.defaultBranch = "main";
       pull.rebase = true;
       push.autoSetupRemote = true;
@@ -19,22 +21,22 @@
       "credential \"https://github.com\"".helper = "!gh auth git-credential";
       "credential \"https://gist.github.com\"".helper = "!gh auth git-credential";
       "credential \"https://github.netflix.net\"".helper = "!gh auth git-credential";
-    };
-    aliases = {
-      gp  = "pull";
-      gP  = "push";
-      gs  = "status -s";
-      ga  = "add";
-      gc  = "commit";
-      gcm = "commit -m";
-      gco = "checkout";
-      gb  = "branch";
-      gl  = "log --oneline --graph --decorate -15";
-      gd  = "diff";
-      gds = "diff --staged";
-      gf  = "fetch";
-      grb = "rebase";
-      gst = "stash";
+      alias = {
+        gp  = "pull";
+        gP  = "push";
+        gs  = "status -s";
+        ga  = "add";
+        gc  = "commit";
+        gcm = "commit -m";
+        gco = "checkout";
+        gb  = "branch";
+        gl  = "log --oneline --graph --decorate -15";
+        gd  = "diff";
+        gds = "diff --staged";
+        gf  = "fetch";
+        grb = "rebase";
+        gst = "stash";
+      };
     };
   };
 }

@@ -15,20 +15,25 @@
 # Type=simple: swaybg becomes the service process so it persists.
 # Restart=on-failure: retries if niri isn't ready yet at startup.
 
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 let
+  # Use the same niri build as the running compositor (system/desktop/niri.nix
+  # pins niri-unstable). `pkgs.niri` is the stable nixpkgs build (a different
+  # version), and its `niri msg` client can drift from the unstable IPC.
+  niri = inputs.niri-flake.packages.${pkgs.system}.niri-unstable;
+
   configureDisplays = pkgs.writeShellScript "configure-displays" ''
     export WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-wayland-1}
     export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 
     # Wait for niri to be ready (up to 10 seconds)
     for i in $(seq 1 10); do
-      ${pkgs.niri}/bin/niri msg outputs &>/dev/null && break
+      ${niri}/bin/niri msg outputs &>/dev/null && break
       sleep 1
     done
 
-    outputs=$(${pkgs.niri}/bin/niri msg outputs 2>/dev/null)
+    outputs=$(${niri}/bin/niri msg outputs 2>/dev/null)
 
     # Extract connector names by model
     uw=$(echo  "$outputs" | grep "AW3423DWF" | awk -F'[()]' '{print $2}')  # ultrawide 3440
@@ -57,22 +62,22 @@ let
     # Launch apps only on first run (not on resume restarts)
     if [ -n "$uw" ] && ! pgrep -f "google-chrome" > /dev/null; then
       # Focus ultrawide — Chrome and Ghostty will open here
-      ${pkgs.niri}/bin/niri msg action focus-monitor "$uw"
+      ${niri}/bin/niri msg action focus-monitor "$uw"
       sleep 0.5
       # Chrome first → left column; Ghostty second → right column
       # Chrome needs ~2s to create its window; if Ghostty wins the race it ends up left
-      ${pkgs.niri}/bin/niri msg action spawn -- google-chrome-stable
+      ${niri}/bin/niri msg action spawn -- google-chrome-stable
       sleep 2
-      ${pkgs.niri}/bin/niri msg action spawn -- ghostty
+      ${niri}/bin/niri msg action spawn -- ghostty
       # Wait for Ghostty to open, then refocus Chrome (left column)
       sleep 1
-      ${pkgs.niri}/bin/niri msg action focus-column-left
+      ${niri}/bin/niri msg action focus-column-left
       # Slack on 27-inch
       if [ -n "$aw" ]; then
         sleep 0.5
-        ${pkgs.niri}/bin/niri msg action focus-monitor "$aw"
+        ${niri}/bin/niri msg action focus-monitor "$aw"
         sleep 0.5
-        ${pkgs.niri}/bin/niri msg action spawn -- slack
+        ${niri}/bin/niri msg action spawn -- slack
       fi
     fi
 

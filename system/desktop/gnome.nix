@@ -19,5 +19,6 @@
   services.displayManager.gdm.enable = false;
 
   # GNOME Desktop — kept as a selectable fallback session in the greeter.
-  services.xserver.desktopManager.gnome.enable = true;
+  # (Moved out of services.xserver in nixpkgs.)
+  services.desktopManager.gnome.enable = true;
 }

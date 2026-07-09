@@ -31,7 +31,8 @@
       "..." = "cd ../..";
     };
 
-    initExtra = ''
+    # initExtra was renamed to initContent (general config = default mkOrder 1000).
+    initContent = ''
       # Fix backspace in vi mode
       bindkey -v '^?' backward-delete-char
 

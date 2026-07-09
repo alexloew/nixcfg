@@ -71,7 +71,10 @@
     };
 
     # Niri compositor integration
-    # DMS manages layout, colors, alt-tab, and outputs via include files.
+    # DMS manages layout, colors, and alt-tab via include files. Output
+    # modes/positions are owned solely by niri.nix (hand-tuned per connector);
+    # "outputs" is deliberately NOT included here to avoid two output authorities
+    # writing the same connector blocks.
     #
     # Keybinds come from ONE source only: the niri-flake settings, which merge
     # our binds (niri.nix) with DMS's IPC binds (enableKeybinds — Mod+Space,
@@ -87,7 +90,7 @@
       # Don't use enableSpawn since systemd.enable = true
       includes = {
         enable = true;
-        filesToInclude = [ "alttab" "layout" "outputs" ];
+        filesToInclude = [ "alttab" "layout" ];
       };
     };
   };
