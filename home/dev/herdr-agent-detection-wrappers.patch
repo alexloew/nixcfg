@@ -15,7 +15,7 @@ index e88d5e5..efb404d 100644
  
 +/// Resolve the target command from a sandbox/launcher that separates its own
 +/// options from the wrapped command with a standalone `--` token, e.g.
-+/// `bwrap … -- claude --resume …` (Nix/newt FHS sandboxes) or `env … -- codex`.
++/// `bwrap … -- claude --resume …` (sandbox wrappers) or `env … -- codex`.
 +/// Returns the agent name derived from the first token after the separator.
 +fn separator_wrapped_agent_name(argv: Option<&[String]>) -> Option<String> {
 +    let argv = argv?;
@@ -66,7 +66,7 @@ index e88d5e5..efb404d 100644
  
 +/// Nix (and similar) wrappers exec an unwrapped binary whose name gains a
 +/// leading `.` and/or a `-wrapped`/`-unwrapped` affix, e.g. `.claude-unwrapped`.
-+/// Strip those so the underlying agent name is still recognized (herdr#803).
++/// Strip those so the underlying agent name is still recognized.
 +fn strip_wrapper_affixes(name: &str) -> &str {
 +    let name = name.strip_prefix('.').unwrap_or(name);
 +    name.strip_suffix("-unwrapped")
@@ -83,7 +83,7 @@ index e88d5e5..efb404d 100644
  
 +    #[test]
 +    fn identify_agent_in_job_detects_bwrap_sandbox_claude_after_separator() {
-+        // Nix/newt FHS sandboxes exec `bwrap … -- claude …`; the agent token
++        // Sandbox wrappers exec `bwrap … -- claude …`; the agent token
 +        // sits after a standalone `--`, and the process comm is `bwrap`.
 +        let job = crate::platform::ForegroundJob {
 +            process_group_id: 100,
@@ -137,7 +137,7 @@ index e88d5e5..efb404d 100644
 +    #[test]
 +    fn identify_agent_in_job_detects_unwrapped_binary_basename() {
 +        // Nix unwrapped binaries carry a leading dot and `-unwrapped` suffix as
-+        // both comm and argv0 basename (herdr#803).
++        // both comm and argv0 basename.
 +        let job = crate::platform::ForegroundJob {
 +            process_group_id: 300,
 +            processes: vec![foreground_process(
