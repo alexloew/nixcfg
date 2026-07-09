@@ -1,0 +1,158 @@
+diff --git a/src/detect/mod.rs b/src/detect/mod.rs
+index e88d5e5..efb404d 100644
+--- a/src/detect/mod.rs
++++ b/src/detect/mod.rs
+@@ -295,9 +295,24 @@ fn normalized_process_name(process: &crate::platform::ForegroundProcess) -> Stri
+         return wrapped_agent;
+     }
+ 
++    if let Some(wrapped_agent) = separator_wrapped_agent_name(process.argv.as_deref()) {
++        return wrapped_agent;
++    }
++
+     effective.to_string()
+ }
+ 
++/// Resolve the target command from a sandbox/launcher that separates its own
++/// options from the wrapped command with a standalone `--` token, e.g.
++/// `bwrap … -- claude --resume …` (Nix/newt FHS sandboxes) or `env … -- codex`.
++/// Returns the agent name derived from the first token after the separator.
++fn separator_wrapped_agent_name(argv: Option<&[String]>) -> Option<String> {
++    let argv = argv?;
++    let separator = argv.iter().position(|arg| arg == "--")?;
++    let target = argv.get(separator + 1)?;
++    agent_name_from_path_token(target)
++}
++
+ fn wrapped_agent_name_from_runtime_argv(runtime: &str, argv: Option<&[String]>) -> Option<String> {
+     let argv = argv?;
+     let runtime = normalized_agent_lookup_name(path_basename(runtime));
+@@ -472,9 +487,26 @@ fn agent_name_from_path_token(token: &str) -> Option<String> {
+ 
+     agent_name_from_basename(path_basename(trimmed))
+         .or_else(|| agent_name_from_known_package_path(trimmed))
++        .or_else(|| agent_name_from_launcher_path(trimmed))
+         .or_else(|| resolved_agent_name_from_path_token(trimmed))
+ }
+ 
++/// Recognize versioned launcher layouts where the on-disk binary is named after
++/// its version rather than the agent, e.g. `…/claude/versions/2.1.204`. Matches
++/// an `<agent>/versions` component pair anywhere in the path.
++fn agent_name_from_launcher_path(path: &str) -> Option<String> {
++    let components: Vec<&str> = path
++        .split(['/', '\\'])
++        .filter(|component| !component.is_empty())
++        .collect();
++
++    components.windows(2).find_map(|window| {
++        (normalized_agent_lookup_name(window[1]) == "versions")
++            .then(|| agent_name_from_basename(window[0]))
++            .flatten()
++    })
++}
++
+ fn agent_name_from_known_package_path(path: &str) -> Option<String> {
+     let components: Vec<String> = path
+         .split(['/', '\\'])
+@@ -510,10 +542,21 @@ fn resolved_agent_name_from_path_token(token: &str) -> Option<String> {
+ }
+ 
+ fn agent_name_from_basename(basename: &str) -> Option<String> {
+-    let agent = parse_agent_label(basename)?;
++    let agent =
++        parse_agent_label(basename).or_else(|| parse_agent_label(strip_wrapper_affixes(basename)))?;
+     Some(agent_label(agent).to_string())
+ }
+ 
++/// Nix (and similar) wrappers exec an unwrapped binary whose name gains a
++/// leading `.` and/or a `-wrapped`/`-unwrapped` affix, e.g. `.claude-unwrapped`.
++/// Strip those so the underlying agent name is still recognized (herdr#803).
++fn strip_wrapper_affixes(name: &str) -> &str {
++    let name = name.strip_prefix('.').unwrap_or(name);
++    name.strip_suffix("-unwrapped")
++        .or_else(|| name.strip_suffix("-wrapped"))
++        .unwrap_or(name)
++}
++
+ fn normalized_agent_lookup_name(name: &str) -> String {
+     let mut name = name.trim().to_lowercase();
+     for suffix in [".exe", ".cmd", ".bat", ".ps1", ".js"] {
+@@ -772,6 +815,78 @@ mod tests {
+         );
+     }
+ 
++    #[test]
++    fn identify_agent_in_job_detects_bwrap_sandbox_claude_after_separator() {
++        // Nix/newt FHS sandboxes exec `bwrap … -- claude …`; the agent token
++        // sits after a standalone `--`, and the process comm is `bwrap`.
++        let job = crate::platform::ForegroundJob {
++            process_group_id: 100,
++            processes: vec![foreground_process(
++                100,
++                "bwrap",
++                &[
++                    "/nix/store/abc-bubblewrap/bin/bwrap",
++                    "--die-with-parent",
++                    "--bind",
++                    "/home",
++                    "/home",
++                    "--app-type=coding-assistant",
++                    "--",
++                    "claude",
++                    "--resume",
++                    "3c9e0e7c",
++                ],
++            )],
++        };
++
++        assert_eq!(
++            identify_agent_in_job(&job),
++            Some((Agent::Claude, "claude".to_string()))
++        );
++    }
++
++    #[test]
++    fn identify_agent_in_job_detects_versioned_launcher_path() {
++        // Claude Code execs its versioned binary directly, so comm/basename is
++        // the version (e.g. `2.1.204`) and only the `claude/versions` path
++        // component reveals the agent.
++        let job = crate::platform::ForegroundJob {
++            process_group_id: 200,
++            processes: vec![foreground_process(
++                200,
++                "2.1.204",
++                &[
++                    "/home/user/.local/share/claude/versions/2.1.204",
++                    "--model=sonnet",
++                ],
++            )],
++        };
++
++        assert_eq!(
++            identify_agent_in_job(&job),
++            Some((Agent::Claude, "claude".to_string()))
++        );
++    }
++
++    #[test]
++    fn identify_agent_in_job_detects_unwrapped_binary_basename() {
++        // Nix unwrapped binaries carry a leading dot and `-unwrapped` suffix as
++        // both comm and argv0 basename (herdr#803).
++        let job = crate::platform::ForegroundJob {
++            process_group_id: 300,
++            processes: vec![foreground_process(
++                300,
++                ".claude-unwrapped",
++                &["/nix/store/xyz-claude-code/bin/.claude-unwrapped"],
++            )],
++        };
++
++        assert_eq!(
++            identify_agent_in_job(&job),
++            Some((Agent::Claude, "claude".to_string()))
++        );
++    }
++
+     #[test]
+     fn identify_agent_in_job_detects_shell_wrapped_pi() {
+         let job = crate::platform::ForegroundJob {
