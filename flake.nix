@@ -34,7 +34,7 @@
     };
 
     # Fleet / Orbit agent (osquery-based host agent)
-    fleet-nixos = {
+    fleetdm-nix = {
       url = "git+ssh://git@github.com/Netflix/fleetdm-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -89,7 +89,7 @@
           inputs.smallstep.nixosModules.default
 
           # Fleet / Orbit agent
-          inputs.fleet-nixos.nixosModules.fleet-nixos
+          inputs.fleetdm-nix.nixosModules.fleetdm-nix
 
           # Netflix modules
           inputs.nflx-nixcfg.nixosModules.newt
