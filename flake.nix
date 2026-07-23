@@ -35,7 +35,7 @@
 
     # Fleet / Orbit agent (osquery-based host agent)
     fleet-nixos = {
-      url = "git+ssh://git@github.com/alexloew/fleet-nixos";
+      url = "git+ssh://git@github.com/Netflix/fleetdm-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
