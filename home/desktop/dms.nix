@@ -30,6 +30,21 @@
       # to blur its surfaces at runtime when this is true.
       blurEnabled = true;
 
+      # Idle / power management — DMS's native idle daemon owns this now,
+      # replacing the old swayidle service (home/desktop/idle.nix). Timeouts are
+      # in seconds; 0 disables that action. Split AC vs battery:
+      #   - Displays off after 5 min on both AC and battery.
+      #   - Suspend after 10 min on battery only; never auto-suspend on AC.
+      #   - Lock before suspending, so waking requires the password.
+      # loginctlLockIntegration makes `loginctl lock-session` (and thus the
+      # logind lock signal on suspend) show the DMS lock screen.
+      acMonitorTimeout = 300;       # displays off @ 5 min on AC
+      batteryMonitorTimeout = 300;  # displays off @ 5 min on battery
+      acSuspendTimeout = 0;         # never auto-suspend on AC
+      batterySuspendTimeout = 600;  # suspend @ 10 min on battery
+      lockBeforeSuspend = true;
+      loginctlLockIntegration = true;
+
       barConfigs = [
         {
           id = "default";
