@@ -10,7 +10,6 @@
     ./fonts.nix
     ./gnome.nix
     ./niri.nix
-    ./idle.nix
     ./displays.nix
   ];
 }

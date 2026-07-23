@@ -15,12 +15,13 @@ in
 {
   # Install supporting tools
   home.packages = with pkgs; [
-    swaylock      # Screen locker
+    swaylock      # Screen locker — break-glass only; DMS is the primary locker
     swaybg        # Wallpaper renderer
     grim          # Screenshots (used for region-to-clipboard)
     slurp         # Region selection (used for screenshot-to-clipboard)
     wl-clipboard  # Clipboard support
-    swayidle            # Idle management
+    # Idle handling is DMS's native idle daemon (see home/desktop/dms.nix);
+    # swayidle is no longer used.
   ];
 
   # Niri configuration via niri-flake settings
@@ -349,9 +350,8 @@ in
     };
   };
 
-  # Idle-suspend is handled by the single swayidle instance in idle.nix
-  # (display-off at 5 min, suspend-on-battery at 10 min), so there's no
-  # standalone service here anymore.
+  # Idle handling (display-off, suspend-on-battery, lock) is DMS's native idle
+  # daemon, configured in home/desktop/dms.nix. No standalone service here.
 
   # Lid-close handler: toggle eDP-1 off/on via niri msg
   # Triggered by the system udev rule on button/lid change events
