@@ -30,7 +30,7 @@
 
     # Smallstep - certificate/identity tooling (private)
     smallstep = {
-      url = "git+ssh://git@github.com/alexloew/smallstep-nixos-flake";
+      url = "git+ssh://git@github.com/Netflix/smallstep-nix";
     };
 
     # Fleet / Orbit agent (osquery-based host agent)
