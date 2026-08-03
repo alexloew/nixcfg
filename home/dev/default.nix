@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./distrobox.nix
     ./go.nix
     ./herdr.nix
   ];
