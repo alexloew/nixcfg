@@ -369,7 +369,7 @@
         "type": "github"
       }
     },
-    "fleet-nixos": {
+    "fleetdm-nix": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -377,17 +377,17 @@
         "nixpkgs-osquery": "nixpkgs-osquery"
       },
       "locked": {
-        "lastModified": 1782705319,
-        "narHash": "sha256-mY2gILylIdxokq9zKEgcvjNAnPhkAFQH/qH8Q12Xj7g=",
+        "lastModified": 1785113263,
+        "narHash": "sha256-tH+b1Jxf02UQB1p3vkSPIx8r6ASNEawHYZ7zuGg8SoY=",
         "ref": "refs/heads/main",
-        "rev": "6b613551eb49c851225e634084502d352c72acf9",
-        "revCount": 182,
+        "rev": "d4401e9e230321736d7ba3d1373065c47fc04d65",
+        "revCount": 192,
         "type": "git",
-        "url": "ssh://git@github.com/alexloew/fleet-nixos"
+        "url": "ssh://git@github.com/Netflix/fleetdm-nix"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@github.com/alexloew/fleet-nixos"
+        "url": "ssh://git@github.com/Netflix/fleetdm-nix"
       }
     },
     "git-hooks-nix": {
@@ -1134,7 +1134,7 @@
         "dgop": "dgop",
         "dms": "dms",
         "fh": "fh",
-        "fleet-nixos": "fleet-nixos",
+        "fleetdm-nix": "fleetdm-nix",
         "herdr": "herdr",
         "home-manager": "home-manager",
         "nflx-nixcfg": "nflx-nixcfg",

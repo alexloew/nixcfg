@@ -15,6 +15,7 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
 │       └── hardware.nix     # Hardware configuration
 ├── system/                  # NixOS system modules
 │   ├── boot.nix             # Systemd-boot, EFI, LUKS
+│   ├── containers.nix       # Rootless Podman (distrobox backend)
 │   ├── desktop/
 │   │   ├── common.nix       # Shared desktop settings
 │   │   ├── gnome.nix        # GNOME + GDM
@@ -38,6 +39,10 @@ NixOS configuration using flakes with dendritic (tree-like) organization.
     │   ├── gnome.nix        # GNOME extensions
     │   ├── idle.nix         # Idle management
     │   └── niri.nix         # Niri config + DMS includes
+    ├── dev/
+    │   ├── distrobox.nix    # distrobox config + box definitions
+    │   ├── go.nix           # Go toolchain
+    │   └── herdr.nix        # herdr workspace manager
     ├── editors/
     │   └── helix.nix        # Helix editor + LSPs
     └── shell/
@@ -129,6 +134,48 @@ virt-install \
   --disk size=20 \
   --boot uefi
 ```
+
+## Containers (distrobox)
+
+Rootless Podman (`system/containers.nix`) backs [distrobox](https://distrobox.it/)
+(`home/dev/distrobox.nix`) for tooling that wants a conventional FHS distro —
+`apt` packages, prebuilt binaries, vendor installers. Boxes share `$HOME` and
+bind-mount `/nix` read-only, so host dotfiles and Nix binaries work inside.
+
+Defaults live in `~/.config/distrobox/distrobox.conf`; three boxes (`ubuntu`,
+`fedora`, `arch`) are declared in `~/.config/distrobox/assemble.ini`.
+
+Boxes are graphical, not headless — distrobox shares the Wayland/X11 sockets,
+dbus, audio and `/dev/dri`, so GUI apps installed inside run against the host
+session. `container_generate_entry=1` adds their launcher entries to the host.
+NVIDIA passthrough (`nvidia=true`) is on for CUDA / explicit dGPU offload; the
+display itself is driven by the Intel iGPU in PRIME offload mode.
+
+```bash
+# Create the declared boxes (idempotent; skips existing ones)
+distrobox assemble create --all
+
+# Enter / list / remove
+distrobox enter arch
+distrobox list
+distrobox rm arch
+
+# Ad-hoc box outside the assemble file
+distrobox create --name tumbleweed --image registry.opensuse.org/opensuse/tumbleweed:latest
+
+# Export a GUI app installed in a box to the host launcher
+distrobox enter arch -- distrobox-export --app gimp
+
+# Run a host command from inside a box
+distrobox-host-exec systemctl status
+
+# docker is aliased to podman
+docker ps
+```
+
+Boxes are mutable state, not declarative: editing `assemble.ini` does not
+rebuild an existing box. Use `distrobox assemble create --replace --all` to
+recreate them from the updated definitions.
 
 ## Adding a New Host
 
