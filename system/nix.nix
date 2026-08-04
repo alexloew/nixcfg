@@ -7,6 +7,22 @@
   # Enable flakes and nix command
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # Garbage collection. One generation of this system is ~28 GiB, so a handful
+  # of untended generations is enough to fill a disk. Determinate manages
+  # /etc/nix/nix.conf but not GC on NixOS (its garbageCollector option is
+  # nix-darwin only), so the stock NixOS timer is what does the work here.
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
+  # Hardlink identical files in the store. Cheap dedup on top of GC.
+  nix.optimise = {
+    automatic = true;
+    dates = [ "weekly" ];
+  };
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
