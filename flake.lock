@@ -559,11 +559,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1786367905,
-        "narHash": "sha256-NBE+3cEeuITNb4aNmHpgiI/dk0DwLNhH6DtmTmlipPs=",
+        "lastModified": 1786468481,
+        "narHash": "sha256-xK6VU3X2SzdDQPnsDBlFxOaMauGatgjotkwOdF7Q4qw=",
         "ref": "refs/heads/main",
-        "rev": "37a0d0231809147d10122982cb58f63079634cdd",
-        "revCount": 187,
+        "rev": "80ed4a544a4e7a2617ec2ea156eecfe5a97649d7",
+        "revCount": 189,
         "type": "git",
         "url": "ssh://git@github.com/Netflix/nflx-nixcfg"
       },
