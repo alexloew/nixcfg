@@ -60,10 +60,19 @@
     }@inputs:
     let
       system = "x86_64-linux";
+
+      # niri-flake still requires libdisplay-info 0.2, which nixpkgs removed in
+      # August 2026. Reuse the compatible package from niri-flake's pinned
+      # stable nixpkgs input until niri-flake updates that dependency.
+      niriPkgs = nixpkgs.legacyPackages.${system}.extend (_final: _prev: {
+        libdisplay-info_0_2 =
+          niri-flake.inputs.nixpkgs-stable.legacyPackages.${system}.libdisplay-info_0_2;
+      });
+      niriPackage = (niri-flake.lib.internal.make-package-set niriPkgs).niri-unstable;
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs niriPackage; };
         modules = [
           # Host configuration (branches to system modules)
           ./hosts/nixos
@@ -80,7 +89,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = { inherit inputs niriPackage; };
             home-manager.backupFileExtension = "bak";
             home-manager.users.alexloewenthal = import ./home;
           }
