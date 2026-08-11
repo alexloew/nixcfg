@@ -20,9 +20,11 @@
     defaultKeymap = "viins";
 
     shellAliases = {
-      # Nix Shortcuts
-      update = "sudo nixos-rebuild switch";
-      flake-up = "nix flake update";
+      # Nix Shortcuts — the Git checkout is the authoritative flake.
+      update = "nh os switch";
+      nix-test = "nh os test";
+      flake-up = "nix flake update --flake /home/alexloewenthal/gh-personal/nixcfg";
+      conf = "cd /home/alexloewenthal/gh-personal/nixcfg";
       cleanup = "sudo nix-collect-garbage -d";
 
       # Navigation
