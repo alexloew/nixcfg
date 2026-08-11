@@ -11,7 +11,7 @@
 { pkgs, inputs, ... }:
 
 let
-  herdr = inputs.herdr.packages.${pkgs.system}.default.overrideAttrs (old: {
+  herdr = inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [ ./herdr-agent-detection-wrappers.patch ];
   });
 in

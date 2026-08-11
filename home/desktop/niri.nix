@@ -6,11 +6,11 @@
 # included from DMS (niri rejects duplicate binds to the same key).
 # See: https://danklinux.com/docs/dankmaterialshell/compositors
 
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, niriPackage, ... }:
 
 let
   # Same niri build as the running compositor (pinned in system/desktop/niri.nix).
-  niri = inputs.niri-flake.packages.${pkgs.system}.niri-unstable;
+  niri = niriPackage;
 in
 {
   # Install supporting tools

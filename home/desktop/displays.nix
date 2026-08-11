@@ -15,13 +15,13 @@
 # Type=simple: swaybg becomes the service process so it persists.
 # Restart=on-failure: retries if niri isn't ready yet at startup.
 
-{ pkgs, inputs, ... }:
+{ pkgs, niriPackage, ... }:
 
 let
   # Use the same niri build as the running compositor (system/desktop/niri.nix
   # pins niri-unstable). `pkgs.niri` is the stable nixpkgs build (a different
   # version), and its `niri msg` client can drift from the unstable IPC.
-  niri = inputs.niri-flake.packages.${pkgs.system}.niri-unstable;
+  niri = niriPackage;
 
   configureDisplays = pkgs.writeShellScript "configure-displays" ''
     export WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-wayland-1}

@@ -1,7 +1,7 @@
 # GNOME Desktop Configuration
 # Extensions and dconf settings (fallback desktop)
 
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   # GNOME Extensions
@@ -21,6 +21,8 @@
       name = "Inter";
       size = 11;
     };
+    # Preserve Home Manager's pre-26.05 GTK 4 theme behavior explicitly.
+    gtk4.theme = config.gtk.theme;
   };
 
   # dconf settings
