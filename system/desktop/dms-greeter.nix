@@ -13,7 +13,7 @@
 # greetd, creates the `dms-greeter` system user + group, wires
 # security.pam.services.dms-greeter, and enables hardware.graphics + libinput.
 # The greeter runs inside niri (`programs.niri.enable = true`, system/desktop/
-# niri.nix), reusing the same niri-flake package as the logged-in session.
+# niri.nix), reusing the same upstream Niri package as the logged-in session.
 
 { config, pkgs, ... }:
 
@@ -48,7 +48,7 @@ in
       #
       # The bundled default (dms-shell 1.4.6) emits `debug {
       # keep-max-bpc-unchanged }` and `layout { background-color }`, options the
-      # 2026-05-29 niri-unstable we run no longer accepts. niri then rejects the
+      # upstream Niri build we run no longer accepts. niri then rejects the
       # greeter config, falls back to its built-in defaults, and never spawns the
       # DMS login UI — so the login screen is a bare gray niri with a "failed to
       # parse the config file" banner. (The niri_overrides hook only *appends*

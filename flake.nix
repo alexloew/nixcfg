@@ -10,9 +10,9 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
 
-    # Niri compositor (provides config.lib.niri.actions, required by DMS)
-    niri-flake = {
-      url = "github:sodiboo/niri-flake";
+    # Niri compositor package; NixOS and Home Manager provide the modules.
+    niri = {
+      url = "github:niri-wm/niri";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -53,22 +53,14 @@
       determinate,
       fh,
       home-manager,
-      niri-flake,
+      niri,
       dms,
       dgop,
       ...
     }@inputs:
     let
       system = "x86_64-linux";
-
-      # niri-flake still requires libdisplay-info 0.2, which nixpkgs removed in
-      # August 2026. Reuse the compatible package from niri-flake's pinned
-      # stable nixpkgs input until niri-flake updates that dependency.
-      niriPkgs = nixpkgs.legacyPackages.${system}.extend (_final: _prev: {
-        libdisplay-info_0_2 =
-          niri-flake.inputs.nixpkgs-stable.legacyPackages.${system}.libdisplay-info_0_2;
-      });
-      niriPackage = (niri-flake.lib.internal.make-package-set niriPkgs).niri-unstable;
+      niriPackage = niri.packages.${system}.niri;
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
@@ -76,9 +68,6 @@
         modules = [
           # Host configuration (branches to system modules)
           ./hosts/nixos
-
-          # Niri compositor (provides config.lib.niri.actions for DMS)
-          niri-flake.nixosModules.niri
 
           # Determinate Systems Nix
           determinate.nixosModules.default
