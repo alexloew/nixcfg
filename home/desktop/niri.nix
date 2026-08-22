@@ -6,10 +6,10 @@
 # included from DMS (niri rejects duplicate binds to the same key).
 # See: https://danklinux.com/docs/dankmaterialshell/compositors
 
-{ config, pkgs, lib, niriPackage, ... }:
+{ pkgs, niriPackage, ... }:
 
 let
-  # Same niri build as the running compositor (pinned in system/desktop/niri.nix).
+  # Same upstream niri build as the running compositor and greeter.
   niri = niriPackage;
 in
 {
@@ -24,322 +24,388 @@ in
     # swayidle is no longer used.
   ];
 
-  # Niri configuration via niri-flake settings
-  programs.niri.settings = {
-    # Environment variables for NVIDIA + Wayland
-    environment = {
-      NIXOS_OZONE_WL = "1";
-      ELECTRON_OZONE_PLATFORM_HINT = "auto";
-      # niri isn't launched with `--session` here (greetd/dms-greeter), so it
-      # doesn't set this itself; portals and apps use it to pick a backend.
-      XDG_CURRENT_DESKTOP = "niri";
-    };
+  # Home Manager owns the generated KDL; NixOS owns compositor/session setup.
+  wayland.windowManager.niri = {
+    enable = true;
+    package = niriPackage;
+    systemd.enable = false;
+    portalPackage = null;
 
-    # Remove client-side decorations (cleaner look, matches Wynn-Dots style)
-    prefer-no-csd = true;
+    settings = {
+      # Repeated top-level nodes must be expressed as ordered KDL children.
+      _children = [
+        # Output configuration — niri requires connector names, not EDID strings.
+        # Current hardware: DP-1=AW3423DWF (ultrawide), DP-2=AW2725DF (27-inch)
+        {
+          output = {
+            _args = [ "DP-1" ];
+            scale = 1.0;
+            transform = "normal";
+            position._props = { x = 2560; y = 0; };
+            mode = "3440x1440@99.982000";
+          };
+        }
+        {
+          output = {
+            _args = [ "DP-2" ];
+            scale = 1.0;
+            transform = "normal";
+            position._props = { x = 0; y = 0; };
+            mode = "2560x1440@143.969000";
+          };
+        }
+        {
+          output = {
+            _args = [ "eDP-1" ];
+            scale = 2.0;
+            transform = "normal";
+          };
+        }
 
-    # Screenshot output path
-    screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
+        # Window rules: opacity plus per-application overrides.
+        {
+          window-rule._children = [
+            { clip-to-geometry = true; }
+            { opacity = 0.95; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.is-active = false; }
+            { opacity = 0.90; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^com\\.mitchellh\\.ghostty$"; }
+            { match._props.app-id = "^Alacritty$"; }
+            { match._props.app-id = "^kitty$"; }
+            { match._props.app-id = "^foot$"; }
+            { opacity = 0.95; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^google-chrome$"; }
+            { match._props.app-id = "^firefox$"; }
+            { match._props.app-id = "^Slack$"; }
+            { match._props.app-id = "^mpv$"; }
+            { match._props.app-id = "^vlc$"; }
+            { opacity = 1.0; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^google-chrome$"; }
+            { match._props.app-id = "^com\\.mitchellh\\.ghostty$"; }
+            { open-maximized = true; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^Slack$"; }
+            { open-maximized = true; }
+          ];
+        }
 
-    # Input configuration
-    input = {
-      keyboard.xkb.layout = "us";
-
-      touchpad = {
-        natural-scroll = true;
-        tap = true;
-      };
-      
-      mouse = {
-          natural-scroll = true;
-        }; 
-
-      focus-follows-mouse = {
-        enable = true;
-        max-scroll-amount = "0%";
-      };
-    };
-
-    # Output configuration — niri requires connector names (not EDID strings).
-    # configure-displays.service overrides modes/positions via EDID after startup.
-    # Current hardware: DP-1=AW2725DF (27-inch), DP-2=AW3423DWF (ultrawide)
-    outputs = {
-      "eDP-1" = { scale = 2.0; };
-      "DP-1" = {
-        mode = { width = 2560; height = 1440; refresh = 143.969; };
-        position = { x = 0; y = 0; };
-        scale = 1.0;
-      };
-      "DP-2" = {
-        mode = { width = 3440; height = 1440; refresh = 99.982; };
-        position = { x = 2560; y = 0; };
-        scale = 1.0;
-      };
-    };
-
-    # Layout: DMS manages gaps, borders, corner-radius, and colors
-    # via included KDL files (layout.kdl, colors.kdl)
-    # Configure those in DMS Settings → Compositor
-    layout = {
-      # Focus ring: subtle dark border (DMS may override via colors.kdl —
-      # if it does, change `primary` in dms.nix to a darker value)
-      focus-ring = {
-        width = 2;
-        active.color = "#4a4a4a";
-        inactive.color = "#252525";
-      };
-
-      # Shadow (not managed by DMS)
-      shadow = {
-        enable = true;
-        softness = 12;
-        spread = 3;
-        offset = { x = 0; y = 2; };
-        color = "#0d0d0dcc";
-        inactive-color = "#0d0d0d88";
-      };
-
-      preset-column-widths = [
-        { proportion = 1.0 / 3.0; }
-        { proportion = 1.0 / 2.0; }
-        { proportion = 2.0 / 3.0; }
-        { proportion = 1.0; }
+        # Layer rules: DMS controls its own background alpha.
+        {
+          layer-rule._children = [
+            { match._props.namespace = "^dms:bar$"; }
+            { opacity = 1.0; }
+          ];
+        }
+        {
+          layer-rule._children = [
+            { match._props.namespace = "^quickshell$"; }
+            { opacity = 1.0; }
+          ];
+        }
       ];
 
-      default-column-width.proportion = 1.0 / 2.0;
+      # Environment variables for NVIDIA and Wayland applications.
+      environment = {
+        NIXOS_OZONE_WL = "1";
+        ELECTRON_OZONE_PLATFORM_HINT = "auto";
+        # niri isn't launched with `--session` here (greetd/dms-greeter), so it
+        # doesn't set this itself; portals and apps use it to pick a backend.
+        XDG_CURRENT_DESKTOP = "niri";
+      };
+
+      prefer-no-csd = { };
+      screenshot-path = "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png";
+
+      input = {
+        keyboard = {
+          xkb = {
+            layout = "us";
+            model = "";
+            rules = "";
+            variant = "";
+          };
+          repeat-delay = 600;
+          repeat-rate = 25;
+          track-layout = "global";
+        };
+
+        touchpad = {
+          natural-scroll = { };
+          tap = { };
+        };
+
+        mouse.natural-scroll = { };
+        focus-follows-mouse._props.max-scroll-amount = "0%";
+      };
+
+      # DMS's layout include follows this generated configuration and overrides
+      # the values it owns (gaps, border/focus widths, and corner radius).
+      layout = {
+        gaps = 16;
+        struts = {
+          left = 0;
+          right = 0;
+          top = 0;
+          bottom = 0;
+        };
+
+        focus-ring = {
+          width = 2;
+          active-color = "#4a4a4a";
+          inactive-color = "#252525";
+        };
+
+        border.off = { };
+
+        shadow = {
+          on = { };
+          offset._props = { x = 0; y = 2; };
+          softness = 12;
+          spread = 3;
+          draw-behind-window = false;
+          color = "#0d0d0dcc";
+          inactive-color = "#0d0d0d88";
+        };
+
+        default-column-width.proportion = 0.5;
+        preset-column-widths._children = [
+          { proportion = 1.0 / 3.0; }
+          { proportion = 1.0 / 2.0; }
+          { proportion = 2.0 / 3.0; }
+          { proportion = 1.0; }
+        ];
+        center-focused-column = "never";
+      };
+
+      cursor = {
+        xcursor-theme = "Adwaita";
+        xcursor-size = 24;
+      };
+
+      animations = {
+        workspace-switch.spring._props = {
+          damping-ratio = 0.8;
+          stiffness = 1000;
+          epsilon = 0.0001;
+        };
+        horizontal-view-movement.spring._props = {
+          damping-ratio = 0.8;
+          stiffness = 800;
+          epsilon = 0.0001;
+        };
+        window-open = {
+          duration-ms = 200;
+          curve = "ease-out-cubic";
+        };
+        window-close = {
+          duration-ms = 150;
+          curve = "ease-out-cubic";
+        };
+        window-movement.spring._props = {
+          damping-ratio = 0.8;
+          stiffness = 800;
+          epsilon = 0.0001;
+        };
+        window-resize.spring._props = {
+          damping-ratio = 0.8;
+          stiffness = 800;
+          epsilon = 0.0001;
+        };
+      };
+
+      # User key bindings. DMS IPC keybinds are declared here too (see dms.nix)
+      # so this generated file remains the sole binding authority.
+      binds = {
+        # Application launchers
+        "Mod+Return".spawn = [ "ghostty" ];
+        "Mod+B".spawn = [ "firefox" ];
+
+        # DMS IPC keybinds are declared directly so the generated Home Manager
+        # config remains the only binding authority.
+        "Mod+Space" = {
+          _props.hotkey-overlay-title = "Toggle Application Launcher";
+          spawn = [ "dms" "ipc" "spotlight" "toggle" ];
+        };
+        "Mod+N" = {
+          _props.hotkey-overlay-title = "Toggle Notification Center";
+          spawn = [ "dms" "ipc" "notifications" "toggle" ];
+        };
+        "Mod+Comma" = {
+          _props.hotkey-overlay-title = "Toggle Settings";
+          spawn = [ "dms" "ipc" "settings" "toggle" ];
+        };
+        "Mod+P" = {
+          _props.hotkey-overlay-title = "Toggle Notepad";
+          spawn = [ "dms" "ipc" "notepad" "toggle" ];
+        };
+        "Mod+V" = {
+          _props.hotkey-overlay-title = "Toggle Clipboard Manager";
+          spawn = [ "dms" "ipc" "clipboard" "toggle" ];
+        };
+        "Mod+X" = {
+          _props.hotkey-overlay-title = "Toggle Power Menu";
+          spawn = [ "dms" "ipc" "powermenu" "toggle" ];
+        };
+        "Mod+M" = {
+          _props.hotkey-overlay-title = "Toggle Process List";
+          spawn = [ "dms" "ipc" "processlist" "toggle" ];
+        };
+        "Mod+Alt+N" = {
+          _props = {
+            allow-when-locked = true;
+            hotkey-overlay-title = "Toggle Night Mode";
+          };
+          spawn = [ "dms" "ipc" "night" "toggle" ];
+        };
+        "Super+Alt+L" = {
+          _props.hotkey-overlay-title = "Toggle Lock Screen";
+          spawn = [ "dms" "ipc" "lock" "lock" ];
+        };
+        "XF86AudioLowerVolume" = {
+          _props.allow-when-locked = true;
+          spawn = [ "dms" "ipc" "audio" "decrement" "3" ];
+        };
+        "XF86AudioRaiseVolume" = {
+          _props.allow-when-locked = true;
+          spawn = [ "dms" "ipc" "audio" "increment" "3" ];
+        };
+        "XF86AudioMute" = {
+          _props.allow-when-locked = true;
+          spawn = [ "dms" "ipc" "audio" "mute" ];
+        };
+        "XF86AudioMicMute" = {
+          _props.allow-when-locked = true;
+          spawn = [ "dms" "ipc" "audio" "micmute" ];
+        };
+        "XF86MonBrightnessUp" = {
+          _props.allow-when-locked = true;
+          spawn = [ "dms" "ipc" "brightness" "increment" "5" "" ];
+        };
+        "XF86MonBrightnessDown" = {
+          _props.allow-when-locked = true;
+          spawn = [ "dms" "ipc" "brightness" "decrement" "5" "" ];
+        };
+
+        # Screenshots
+        "Mod+S".screenshot-screen = { };
+        "Mod+Alt+S".screenshot = { };
+        "Mod+Shift+Alt+S".screenshot-window = { };
+        "Mod+Shift+S".spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
+
+        # Window management
+        "Mod+Q".close-window = { };
+        "Mod+Shift+M".quit = { };
+        "Mod+Shift+V".toggle-window-floating = { };
+        "Mod+F".maximize-column = { };
+        "Mod+Shift+F".fullscreen-window = { };
+
+        # Focus movement (vim-style)
+        "Mod+H".focus-column-left = { };
+        "Mod+L".focus-column-right = { };
+        "Mod+K".focus-window-or-workspace-up = { };
+        "Mod+J".focus-window-or-workspace-down = { };
+
+        # Arrow key focus movement
+        "Mod+Left".focus-column-left = { };
+        "Mod+Right".focus-column-right = { };
+        "Mod+Up".focus-window-or-workspace-up = { };
+        "Mod+Down".focus-window-or-workspace-down = { };
+
+        # Move windows (vim-style)
+        "Mod+Shift+H".move-column-left = { };
+        "Mod+Shift+L".move-column-right = { };
+        "Mod+Shift+K".move-window-up-or-to-workspace-up = { };
+        "Mod+Shift+J".move-window-down-or-to-workspace-down = { };
+
+        # Arrow key move windows
+        "Mod+Shift+Left".move-column-left = { };
+        "Mod+Shift+Right".move-column-right = { };
+        "Mod+Shift+Up".move-window-up-or-to-workspace-up = { };
+        "Mod+Shift+Down".move-window-down-or-to-workspace-down = { };
+
+        # Column width adjustments
+        "Mod+Minus".set-column-width = "-10%";
+        "Mod+Equal".set-column-width = "+10%";
+        "Mod+Shift+Minus".set-window-height = "-10%";
+        "Mod+Shift+Equal".set-window-height = "+10%";
+
+        "Mod+R".switch-preset-column-width = { };
+        "Mod+BracketLeft".consume-or-expel-window-left = { };
+        "Mod+BracketRight".consume-or-expel-window-right = { };
+
+        # Workspace switching
+        "Mod+1".focus-workspace = 1;
+        "Mod+2".focus-workspace = 2;
+        "Mod+3".focus-workspace = 3;
+        "Mod+4".focus-workspace = 4;
+        "Mod+5".focus-workspace = 5;
+        "Mod+6".focus-workspace = 6;
+        "Mod+7".focus-workspace = 7;
+        "Mod+8".focus-workspace = 8;
+        "Mod+9".focus-workspace = 9;
+        "Mod+0".focus-workspace = 10;
+
+        # Move windows to workspaces
+        "Mod+Shift+1".move-column-to-workspace = 1;
+        "Mod+Shift+2".move-column-to-workspace = 2;
+        "Mod+Shift+3".move-column-to-workspace = 3;
+        "Mod+Shift+4".move-column-to-workspace = 4;
+        "Mod+Shift+5".move-column-to-workspace = 5;
+        "Mod+Shift+6".move-column-to-workspace = 6;
+        "Mod+Shift+7".move-column-to-workspace = 7;
+        "Mod+Shift+8".move-column-to-workspace = 8;
+        "Mod+Shift+9".move-column-to-workspace = 9;
+        "Mod+Shift+0".move-column-to-workspace = 10;
+
+        "MouseMiddle".toggle-overview = { };
+        "Mod+WheelScrollDown".focus-workspace-down = { };
+        "Mod+WheelScrollUp".focus-workspace-up = { };
+        "Mod+WheelScrollRight".focus-column-right = { };
+        "Mod+WheelScrollLeft".focus-column-left = { };
+      };
+
+      gestures.hot-corners.off = { };
+
+      # Bring up the systemd graphical session ourselves. The greetd/DMS login
+      # starts bare niri rather than niri-session, so niri does not activate
+      # graphical-session.target on its own.
+      spawn-at-startup = [
+        "sh"
+        "-c"
+        "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET; systemctl --user start niri-session.target"
+      ];
     };
 
-    # Animations
-    animations = {
-      workspace-switch.kind.spring = {
-        damping-ratio = 0.8;
-        stiffness = 1000;
-        epsilon = 0.0001;
-      };
-      horizontal-view-movement.kind.spring = {
-        damping-ratio = 0.8;
-        stiffness = 800;
-        epsilon = 0.0001;
-      };
-      window-open.kind.easing = {
-        duration-ms = 200;
-        curve = "ease-out-cubic";
-      };
-      window-close.kind.easing = {
-        duration-ms = 150;
-        curve = "ease-out-cubic";
-      };
-      window-movement.kind.spring = {
-        damping-ratio = 0.8;
-        stiffness = 800;
-        epsilon = 0.0001;
-      };
-      window-resize.kind.spring = {
-        damping-ratio = 0.8;
-        stiffness = 800;
-        epsilon = 0.0001;
-      };
-    };
-
-    # Layer rules: transparency for DMS bar and overlays
-    # Opacity 1.0 here — DMS's own `transparency = 0.5` controls bar bg alpha;
-    # adding compositor opacity on top would double-reduce it.
-    layer-rules = [
-      {
-        matches = [{ namespace = "^dms:bar$"; }];
-        opacity = 1.0;
-      }
-      {
-        matches = [{ namespace = "^quickshell$"; }];
-        opacity = 1.0;
-      }
-    ];
-
-    # Window rules: opacity + per-app overrides
-    # DMS manages corner-radius and borders via layout.kdl
-    window-rules = [
-      # Base rule: default opacity for all windows
-      {
-        clip-to-geometry = true;
-        opacity = 0.95;
-      }
-      # Inactive windows
-      {
-        matches = [{ is-active = false; }];
-        opacity = 0.90;
-      }
-      # Terminals: match active baseline
-      {
-        matches = [
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-          { app-id = "^Alacritty$"; }
-          { app-id = "^kitty$"; }
-          { app-id = "^foot$"; }
-        ];
-        opacity = 0.95;
-      }
-      # Browsers and media: always fully opaque
-      {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^firefox$"; }
-          { app-id = "^Slack$"; }
-          { app-id = "^mpv$"; }
-          { app-id = "^vlc$"; }
-        ];
-        opacity = 1.0;
-      }
-      # Chrome + Ghostty: open maximized; configure-displays focuses the correct
-      # output before spawning so they land on the ultrawide
-      {
-        matches = [
-          { app-id = "^google-chrome$"; }
-          { app-id = "^com\\.mitchellh\\.ghostty$"; }
-        ];
-        open-maximized = true;
-      }
-      # Slack: open maximized on 27-inch (configure-displays focuses it before spawn)
-      {
-        matches = [{ app-id = "^Slack$"; }];
-        open-maximized = true;
-      }
-    ];
-
-    # User key bindings (in addition to DMS-managed binds)
-    binds = {
-      # Application launchers
-      "Mod+Return".action.spawn = "ghostty";
-      "Mod+B".action.spawn = "firefox";
-
-      # Screenshots — uses niri native actions (DMS manages path via screenshot-path)
-      "Mod+S".action.screenshot-screen = [];       # Current screen → file
-      "Mod+Alt+S".action.screenshot = [];          # Interactive region select → file
-      "Mod+Shift+Alt+S".action.screenshot-window = []; # Focused window → file
-      # Region screenshot to clipboard (grim/slurp still needed for this)
-      "Mod+Shift+S".action.spawn = [ "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy" ];
-
-      # Window management
-      "Mod+Q".action.close-window = [];
-      "Mod+Shift+M".action.quit = [];
-      "Mod+Shift+V".action.toggle-window-floating = [];
-      "Mod+F".action.maximize-column = [];
-      "Mod+Shift+F".action.fullscreen-window = [];
-
-      # Focus movement (vim-style)
-      "Mod+H".action.focus-column-left = [];
-      "Mod+L".action.focus-column-right = [];
-      "Mod+K".action.focus-window-or-workspace-up = [];
-      "Mod+J".action.focus-window-or-workspace-down = [];
-
-      # Arrow key focus movement
-      "Mod+Left".action.focus-column-left = [];
-      "Mod+Right".action.focus-column-right = [];
-      "Mod+Up".action.focus-window-or-workspace-up = [];
-      "Mod+Down".action.focus-window-or-workspace-down = [];
-
-      # Move windows (vim-style)
-      "Mod+Shift+H".action.move-column-left = [];
-      "Mod+Shift+L".action.move-column-right = [];
-      "Mod+Shift+K".action.move-window-up-or-to-workspace-up = [];
-      "Mod+Shift+J".action.move-window-down-or-to-workspace-down = [];
-
-      # Arrow key move windows
-      "Mod+Shift+Left".action.move-column-left = [];
-      "Mod+Shift+Right".action.move-column-right = [];
-      "Mod+Shift+Up".action.move-window-up-or-to-workspace-up = [];
-      "Mod+Shift+Down".action.move-window-down-or-to-workspace-down = [];
-
-      # Column width adjustments
-      "Mod+Minus".action.set-column-width = "-10%";
-      "Mod+Equal".action.set-column-width = "+10%";
-      "Mod+Shift+Minus".action.set-window-height = "-10%";
-      "Mod+Shift+Equal".action.set-window-height = "+10%";
-
-      # Preset column widths
-      "Mod+R".action.switch-preset-column-width = [];
-
-      # Consume / expel windows (merge columns)
-      "Mod+BracketLeft".action.consume-or-expel-window-left = [];
-      "Mod+BracketRight".action.consume-or-expel-window-right = [];
-
-      # Workspace switching
-      "Mod+1".action.focus-workspace = 1;
-      "Mod+2".action.focus-workspace = 2;
-      "Mod+3".action.focus-workspace = 3;
-      "Mod+4".action.focus-workspace = 4;
-      "Mod+5".action.focus-workspace = 5;
-      "Mod+6".action.focus-workspace = 6;
-      "Mod+7".action.focus-workspace = 7;
-      "Mod+8".action.focus-workspace = 8;
-      "Mod+9".action.focus-workspace = 9;
-      "Mod+0".action.focus-workspace = 10;
-
-      # Move window to workspace
-      "Mod+Shift+1".action.move-column-to-workspace = 1;
-      "Mod+Shift+2".action.move-column-to-workspace = 2;
-      "Mod+Shift+3".action.move-column-to-workspace = 3;
-      "Mod+Shift+4".action.move-column-to-workspace = 4;
-      "Mod+Shift+5".action.move-column-to-workspace = 5;
-      "Mod+Shift+6".action.move-column-to-workspace = 6;
-      "Mod+Shift+7".action.move-column-to-workspace = 7;
-      "Mod+Shift+8".action.move-column-to-workspace = 8;
-      "Mod+Shift+9".action.move-column-to-workspace = 9;
-      "Mod+Shift+0".action.move-column-to-workspace = 10;
-
-      # Overview
-      "MouseMiddle".action.toggle-overview = {};
-
-      # Scroll through workspaces
-      "Mod+WheelScrollDown".action.focus-workspace-down = [];
-      "Mod+WheelScrollUp".action.focus-workspace-up = [];
-
-      # Mouse window management
-      "Mod+WheelScrollRight".action.focus-column-right = [];
-      "Mod+WheelScrollLeft".action.focus-column-left = [];
-    };
-
-    # Disable top-left hot corner (overview triggered via MouseMiddle instead)
-    gestures.hot-corners.enable = false;
-
-    # Cursor settings
-    cursor = {
-      theme = "Adwaita";
-      size = 24;
-    };
-
-    # Bring up the systemd graphical session ourselves.
-    #
-    # niri only manages graphical-session.target when launched as `niri
-    # --session`. The greetd/dms-greeter login path (system/desktop/
-    # dms-greeter.nix) does not start niri in session mode, so the target never
-    # activated and every WantedBy=graphical-session.target unit — DMS (bar +
-    # wallpaper), configure-displays, idle-suspend — stayed dead, leaving a
-    # bare gray niri screen.
-    #
-    # graphical-session.target sets RefuseManualStart=yes, so we cannot start it
-    # directly ("Operation refused … may be requested by dependency only"). The
-    # standard compositor-without-a-DM pattern is to start an intermediate
-    # niri-session.target (defined below) that BindsTo graphical-session.target;
-    # dependency activation is allowed and pulls in graphical-session.target and
-    # everything wired to it. First import the Wayland env so those user units
-    # can reach the compositor. Idempotent. Apps themselves are still launched
-    # by configure-displays.service (displays.nix).
-    spawn-at-startup = [
-      {
-        command = [
-          "sh"
-          "-c"
-          "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE NIRI_SOCKET; systemctl --user start niri-session.target"
-        ];
-      }
-    ];
+    # DMS owns these runtime-generated fragments. They follow the base config so
+    # its layout values override ours. Binds, outputs, and window rules remain
+    # excluded to avoid duplicate or competing configuration authorities.
+    extraConfig = ''
+      include optional=true "dms/alttab.kdl"
+      include optional=true "dms/layout.kdl"
+    '';
   };
 
-  # Intermediate target started from niri's spawn-at-startup (above). It exists
-  # only to pull in graphical-session.target, which refuses a direct manual
-  # start. BindsTo gives dependency-driven activation (allowed) and tears the
-  # session down with it; Wants/After graphical-session-pre.target matches the
-  # convention used by sway/Hyprland systemd sessions.
+  # Intermediate target started from niri's spawn-at-startup. It exists only to
+  # pull in graphical-session.target, which refuses a direct manual start.
   systemd.user.targets.niri-session = {
     Unit = {
       Description = "niri session";
@@ -353,8 +419,7 @@ in
   # Idle handling (display-off, suspend-on-battery, lock) is DMS's native idle
   # daemon, configured in home/desktop/dms.nix. No standalone service here.
 
-  # Lid-close handler: toggle eDP-1 off/on via niri msg
-  # Triggered by the system udev rule on button/lid change events
+  # Lid-close handler: toggle eDP-1 off/on via niri msg.
   systemd.user.services.lid-handler = {
     Unit.Description = "Toggle eDP-1 output on lid close/open";
     Service = let
@@ -373,6 +438,5 @@ in
     };
   };
 
-  # Wallpaper
   home.file.".local/share/wallpapers/earthrise.JPG".source = ./wallpapers/earthrise.JPG;
 }

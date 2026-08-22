@@ -4,7 +4,7 @@
 { config, pkgs, niriPackage, ... }:
 
 {
-  # Enable Niri (unstable required: niri-stable v25.08 lacks `include` directive support)
+  # Use the shared upstream package for the user session and DMS greeter.
   programs.niri = {
     enable = true;
     package = niriPackage;
