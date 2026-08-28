@@ -13,7 +13,7 @@
 # greetd, creates the `dms-greeter` system user + group, wires
 # security.pam.services.dms-greeter, and enables hardware.graphics + libinput.
 # The greeter runs inside niri (`programs.niri.enable = true`, system/desktop/
-# niri.nix), reusing the same upstream Niri package as the logged-in session.
+# niri.nix), reusing the same cached nixpkgs package as the logged-in session.
 
 { config, pkgs, ... }:
 
