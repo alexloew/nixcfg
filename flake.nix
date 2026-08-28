@@ -99,7 +99,6 @@
           inputs.nflx-nixcfg.nixosModules.python
           inputs.nflx-nixcfg.nixosModules.git
           inputs.nflx-nixcfg.nixosModules.ssh-agent
-          inputs.nflx-nixcfg.nixosModules.pulse-official
           inputs.nflx-nixcfg.nixosModules.gh
           {
             nflx = {
@@ -107,7 +106,6 @@
               nix-ld.enable = true;
               ssh-agent.enable = true;
               vpn.pulse.browser-extensions = [ ];
-              vpn.pulse-official.enable = true;
               genai.disable-project-id-warning = true;
             };
           }

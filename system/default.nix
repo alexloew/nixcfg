@@ -18,6 +18,5 @@
     ./tpm.nix
     ./users.nix
     ./virt.nix
-    ./virtualbox.nix
   ];
 }
