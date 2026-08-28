@@ -86,7 +86,9 @@
           # Smallstep step-agent
           inputs.smallstep.nixosModules.default
 
-          # Fleet / Orbit agent
+          # Fleet / Orbit agent. nixpkgs now ships its own services.orbit
+          # module; keep the Netflix module as the sole option owner.
+          { disabledModules = [ "services/monitoring/orbit.nix" ]; }
           inputs.fleetdm-nix.nixosModules.fleetdm-nix
 
           # Netflix modules
