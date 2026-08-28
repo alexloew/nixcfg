@@ -18,9 +18,8 @@
 { pkgs, niriPackage, ... }:
 
 let
-  # Use the same upstream niri build as the running compositor
-  # (system/desktop/niri.nix). `pkgs.niri` can be a different version, and its
-  # `niri msg` client can drift from the compositor's IPC.
+  # Use the same cached nixpkgs build as the running compositor so the
+  # `niri msg` client cannot drift from the compositor's IPC.
   niri = niriPackage;
 
   configureDisplays = pkgs.writeShellScript "configure-displays" ''

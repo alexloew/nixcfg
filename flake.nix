@@ -10,12 +10,6 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
 
-    # Niri compositor package; NixOS and Home Manager provide the modules.
-    niri = {
-      url = "github:niri-wm/niri";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Dank Material Shell - Wayland desktop shell
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
@@ -53,14 +47,15 @@
       determinate,
       fh,
       home-manager,
-      niri,
       dms,
       dgop,
       ...
     }@inputs:
     let
       system = "x86_64-linux";
-      niriPackage = niri.packages.${system}.niri;
+      # Use the Hydra-built nixpkgs package so cache.nixos.org can substitute
+      # Niri while keeping one shared build across the session, greeter, and IPC.
+      niriPackage = nixpkgs.legacyPackages.${system}.niri;
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {

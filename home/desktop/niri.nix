@@ -9,7 +9,7 @@
 { pkgs, niriPackage, ... }:
 
 let
-  # Same upstream niri build as the running compositor and greeter.
+  # Same cached nixpkgs build as the running compositor and greeter.
   niri = niriPackage;
 in
 {

@@ -4,7 +4,7 @@
 { config, pkgs, niriPackage, ... }:
 
 {
-  # Use the shared upstream package for the user session and DMS greeter.
+  # Use the shared cached nixpkgs package for the user session and DMS greeter.
   programs.niri = {
     enable = true;
     package = niriPackage;
