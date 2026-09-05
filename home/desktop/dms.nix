@@ -2,7 +2,7 @@
 # Desktop shell for Wayland compositors (Niri)
 # https://danklinux.com/docs/dankmaterialshell/nixos-flake
 
-{ config, pkgs, inputs, lib, ... }:
+{ config, inputs, ... }:
 
 {
   imports = [
@@ -12,8 +12,8 @@
   programs.dank-material-shell = {
     enable = true;
     systemd.enable = true;
+    # DMS now embeds the dgop library; the external package option was removed.
     enableSystemMonitoring = true;
-    dgop.package = inputs.dgop.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     # Catppuccin Mocha custom theme
     settings = {

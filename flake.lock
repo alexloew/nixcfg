@@ -3,11 +3,11 @@
     "aimee": {
       "flake": false,
       "locked": {
-        "lastModified": 1785520687,
-        "narHash": "sha256-M4/SvSrBsyxgZTQNss+FbsZZLYdsIuFTOpzZ7Ck+n/c=",
+        "lastModified": 1788358127,
+        "narHash": "sha256-PcITNdHr+YWzg0jahdI71sIgCDtJYekdKgA6V4nKOZI=",
         "ref": "main",
-        "rev": "3bd7427aecd12a2506bff2400d18af97a49df4f2",
-        "revCount": 810,
+        "rev": "8c13e10f3e3049e78af96f2e92545938a2d798f3",
+        "revCount": 892,
         "type": "git",
         "url": "ssh://git@github.netflix.net/corp/aimee"
       },
@@ -74,6 +74,22 @@
       "original": {
         "type": "tarball",
         "url": "https://flakehub.com/f/ipetkov/crane/0"
+      }
+    },
+    "dank-qml-common": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788376015,
+        "narHash": "sha256-/tT8rTznLADndTwLBzdgzzgfJH1ZhYQibYo5v/F8U+U=",
+        "owner": "AvengeMedia",
+        "repo": "dank-qml-common",
+        "rev": "26396ce432d6c71c3f5367438f96f4a8d667e160",
+        "type": "github"
+      },
+      "original": {
+        "owner": "AvengeMedia",
+        "repo": "dank-qml-common",
+        "type": "github"
       }
     },
     "determinate": {
@@ -155,17 +171,18 @@
     },
     "dms": {
       "inputs": {
+        "dank-qml-common": "dank-qml-common",
         "flake-compat": "flake-compat_2",
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1785111455,
-        "narHash": "sha256-aTNuC9NDBnYAeEtFsleeUwmGX3AZlKOutbl+LQRPkmQ=",
+        "lastModified": 1788454433,
+        "narHash": "sha256-E4KUauS30dL2R/n/yABNENdTehhT+qHV7uemd/jxQfU=",
         "owner": "AvengeMedia",
         "repo": "DankMaterialShell",
-        "rev": "069ddab041c738236a8910e4c39b65d9628d3018",
+        "rev": "0bbe83380c9406d262d567581d64477d261c9ee5",
         "type": "github"
       },
       "original": {
@@ -452,6 +469,7 @@
     "hermes-agent": {
       "inputs": {
         "flake-parts": "flake-parts_3",
+        "home-manager": "home-manager_2",
         "nixpkgs": [
           "nflx-nixcfg",
           "nixpkgs"
@@ -462,16 +480,16 @@
         "uv2nix": "uv2nix"
       },
       "locked": {
-        "lastModified": 1786992185,
-        "narHash": "sha256-NoURyVuZ4EvG4K3S2oKSfJctVH9rXk4oeoXHWBNddPw=",
+        "lastModified": 1788204567,
+        "narHash": "sha256-Ii9xP2fKUpvCcwWZuxJ0g3CZ+IL2UZH14pUNvBfdclc=",
         "owner": "NousResearch",
         "repo": "hermes-agent",
-        "rev": "7339f5f160db5c96657a3bab60151227cc61f66c",
+        "rev": "29112bef099274229cadff79cdff7bf7b99c4b77",
         "type": "github"
       },
       "original": {
         "owner": "NousResearch",
-        "ref": "v2026.8.16.2",
+        "ref": "v2026.8.31",
         "repo": "hermes-agent",
         "type": "github"
       }
@@ -497,6 +515,28 @@
       }
     },
     "home-manager_2": {
+      "inputs": {
+        "nixpkgs": [
+          "nflx-nixcfg",
+          "hermes-agent",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786487128,
+        "narHash": "sha256-ad60hrRVhH/bo3Jl1YLzO+QcS3mUNZr9LNJdzhMO2P4=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "f404edbfa4117810c96b97048299242fc50e5362",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "home-manager_3": {
       "inputs": {
         "nixpkgs": [
           "nflx-nixcfg",
@@ -546,7 +586,7 @@
         "claude-code": "claude-code",
         "claude-desktop": "claude-desktop",
         "hermes-agent": "hermes-agent",
-        "home-manager": "home-manager_2",
+        "home-manager": "home-manager_3",
         "netflix-tv-launcher": "netflix-tv-launcher",
         "nixpkgs": "nixpkgs_4",
         "nixpkgs-stable": "nixpkgs-stable",
@@ -559,11 +599,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1787763215,
-        "narHash": "sha256-RUPS0Slpmo5TIal0pvGt3RAcNNtqqNloz+xEy6dYrBA=",
+        "lastModified": 1788417107,
+        "narHash": "sha256-tC+4lnuRvb/CLe/DzGxji1YFRuIy6V8sE0XIhCjC7dU=",
         "ref": "refs/heads/main",
-        "rev": "25bc018bef94c19e4b91372da42c1c0e8b1c4839",
-        "revCount": 192,
+        "rev": "0c96c177836019d9306032ca04ca8702721b0063",
+        "revCount": 194,
         "type": "git",
         "url": "ssh://git@github.com/Netflix/nflx-nixcfg"
       },
@@ -889,11 +929,11 @@
     "pi-agent": {
       "flake": false,
       "locked": {
-        "lastModified": 1786997111,
-        "narHash": "sha256-C/4nDyoJslCqnjIX6YYHoLw0M4gwg2S06TR4n0xYogo=",
+        "lastModified": 1788398773,
+        "narHash": "sha256-INZhbeRXDepveSmzdILbdEm3CvXVFQEWGYw2IPKNQ2Y=",
         "ref": "main",
-        "rev": "d457882fc696c917825fa718b138876db8553874",
-        "revCount": 796,
+        "rev": "45d13e0aa5048fbf3d73a44fecad524d8eddf9d4",
+        "revCount": 936,
         "type": "git",
         "url": "ssh://git@github.netflix.net/corp/pi-agent"
       },
