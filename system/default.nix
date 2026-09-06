@@ -14,6 +14,7 @@
     ./network.nix
     ./nix.nix
     ./nvidia.nix
+    ./openlogi.nix
     ./tailscale.nix
     ./users.nix
     ./virt.nix

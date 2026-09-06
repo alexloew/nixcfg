@@ -77,15 +77,6 @@
           # Host configuration (branches to system modules)
           ./hosts/nixos
 
-          # OpenLogi - package, device-access udev rules, and user agent
-          inputs.openlogi.nixosModules.default
-          {
-            programs.openlogi = {
-              enable = true;
-              launchAtLogin = true;
-            };
-          }
-
           # Determinate Systems Nix
           determinate.nixosModules.default
           { environment.systemPackages = [ fh.packages.x86_64-linux.default ]; }
