@@ -21,8 +21,8 @@ in
   services.printing.enable = true;
 
   # Lid-close behavior:
-  # - Docked (external displays connected): ignore — lid-handler turns off eDP-1
-  #   so the docked workflow keeps running on external monitors.
+  # - Docked (external displays connected): ignore — lid-handler turns off eDP-1,
+  #   moves Slack beside Chrome, and keeps the docked workflow on externals.
   # - Undocked (battery or AC, no external displays): suspend, so the laptop
   #   doesn't burn its battery sitting in a bag with the lid closed.
   # logind lid options moved under services.logind.settings.Login in nixpkgs.

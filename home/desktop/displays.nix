@@ -3,8 +3,8 @@
 # Modes/positions/scale are NOT set here — niri applies them natively from its
 # own output config (home/desktop/niri.nix) whenever an output connects. This
 # service only (a) maps each connected EDID model to its niri connector name,
-# (b) launches the startup apps on the correct monitors on first login, and
-# (c) execs swaybg for wallpapers. It issues NO `niri msg output … mode …`, so
+# (b) launches missing startup apps whose named-workspace rules live in niri.nix,
+# and (c) execs swaybg for wallpapers. It issues NO `niri msg output … mode …`, so
 # it cannot emit a KMS modeset and therefore cannot self-trigger the DRM
 # `change` uevent → restart loop that livelocked boot (issue #111).
 #
@@ -58,27 +58,30 @@ let
       exit 1
     fi
 
-    # Launch apps only on first run (not on resume restarts)
-    if [ -n "$uw" ] && ! pgrep -f "google-chrome" > /dev/null; then
-      # Focus ultrawide — Chrome and Ghostty will open here
-      ${niri}/bin/niri msg action focus-monitor "$uw"
-      sleep 0.5
-      # Chrome first → left column; Ghostty second → right column
-      # Chrome needs ~2s to create its window; if Ghostty wins the race it ends up left
-      ${niri}/bin/niri msg action spawn -- google-chrome-stable
-      sleep 2
-      ${niri}/bin/niri msg action spawn -- ghostty
-      # Wait for Ghostty to open, then refocus Chrome (left column)
-      sleep 1
-      ${niri}/bin/niri msg action focus-column-left
-      # Slack on 27-inch
-      if [ -n "$aw" ]; then
-        sleep 0.5
-        ${niri}/bin/niri msg action focus-monitor "$aw"
-        sleep 0.5
-        ${niri}/bin/niri msg action spawn -- slack
+    # Launch each missing app once. Niri's named-workspace rules place them and
+    # carry those workspaces across output disconnect/reconnect events.
+    windows=$(${niri}/bin/niri msg --json windows 2>/dev/null || printf '[]')
+    launch_if_missing() {
+      local app_id="$1"
+      shift
+      if ! ${pkgs.jq}/bin/jq -e --arg app_id "$app_id" \
+        'any(.[]; .app_id == $app_id)' <<<"$windows" >/dev/null; then
+        ${niri}/bin/niri msg action spawn -- "$@"
       fi
-    fi
+    }
+
+    # Launch order preserves the observed media-workspace column order.
+    launch_if_missing "spotify" spotify
+    launch_if_missing "md.Obsidian" obsidian
+    launch_if_missing "google-chrome" google-chrome-stable
+    launch_if_missing "com.mitchellh.ghostty" ghostty
+    launch_if_missing "slack" slack
+
+    # Let windows match their rules, then apply the current lid state. This
+    # also handles sessions that start while already docked with the lid shut.
+    sleep 3
+    ${pkgs.systemd}/bin/systemctl --user start --no-block lid-handler.service
+    ${niri}/bin/niri msg action focus-workspace "web" || true
 
     exec ${pkgs.swaybg}/bin/swaybg "''${swaybg_args[@]}"
   '';
