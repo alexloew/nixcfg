@@ -1,11 +1,8 @@
 # Hardware Services Configuration
 # Audio, printing, and other hardware-related services
 
-{ config, pkgs, ... }:
+{ ... }:
 
-let
-  username = "alexloewenthal";
-in
 {
   # Audio - PipeWire
   services.pulseaudio.enable = false;
@@ -13,7 +10,6 @@ in
   services.pipewire = {
     enable = true;
     alsa.enable = true;
-    alsa.support32Bit = true;
     pulse.enable = true;
   };
 
@@ -21,10 +17,10 @@ in
   services.printing.enable = true;
 
   # Lid-close behavior:
-  # - Docked (external displays connected): ignore — lid-handler turns off eDP-1,
-  #   moves Slack beside Chrome, and keeps the docked workflow on externals.
+  # - Docked (external displays connected): ignore. Niri disconnects eDP-1 and
+  #   the topology watcher moves Slack beside Chrome on the external outputs.
   # - Undocked (battery or AC, no external displays): suspend, so the laptop
-  #   doesn't burn its battery sitting in a bag with the lid closed.
+  #   does not burn its battery sitting in a bag with the lid closed.
   # logind lid options moved under services.logind.settings.Login in nixpkgs.
   services.logind.settings.Login = {
     HandleLidSwitch = "suspend";
@@ -32,25 +28,16 @@ in
     HandleLidSwitchDocked = "ignore";
   };
 
-  # Fire the user-level lid-handler service when the lid state changes
-  services.udev.extraRules = ''
-    ACTION=="change", SUBSYSTEM=="button", KERNEL=="button/lid", \
-      RUN+="${pkgs.systemd}/bin/systemctl --no-block --user --machine=${username}@.host start lid-handler.service"
+  # Niri handles kernel lid events and panel state directly. Do not bridge lid
+  # events through acpid into the user manager: the lid can open while
+  # user.slice is still frozen, causing the `output eDP-1 on` dispatch to fail
+  # and leaving the compositor with no active output after resume.
 
-    # NOTE (issue #111): there is deliberately NO `ACTION=change, SUBSYSTEM=drm`
-    # rule restarting configure-displays. That rule was the boot livelock: at boot
-    # the DRM nodes re-probe and re-enumerate racily, firing change uevents that
-    # restarted configure-displays, whose `niri msg output … mode …` modeset emitted
-    # a fresh change uevent (carrying HOTPLUG=1, so the gate could not filter it) →
-    # infinite restart storm → hang. The #115 HOTPLUG gate and #116 idempotency
-    # guard both failed to hold during the boot enumeration race. Modes/positions
-    # are now applied natively by niri's own output config (home/desktop/niri.nix)
-    # on output connect — including real hotplug — so this rule is unnecessary.
-  '';
+  # NOTE (issue #111): there is deliberately no DRM udev rule restarting
+  # configure-displays. The old rule formed a modeset/uevent restart loop during
+  # boot. Niri now applies output modes and positions natively on connection.
 
-  powerManagement.resumeCommands = ''
-    sleep 3
-    ${pkgs.systemd}/bin/systemctl --user -M ${username}@ restart dms.service || true
-    ${pkgs.systemd}/bin/systemctl --user -M ${username}@ restart configure-displays.service || true
-  '';
+  # Do not restart graphical user services unconditionally on resume. DMS
+  # restores its own Wayland surfaces, while Niri topology events start display
+  # reconciliation once an output is active.
 }

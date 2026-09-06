@@ -8,10 +8,6 @@
 
 { pkgs, niriPackage, ... }:
 
-let
-  # Same cached nixpkgs build as the running compositor and greeter.
-  niri = niriPackage;
-in
 {
   # Install supporting tools
   home.packages = with pkgs; [
@@ -62,10 +58,15 @@ in
           };
         }
 
-        # Named workspaces preserve this physical layout across hotplug. When
-        # an output disconnects, niri temporarily moves its workspaces to an
-        # available output and returns them when their preferred output comes
-        # back. Declaration order keeps terminal immediately below web.
+        # Named workspaces form three physical workspace columns when docked:
+        # notes above media on the left, web above terminal in the center, and
+        # chat on the right. The reconciler defines the laptop-only collapse.
+        {
+          workspace = {
+            _args = [ "notes" ];
+            open-on-output = "Dell Inc. AW2725DF 92Q6ZZ3";
+          };
+        }
         {
           workspace = {
             _args = [ "media" ];
@@ -91,20 +92,20 @@ in
           };
         }
 
-        # Place apps on persistent workspaces. Spotify and Obsidian retain the
-        # observed 40/60 split on the left display.
+        # Place each app on its docked workspace; the reconciler moves existing
+        # windows into the topology-specific arrangement.
         {
           window-rule._children = [
             { match._props.app-id = "^spotify$"; }
             { open-on-workspace = "media"; }
-            { default-column-width.proportion = 0.4; }
+            { default-column-width.proportion = 1.0; }
           ];
         }
         {
           window-rule._children = [
             { match._props.app-id = "^md\\.Obsidian$"; }
-            { open-on-workspace = "media"; }
-            { default-column-width.proportion = 0.6; }
+            { open-on-workspace = "notes"; }
+            { default-column-width.proportion = 1.0; }
           ];
         }
         {
@@ -417,11 +418,11 @@ in
         "Mod+BracketRight".consume-or-expel-window-right = { };
 
         # Workspace switching
-        "Mod+1".focus-workspace = "media";
-        "Mod+2".focus-workspace = "web";
-        "Mod+3".focus-workspace = "terminal";
-        "Mod+4".focus-workspace = "chat";
-        "Mod+5".focus-workspace = 5;
+        "Mod+1".focus-workspace = "notes";
+        "Mod+2".focus-workspace = "media";
+        "Mod+3".focus-workspace = "web";
+        "Mod+4".focus-workspace = "terminal";
+        "Mod+5".focus-workspace = "chat";
         "Mod+6".focus-workspace = 6;
         "Mod+7".focus-workspace = 7;
         "Mod+8".focus-workspace = 8;
@@ -429,11 +430,11 @@ in
         "Mod+0".focus-workspace = 10;
 
         # Move windows to workspaces
-        "Mod+Shift+1".move-column-to-workspace = "media";
-        "Mod+Shift+2".move-column-to-workspace = "web";
-        "Mod+Shift+3".move-column-to-workspace = "terminal";
-        "Mod+Shift+4".move-column-to-workspace = "chat";
-        "Mod+Shift+5".move-column-to-workspace = 5;
+        "Mod+Shift+1".move-column-to-workspace = "notes";
+        "Mod+Shift+2".move-column-to-workspace = "media";
+        "Mod+Shift+3".move-column-to-workspace = "web";
+        "Mod+Shift+4".move-column-to-workspace = "terminal";
+        "Mod+Shift+5".move-column-to-workspace = "chat";
         "Mod+Shift+6".move-column-to-workspace = 6;
         "Mod+Shift+7".move-column-to-workspace = 7;
         "Mod+Shift+8".move-column-to-workspace = 8;
@@ -482,54 +483,12 @@ in
 
   # Idle handling (display-off, suspend-on-battery, lock) is DMS's native idle
   # daemon, configured in home/desktop/dms.nix. No standalone service here.
-
-  # Lid handler: toggle eDP-1 and move Slack between its dedicated laptop
-  # workspace and the rightmost column of the web workspace while docked.
-  systemd.user.services.lid-handler = {
-    Unit.Description = "Reflow workspaces and Slack on lid close/open";
-    Service = let
-      script = pkgs.writeShellScript "lid-handler" ''
-        slack_window_ids() {
-          ${niri}/bin/niri msg --json windows 2>/dev/null \
-            | ${pkgs.jq}/bin/jq -r \
-              '.[] | select(((.app_id // "") | ascii_downcase) == "slack") | .id'
-        }
-
-        move_slack_to() {
-          local workspace="$1"
-          local put_last="''${2:-false}"
-          local id
-          while IFS= read -r id; do
-            [ -n "$id" ] || continue
-            ${niri}/bin/niri msg action move-window-to-workspace \
-              --window-id "$id" --focus false "$workspace"
-            if [ "$put_last" = true ]; then
-              ${niri}/bin/niri msg action focus-window --id "$id"
-              ${niri}/bin/niri msg action move-column-to-last
-            fi
-          done < <(slack_window_ids)
-        }
-
-        state=$(cat /proc/acpi/button/lid/LID0/state 2>/dev/null || \
-                cat /proc/acpi/button/lid/LID/state 2>/dev/null)
-        if echo "$state" | grep -q "closed"; then
-          ${niri}/bin/niri msg output eDP-1 off
-          sleep 1
-          move_slack_to "web" true
-          # Chrome is the first column on web; leave that workspace focused.
-          ${niri}/bin/niri msg action focus-workspace "web"
-          ${niri}/bin/niri msg action focus-column-first
-        else
-          ${niri}/bin/niri msg output eDP-1 on
-          sleep 1
-          move_slack_to "chat"
-        fi
-      '';
-    in {
-      Type = "oneshot";
-      ExecStart = "${script}";
-    };
-  };
+  #
+  # Niri owns laptop-panel disconnect/reconnect directly from the kernel lid
+  # state. Do not persist an explicit `niri msg output eDP-1 off`: a lid-open
+  # event can occur while the user manager is frozen during suspend, leaving no
+  # user service able to send the matching `on`. The topology watcher reacts to
+  # Niri's native output changes and starts layout reconciliation.
 
   home.file.".local/share/wallpapers/earthrise.JPG".source = ./wallpapers/earthrise.JPG;
 }

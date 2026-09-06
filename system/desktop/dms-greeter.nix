@@ -56,6 +56,10 @@ in
       # the default, and the greeter wrapper still auto-appends the login-UI
       # spawn-at-startup.) Keep only options valid on current niri;
       # DMS_RUN_GREETER signals greeter mode to quickshell.
+      #
+      # Keep the internal panel logically available to this greeter-only Niri
+      # instance. Otherwise, a boot with the lid closed and no external output
+      # starts the greeter without any surface to render onto.
       compositor.customConfig = ''
         hotkey-overlay {
             skip-at-startup
@@ -63,6 +67,10 @@ in
 
         environment {
             DMS_RUN_GREETER "1"
+        }
+
+        debug {
+            keep-laptop-panel-on-when-lid-is-closed
         }
 
         gestures {

@@ -24,6 +24,12 @@
       useFahrenheit = true;
       windSpeedUnit = "mph";
 
+      # Avoid Qt Multimedia's PipeWire/QFFmpeg audio-renderer crash when an
+      # unplug removes the audio sink immediately before suspend. This disables
+      # only DMS's notification, volume and power sound effects; application
+      # audio and DMS's audio controls remain available.
+      soundsEnabled = false;
+
       # Compositor blur on DMS surfaces (bar, popouts, modals, notifications).
       # Niri 26.04+ implements ext-background-effect-v1; DMS asks the compositor
       # to blur its surfaces at runtime when this is true.
@@ -92,7 +98,7 @@
     # under one declarative authority to avoid duplicate or conflicting KDL.
   };
 
-  # Auto-restart DMS if it crashes (e.g. on wake from sleep).
+  # Auto-restart DMS after an unexpected failure.
   # home-manager maps this to the unit's [Service] section, so the key must be
   # `Service` — `serviceConfig` produced a bogus [serviceConfig] section that
   # systemd ignored ("Unknown section 'serviceConfig'"), so the override never

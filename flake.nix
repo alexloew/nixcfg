@@ -3,6 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
@@ -61,6 +65,9 @@
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs niriPackage; };
         modules = [
+          # Model-specific hardware defaults and future upstream quirks.
+          inputs.nixos-hardware.nixosModules.lenovo-thinkpad-p16s-intel-gen3
+
           # Host configuration (branches to system modules)
           ./hosts/nixos
 
