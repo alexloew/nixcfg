@@ -62,6 +62,70 @@ in
           };
         }
 
+        # Named workspaces preserve this physical layout across hotplug. When
+        # an output disconnects, niri temporarily moves its workspaces to an
+        # available output and returns them when their preferred output comes
+        # back. Declaration order keeps terminal immediately below web.
+        {
+          workspace = {
+            _args = [ "media" ];
+            open-on-output = "Dell Inc. AW2725DF 92Q6ZZ3";
+          };
+        }
+        {
+          workspace = {
+            _args = [ "web" ];
+            open-on-output = "Dell Inc. AW3423DWF GF0C2S3";
+          };
+        }
+        {
+          workspace = {
+            _args = [ "terminal" ];
+            open-on-output = "Dell Inc. AW3423DWF GF0C2S3";
+          };
+        }
+        {
+          workspace = {
+            _args = [ "chat" ];
+            open-on-output = "Samsung Display Corp. 0x4165 Unknown";
+          };
+        }
+
+        # Place apps on persistent workspaces. Spotify and Obsidian retain the
+        # observed 40/60 split on the left display.
+        {
+          window-rule._children = [
+            { match._props.app-id = "^spotify$"; }
+            { open-on-workspace = "media"; }
+            { default-column-width.proportion = 0.4; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^md\\.Obsidian$"; }
+            { open-on-workspace = "media"; }
+            { default-column-width.proportion = 0.6; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^google-chrome$"; }
+            { open-on-workspace = "web"; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^com\\.mitchellh\\.ghostty$"; }
+            { open-on-workspace = "terminal"; }
+          ];
+        }
+        {
+          window-rule._children = [
+            { match._props.app-id = "^(Slack|slack)$"; }
+            { open-on-workspace = "chat"; }
+          ];
+        }
+
         # Window rules: opacity plus per-application overrides.
         {
           window-rule._children = [
@@ -88,7 +152,7 @@ in
           window-rule._children = [
             { match._props.app-id = "^google-chrome$"; }
             { match._props.app-id = "^firefox$"; }
-            { match._props.app-id = "^Slack$"; }
+            { match._props.app-id = "^(Slack|slack)$"; }
             { match._props.app-id = "^mpv$"; }
             { match._props.app-id = "^vlc$"; }
             { opacity = 1.0; }
@@ -103,7 +167,7 @@ in
         }
         {
           window-rule._children = [
-            { match._props.app-id = "^Slack$"; }
+            { match._props.app-id = "^(Slack|slack)$"; }
             { open-maximized = true; }
           ];
         }
@@ -353,10 +417,10 @@ in
         "Mod+BracketRight".consume-or-expel-window-right = { };
 
         # Workspace switching
-        "Mod+1".focus-workspace = 1;
-        "Mod+2".focus-workspace = 2;
-        "Mod+3".focus-workspace = 3;
-        "Mod+4".focus-workspace = 4;
+        "Mod+1".focus-workspace = "media";
+        "Mod+2".focus-workspace = "web";
+        "Mod+3".focus-workspace = "terminal";
+        "Mod+4".focus-workspace = "chat";
         "Mod+5".focus-workspace = 5;
         "Mod+6".focus-workspace = 6;
         "Mod+7".focus-workspace = 7;
@@ -365,10 +429,10 @@ in
         "Mod+0".focus-workspace = 10;
 
         # Move windows to workspaces
-        "Mod+Shift+1".move-column-to-workspace = 1;
-        "Mod+Shift+2".move-column-to-workspace = 2;
-        "Mod+Shift+3".move-column-to-workspace = 3;
-        "Mod+Shift+4".move-column-to-workspace = 4;
+        "Mod+Shift+1".move-column-to-workspace = "media";
+        "Mod+Shift+2".move-column-to-workspace = "web";
+        "Mod+Shift+3".move-column-to-workspace = "terminal";
+        "Mod+Shift+4".move-column-to-workspace = "chat";
         "Mod+Shift+5".move-column-to-workspace = 5;
         "Mod+Shift+6".move-column-to-workspace = 6;
         "Mod+Shift+7".move-column-to-workspace = 7;
@@ -419,17 +483,46 @@ in
   # Idle handling (display-off, suspend-on-battery, lock) is DMS's native idle
   # daemon, configured in home/desktop/dms.nix. No standalone service here.
 
-  # Lid-close handler: toggle eDP-1 off/on via niri msg.
+  # Lid handler: toggle eDP-1 and move Slack between its dedicated laptop
+  # workspace and the rightmost column of the web workspace while docked.
   systemd.user.services.lid-handler = {
-    Unit.Description = "Toggle eDP-1 output on lid close/open";
+    Unit.Description = "Reflow workspaces and Slack on lid close/open";
     Service = let
       script = pkgs.writeShellScript "lid-handler" ''
+        slack_window_ids() {
+          ${niri}/bin/niri msg --json windows 2>/dev/null \
+            | ${pkgs.jq}/bin/jq -r \
+              '.[] | select(((.app_id // "") | ascii_downcase) == "slack") | .id'
+        }
+
+        move_slack_to() {
+          local workspace="$1"
+          local put_last="''${2:-false}"
+          local id
+          while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            ${niri}/bin/niri msg action move-window-to-workspace \
+              --window-id "$id" --focus false "$workspace"
+            if [ "$put_last" = true ]; then
+              ${niri}/bin/niri msg action focus-window --id "$id"
+              ${niri}/bin/niri msg action move-column-to-last
+            fi
+          done < <(slack_window_ids)
+        }
+
         state=$(cat /proc/acpi/button/lid/LID0/state 2>/dev/null || \
                 cat /proc/acpi/button/lid/LID/state 2>/dev/null)
         if echo "$state" | grep -q "closed"; then
           ${niri}/bin/niri msg output eDP-1 off
+          sleep 1
+          move_slack_to "web" true
+          # Chrome is the first column on web; leave that workspace focused.
+          ${niri}/bin/niri msg action focus-workspace "web"
+          ${niri}/bin/niri msg action focus-column-first
         else
           ${niri}/bin/niri msg output eDP-1 on
+          sleep 1
+          move_slack_to "chat"
         fi
       '';
     in {
