@@ -16,8 +16,12 @@
   # fixed, the goodkernel pin (#117) and its nixpkgs-goodkernel flake input are
   # dropped so the kernel tracks the rest of the tree again.
 
-  # Use systemd in initrd (required for TPM2-based LUKS unlock)
-  boot.initrd.systemd.enable = true;
+  # Keep TPM-backed LUKS unlock independent of post-boot consumers such as
+  # Metatron and step-agent. These settings own TPM support in stage 1.
+  boot.initrd.systemd = {
+    enable = true;
+    tpm2.enable = true;
+  };
 
   # LUKS unlock for swap partition (TPM2 enrolled separately)
   boot.initrd.luks.devices."luks-a974ef85-8d19-4ef1-a7e4-cbdd1637fe52" = {

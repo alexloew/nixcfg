@@ -32,7 +32,6 @@ hosts/nixos/default.nix
     ├── nix.nix
     ├── nvidia.nix
     ├── tailscale.nix
-    ├── tpm.nix
     ├── users.nix
     └── virt.nix
 
