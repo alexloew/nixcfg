@@ -42,6 +42,12 @@
       url = "github:ogulcancelik/herdr";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # OpenLogi - Logitech HID++ device manager
+    openlogi = {
+      url = "github:AprilNEA/OpenLogi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -70,6 +76,15 @@
 
           # Host configuration (branches to system modules)
           ./hosts/nixos
+
+          # OpenLogi - package, device-access udev rules, and user agent
+          inputs.openlogi.nixosModules.default
+          {
+            programs.openlogi = {
+              enable = true;
+              launchAtLogin = true;
+            };
+          }
 
           # Determinate Systems Nix
           determinate.nixosModules.default
