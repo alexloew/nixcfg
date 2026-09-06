@@ -804,11 +804,11 @@
     },
     "nixpkgs_7": {
       "locked": {
-        "lastModified": 1785692966,
-        "narHash": "sha256-vUfIeBEfpbAfZ5zjgIkYk7eHBeVfCYVjLbWnMkseYnk=",
+        "lastModified": 1788179007,
+        "narHash": "sha256-hn1oU2rue2SYK8dAr8+WNZWtbsz1S2W5mnHlSEuh3bo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "643809054d65fdd466a63e3155b8c498cb483c04",
+        "rev": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
         "type": "github"
       },
       "original": {
@@ -1105,11 +1105,11 @@
         "smallstep-nur": "smallstep-nur"
       },
       "locked": {
-        "lastModified": 1787802842,
-        "narHash": "sha256-mZIxRHVxthwU1lH4sAipL3Fz2MBzBOSWTfUqkTh+SjI=",
+        "lastModified": 1788646419,
+        "narHash": "sha256-hqU1jsoc23OBTjg2Rf+YEE/K304SuXQkNJmxJIe+YKY=",
         "ref": "refs/heads/main",
-        "rev": "fd2081b9098eac592fa55cda3a74f153a1470b9e",
-        "revCount": 25,
+        "rev": "73f94d838eb4c9e301a953176da79d510406bfac",
+        "revCount": 31,
         "type": "git",
         "url": "ssh://git@github.com/Netflix/smallstep-nix"
       },
@@ -1126,11 +1126,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787785106,
-        "narHash": "sha256-gtlq5epAYuyab49GUaO4an6fy4aL5XVdvaOeIIHAPj0=",
+        "lastModified": 1788459496,
+        "narHash": "sha256-tFZCtEHRCHVkXjoyFmqlk1dhQYC2+xRkKBTMgQCsSFY=",
         "owner": "smallstep",
         "repo": "nur",
-        "rev": "2834e1f8a83db70262246fa39f183405ef261278",
+        "rev": "3b611aed7e47180c2b7a88dfde723ed00fbcafc8",
         "type": "github"
       },
       "original": {
