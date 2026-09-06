@@ -16,6 +16,9 @@ result-*
 # macOS
 .DS_Store
 
+# Local agent state
+.agent-beach/
+
 # Local Claude guidelines (machine-specific, not for repo)
 CLAUDE.local.md
 
