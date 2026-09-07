@@ -7,6 +7,16 @@
 - Preserve unrelated user work. Never reset, restore, clean, or overwrite changes that the agent did not create.
 - Never stage `.agent-beach/` or unrelated files.
 
+## GitHub CLI authentication
+
+- On Linux, `gh` may retrieve `github.com` credentials from the Secret Service
+  keyring through `/run/user/$UID/bus`. If sandboxed `gh auth status` says the
+  token is invalid while host status reports `(keyring)`, the keyring is
+  inaccessible—not evidence that the credential is invalid.
+- After confirming the D-Bus socket is unavailable in the sandbox, run only the
+  required authenticated `gh` command in a narrowly scoped `host` zone. Do not
+  request reauthentication unless host `gh auth status` also fails.
+
 ## Builds and realisation
 
 Never run a Nix command that may evaluate the complete system, fetch inputs, download or build a closure, realise store paths, or activate a configuration without asking first. This includes, but is not limited to:
