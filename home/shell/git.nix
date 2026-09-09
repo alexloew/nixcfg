@@ -20,7 +20,6 @@
       # store path is collected. Referencing `gh` on PATH survives rebuilds.
       "credential \"https://github.com\"".helper = "!gh auth git-credential";
       "credential \"https://gist.github.com\"".helper = "!gh auth git-credential";
-      "credential \"https://github.netflix.net\"".helper = "!gh auth git-credential";
       alias = {
         gp  = "pull";
         gP  = "push";
