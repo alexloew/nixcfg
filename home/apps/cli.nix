@@ -37,11 +37,14 @@
     # Hardware info
     pciutils          # lspci
 
+    # Fleet / osquery
+    fleetctl
+    osquery
+
     # System monitoring
     htop
     btop
     fastfetch
-    osquery
 
     # Text editing (fallback)
     vim
