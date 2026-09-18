@@ -26,14 +26,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Smallstep - certificate/identity tooling (private)
-    smallstep = {
-      url = "git+ssh://git@github.com/Netflix/smallstep-nix";
-    };
-
-    # Fleet / Orbit agent (osquery-based host agent)
-    fleetdm-nix = {
-      url = "git+ssh://git@github.com/Netflix/fleetdm-nix";
+    # Netflix corporate baseline: device identity and endpoint management
+    core = {
+      url = "git+https://netflix.ghe.com/ncselinuxdesktop/nixcfg-core";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -91,13 +86,8 @@
             home-manager.users.alexloewenthal = import ./home;
           }
 
-          # Smallstep step-agent
-          inputs.smallstep.nixosModules.default
-
-          # Fleet / Orbit agent. nixpkgs now ships its own services.orbit
-          # module; keep the Netflix module as the sole option owner.
-          { disabledModules = [ "services/monitoring/orbit.nix" ]; }
-          inputs.fleetdm-nix.nixosModules.fleetdm-nix
+          # Netflix corporate baseline (Smallstep device identity and Fleet)
+          inputs.core.nixosModules.corp-base
 
           # Netflix modules
           inputs.nflx-nixcfg.nixosModules.newt

@@ -12,5 +12,4 @@
 
   # Host-specific overrides go here
   networking.hostName = "nixos";
-  services.orbit.enable = true;
 }
