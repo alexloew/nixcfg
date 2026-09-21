@@ -17,6 +17,24 @@ Update the authoritative Git checkout and publish a verified PR. Never update or
 - Use the Nix package/options lookup tool for current nixpkgs facts rather than relying on memory.
 - Use the least-privileged authenticated zone needed for private inputs, push, and GitHub PR operations.
 
+## GitHub.com authentication
+
+- Before reading private GitHub.com inputs, pushing, or creating a PR, run `gh auth status --hostname github.com` and use the active `alexloew` account when it is available.
+- Prefer the account's configured HTTPS protocol. Use ordinary `git fetch` and `git push` over HTTPS; the `gh` credential helper supplies authentication. Use `gh` for PR and GitHub API operations.
+- If `gh` is unavailable or a different account is active, stop and ask. Do not implicitly switch accounts, reauthenticate, or fall back to SSH.
+- Never copy tokens or unredacted authentication output into logs, commits, or pull requests.
+- On Linux, follow the repository's keyring guidance. If the sandbox cannot access `/run/user/$UID/bus`, use a narrowly scoped host command only for the required authenticated `git` or `gh` operation.
+- If a flake input uses `ssh://git@github.com/` while `gh` is configured for HTTPS, do not probe SSH. Apply this process-scoped rewrite to the approved Nix update and verification commands so Git uses the `gh` credential helper:
+
+  ```bash
+  GIT_CONFIG_COUNT=1 \
+  GIT_CONFIG_KEY_0=url.https://github.com/.insteadOf \
+  GIT_CONFIG_VALUE_0=ssh://git@github.com/ \
+  nix ...
+  ```
+
+  This transport override does not authorize changing the declared input URL in `flake.nix`.
+
 ## Workflow
 
 1. Inspect `git status`, the current branch, remotes, and recent commits.
