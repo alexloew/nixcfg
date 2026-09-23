@@ -71,11 +71,11 @@
         "smallstep-nur": "smallstep-nur"
       },
       "locked": {
-        "lastModified": 1790123442,
-        "narHash": "sha256-1X8R2OjSuvllLPWx1n/VqTnC1UVIXslKZ09iD9WLQRA=",
+        "lastModified": 1790169397,
+        "narHash": "sha256-9JTZDuYD/HVKDqCPFp3t26djnqZRgEkgrvy3fLWdTa8=",
         "ref": "refs/heads/main",
-        "rev": "101c3a9a0aada862d10ee70f0b8be11141f85b0b",
-        "revCount": 390,
+        "rev": "37002391c70c6395235e9741e25764e006f3baad",
+        "revCount": 398,
         "type": "git",
         "url": "https://netflix.ghe.com/ncselinuxdesktop/nixcfg-core"
       },

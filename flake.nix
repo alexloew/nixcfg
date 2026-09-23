@@ -103,6 +103,7 @@
               username = "alexloewenthal";
               nix-ld.enable = true;
               ssh-agent.enable = true;
+              vpn.pulse.url = "https://was001.pcs.flxvpn.net/emp-split";
               vpn.pulse.browser-extensions = [ ];
               genai.disable-project-id-warning = true;
             };
