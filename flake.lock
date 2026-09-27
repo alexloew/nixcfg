@@ -71,11 +71,11 @@
         "smallstep-nur": "smallstep-nur"
       },
       "locked": {
-        "lastModified": 1790169397,
-        "narHash": "sha256-9JTZDuYD/HVKDqCPFp3t26djnqZRgEkgrvy3fLWdTa8=",
+        "lastModified": 1790470765,
+        "narHash": "sha256-Amv/47agUV3DprQKptAEJ0ag+1wsOm6kvRrozUYSGJ0=",
         "ref": "refs/heads/main",
-        "rev": "37002391c70c6395235e9741e25764e006f3baad",
-        "revCount": 398,
+        "rev": "9e6c6a1a2cbb2499ff0bc667ff4f976866b215e2",
+        "revCount": 451,
         "type": "git",
         "url": "https://netflix.ghe.com/ncselinuxdesktop/nixcfg-core"
       },
@@ -1172,11 +1172,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789507292,
-        "narHash": "sha256-tGgcpA5cFxlEhRoxMDmiLTzjCQFkTsen8TsH+ksBDys=",
+        "lastModified": 1790285149,
+        "narHash": "sha256-qfA4JRi1bF6sidDT+FoxpqvAuhzQIDXZj1uq1Pu1e0E=",
         "owner": "smallstep",
         "repo": "nur",
-        "rev": "37f625443d11e11ae79bcb2bb817d0ab9340e68e",
+        "rev": "f00dc145127d4e4e1c3360929d1763a90d7b8833",
         "type": "github"
       },
       "original": {
