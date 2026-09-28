@@ -102,12 +102,38 @@
             nflx = {
               username = "alexloewenthal";
               nix-ld.enable = true;
+              vpn.pulse.url = "https://pcs.flxvpn.net/emp-split";
               ssh-agent.enable = true;
-              vpn.pulse.url = "https://was001.pcs.flxvpn.net/emp-split";
               vpn.pulse.browser-extensions = [ ];
               genai.disable-project-id-warning = true;
             };
           }
+
+          # Overlays (kept in their own dir; see ./overlays)
+          {
+            nixpkgs.overlays = [
+              (import ./overlays/openconnect-patched)
+            ];
+          }
+
+          # Split-tunnel routing fix for the emp-split gateway.
+          #
+          # nm-openconnect-pulse-sso's recovery layer force-adds a default route
+          # via tun0 (post-connect add-default-route + reconnect
+          # fix-default-route hooks, both gated behind enableRecovery). That is
+          # correct for the full-tunnel /emp gateway, but on /emp-split it turns
+          # the split tunnel into a full tunnel: external traffic gets pushed
+          # into the tunnel, which the split gateway won't egress, so only
+          # internal hosts are reachable. The module has no separate toggle, so
+          # mask just these two hooks while keeping the rest of recovery
+          # (auto-reconnect, suspend/resume, docker route narrowing, dns flush).
+          # The gateway's own split-include routes (10/8, 172.16/16, ...) still
+          # send internal traffic via tun0; external falls through to the LAN
+          # default route.
+          ({ lib, ... }: {
+            environment.etc."vpnc/post-connect.d/add-default-route".enable = lib.mkForce false;
+            environment.etc."vpnc/reconnect.d/fix-default-route".enable = lib.mkForce false;
+          })
         ];
       };
     };
