@@ -53,7 +53,29 @@ GOBIN=$HOME/go/bin
 
 ## Herdr
 
-Herdr is installed from its flake in `home/dev/herdr.nix`. A local package patch teaches its process detection to recognize wrapped AI-agent launchers. Review and remove the patch after equivalent behavior lands upstream.
+`home/dev/herdr.nix` installs Herdr from its flake and declares `~/.config/herdr/config.toml` through Home Manager. Settings use the Kanagawa theme, priority sorting, pane-border agent labels, symbol status indicators and terminal toasts, with sound and onboarding disabled.
+
+Edit settings in `home/dev/herdr.nix`, then build and activate as described in [`operations.md`](operations.md). The managed file is a read-only Nix-store symlink, so Herdr's settings UI cannot save changes to it. Sessions, snapshots, sockets, logs and plugin state remain writable and unmanaged.
+
+On the first activation, Home Manager backs up an existing unmanaged `config.toml` as `config.toml.bak` using this flake's backup policy. If that backup already exists, preserve it under another name before activating; do not overwrite it.
+
+### Agent integrations
+
+`integrationTargets` in `home/dev/herdr.nix` declares the integrations Home Manager maintains:
+
+| Agent | Configuration directory |
+|---|---|
+| Claude | `~/.claude` |
+| Codex | `~/.codex` |
+| OpenCode | `~/.config/opencode` |
+| Hermes | `~/.hermes` |
+| Pi | `~/.pi-nflx/agent` |
+
+On each activation, after the shared agent-config updates, Home Manager creates any missing directories and runs the pinned Herdr package's integration installers. These use bundled assets and merge Herdr's registrations while preserving unrelated settings and hooks. Agent configuration stays writable. The activation respects Home Manager's dry-run mode and fails if an installer fails.
+
+Pi targets the active Netflix agent directory, not `~/.pi/agent`, and leaves the existing `herdr-status` extension in place. Restart Pi or reload its extensions after activation to load the integration. Removing a target from `integrationTargets` stops future maintenance; it does not uninstall an existing integration.
+
+A local package patch teaches Herdr's process detection to recognize wrapped AI-agent launchers. Review and remove the patch after equivalent behavior lands upstream.
 
 ## Distrobox and Podman
 
