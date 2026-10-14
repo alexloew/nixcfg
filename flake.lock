@@ -472,11 +472,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1790122799,
-        "narHash": "sha256-HqAFeyEPNoNJpO8c3IE+QcOEBO1oOjL/verJUCwKnUk=",
+        "lastModified": 1790983284,
+        "narHash": "sha256-NHYZLfSrt582u7mwZSgaFYYr8LhYFK94HkGEpacLTgg=",
         "owner": "ogulcancelik",
         "repo": "herdr",
-        "rev": "440a8bdd1e3a809ea76f7cee82d73266d9da54d7",
+        "rev": "5da0a01e1eedda054db0c81dd3a780000c40d9f0",
         "type": "github"
       },
       "original": {
@@ -618,17 +618,17 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1790470106,
-        "narHash": "sha256-jztOZP/SezAhp5ol3y69kOnmoQA1H64VnOcr2gwc5O4=",
+        "lastModified": 1791431337,
+        "narHash": "sha256-dH6NqF2gVB09rKT1AYgam0lV4OtYemQmyMTFgHvv8GQ=",
         "ref": "refs/heads/main",
-        "rev": "53404678f6a29e71e995b215a70af127c0471976",
-        "revCount": 196,
+        "rev": "f76e5bf8ea6e1a563d20c9577793e4d229da0697",
+        "revCount": 229,
         "type": "git",
-        "url": "ssh://git@github.com/Netflix/nflx-nixcfg"
+        "url": "https://netflix.ghe.com/ncselinuxdesktop/nflx-nixcfg"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@github.com/Netflix/nflx-nixcfg"
+        "url": "https://netflix.ghe.com/ncselinuxdesktop/nflx-nixcfg"
       }
     },
     "nix": {
@@ -892,11 +892,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790469744,
-        "narHash": "sha256-rznu//idQrqa9zFefFpcAEk1NXVuQJ6RtcX2AqLmeeA=",
+        "lastModified": 1790987618,
+        "narHash": "sha256-wXWM2XTPoXl2EcYIEqY07p+VHBjUEgh4s1sJ4m2NFm8=",
         "owner": "erahhal",
         "repo": "nm-openconnect-pulse-sso",
-        "rev": "d64253b9a72d970a5762de36307cd1b643a03722",
+        "rev": "6ab1bbf1a36c3192a3120e03b7cb76e38accb693",
         "type": "github"
       },
       "original": {
