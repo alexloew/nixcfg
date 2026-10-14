@@ -12,7 +12,7 @@
     fh.url = "https://flakehub.com/f/DeterminateSystems/fh/*.tar.gz";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nflx-nixcfg.url = "git+ssh://git@github.com/Netflix/nflx-nixcfg";
+    nflx-nixcfg.url = "git+https://netflix.ghe.com/ncselinuxdesktop/nflx-nixcfg";
 
     # Dank Material Shell - Wayland desktop shell
     dms = {
@@ -102,7 +102,7 @@
             nflx = {
               username = "alexloewenthal";
               nix-ld.enable = true;
-              vpn.pulse.url = "https://pcs.flxvpn.net/emp-split";
+              vpn.pulse.url = "https://pcs.flxvpn.net/emp";
               ssh-agent.enable = true;
               vpn.pulse.browser-extensions = [ ];
               genai.disable-project-id-warning = true;
