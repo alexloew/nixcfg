@@ -18,10 +18,8 @@
 
   # Keep TPM-backed LUKS unlock independent of post-boot consumers such as
   # Metatron and step-agent. These settings own TPM support in stage 1.
-  boot.initrd.systemd = {
-    enable = true;
-    tpm2.enable = true;
-  };
+  # The initrd is always systemd-based; its former enable option was removed.
+  boot.initrd.systemd.tpm2.enable = true;
 
   # LUKS unlock for swap partition (TPM2 enrolled separately)
   boot.initrd.luks.devices."luks-a974ef85-8d19-4ef1-a7e4-cbdd1637fe52" = {
