@@ -69,7 +69,7 @@ let
 
     # Resolve only active connectors. Niri retains powered-off outputs in IPC
     # with logical=null, so matching the human-readable inventory mistakes a
-    # closed laptop panel for an available Slack target.
+    # closed laptop panel for an available Obsidian target.
     active_output_by_model() {
       ${pkgs.jq}/bin/jq -r --arg model "$1" \
         'to_entries[] | select(.value.logical != null and .value.model == $model) | .key' \
@@ -83,7 +83,9 @@ let
       local app_id="$1"
       ${niri}/bin/niri msg --json windows 2>/dev/null \
         | ${pkgs.jq}/bin/jq -r --arg app_id "$app_id" \
-          '.[] | select(((.app_id // "") | ascii_downcase) == ($app_id | ascii_downcase)) | .id'
+          'def canonical_app_id:
+             ascii_downcase | if . == "md.obsidian.obsidian" then "md.obsidian" else . end;
+           .[] | select(((.app_id // "") | canonical_app_id) == ($app_id | canonical_app_id)) | .id'
     }
 
     first_window_id_for_app() {
@@ -162,60 +164,60 @@ let
     }
 
     arrange_docked() {
-      ensure_named_workspace "notes" "$aw"
+      ensure_named_workspace "chat" "$aw"
       ensure_named_workspace "media" "$aw"
       ensure_named_workspace "web" "$uw"
       ensure_named_workspace "terminal" "$uw"
-      [ -z "$edp" ] || ensure_named_workspace "chat" "$edp"
+      [ -z "$edp" ] || ensure_named_workspace "notes" "$edp"
       ensure_named_workspace "layout-staging" "$uw"
 
-      ${niri}/bin/niri msg action move-workspace-to-monitor --reference "notes" "$aw"
+      ${niri}/bin/niri msg action move-workspace-to-monitor --reference "chat" "$aw"
       ${niri}/bin/niri msg action move-workspace-to-monitor --reference "media" "$aw"
       ${niri}/bin/niri msg action move-workspace-to-monitor --reference "web" "$uw"
       ${niri}/bin/niri msg action move-workspace-to-monitor --reference "terminal" "$uw"
-      [ -z "$edp" ] || ${niri}/bin/niri msg action move-workspace-to-monitor --reference "chat" "$edp"
+      [ -z "$edp" ] || ${niri}/bin/niri msg action move-workspace-to-monitor --reference "notes" "$edp"
       ${niri}/bin/niri msg action move-workspace-to-monitor --reference "layout-staging" "$uw"
 
-      # Build three physical workspace columns: Obsidian above Spotify on the
-      # left, Chrome above Ghostty in the center, and Slack on the right.
+      # Build three physical workspace columns: Slack above Spotify on the
+      # left, Chrome above Ghostty in the center, and Obsidian on the laptop.
       move_app_to_workspace "spotify" "layout-staging"
       move_app_to_workspace "md.Obsidian" "layout-staging"
       move_app_to_workspace "google-chrome" "layout-staging"
       move_app_to_workspace "com.mitchellh.ghostty" "layout-staging"
       move_app_to_workspace "slack" "layout-staging"
 
-      move_app_to_workspace "md.Obsidian" "notes"
+      move_app_to_workspace "slack" "chat"
       move_app_to_workspace "spotify" "media"
       move_app_to_workspace "google-chrome" "web"
       move_app_to_workspace "com.mitchellh.ghostty" "terminal"
 
-      set_app_window_height "md.Obsidian" "100%"
+      set_app_window_height "slack" "100%"
       set_app_window_height "spotify" "100%"
       set_app_window_height "google-chrome" "100%"
       set_app_window_height "com.mitchellh.ghostty" "100%"
-      set_app_column_width "md.Obsidian" "100%"
+      set_app_column_width "slack" "100%"
       set_app_column_width "spotify" "100%"
       set_app_column_width "google-chrome" "100%"
       set_app_column_width "com.mitchellh.ghostty" "100%"
 
-      ${niri}/bin/niri msg action move-workspace-to-index --reference "notes" 1
+      ${niri}/bin/niri msg action move-workspace-to-index --reference "chat" 1
       ${niri}/bin/niri msg action move-workspace-to-index --reference "media" 2
       ${niri}/bin/niri msg action move-workspace-to-index --reference "web" 1
       ${niri}/bin/niri msg action move-workspace-to-index --reference "terminal" 2
 
       if [ -n "$edp" ]; then
-        move_app_to_workspace "slack" "chat"
-        set_app_column_width "slack" "100%"
-        ${niri}/bin/niri msg action move-workspace-to-index --reference "chat" 1
+        move_app_to_workspace "md.Obsidian" "notes"
+        ${niri}/bin/niri msg action move-workspace-to-index --reference "notes" 1
       else
-        move_app_to_workspace "slack" "web"
-        set_app_column_width "slack" "100%"
-        remove_named_workspace "chat"
+        move_app_to_workspace "md.Obsidian" "web"
+        remove_named_workspace "notes"
       fi
+      set_app_window_height "md.Obsidian" "100%"
+      set_app_column_width "md.Obsidian" "100%"
       remove_named_workspace "layout-staging"
 
-      ${niri}/bin/niri msg action focus-workspace "notes" || true
-      [ -z "$edp" ] || ${niri}/bin/niri msg action focus-workspace "chat" || true
+      ${niri}/bin/niri msg action focus-workspace "chat" || true
+      [ -z "$edp" ] || ${niri}/bin/niri msg action focus-workspace "notes" || true
       ${niri}/bin/niri msg action focus-workspace "web" || true
     }
 
@@ -348,7 +350,7 @@ let
                   <<<"$event"
               )
               case "$app_id" in
-                spotify|md.obsidian|google-chrome|com.mitchellh.ghostty|slack)
+                spotify|md.obsidian|md.obsidian.obsidian|google-chrome|com.mitchellh.ghostty|slack)
                   ${pkgs.systemd}/bin/systemctl --user --no-block \
                     restart configure-displays.service
                   ;;
