@@ -89,6 +89,25 @@
           # Netflix corporate baseline (Smallstep device identity and Fleet)
           inputs.core.nixosModules.corp-base
 
+          # Orbit becomes active before osquery creates its manager socket.
+          # Wait before Core's route helper applies the step-agent ACL; otherwise
+          # its first start races osquery and makes activation report a failure.
+          ({ config, lib, ... }: {
+            systemd.services.step-agent-osquery-route = lib.mkIf config.nflx.core.deviceIdentity.osqueryExtension.enable {
+              preStart = ''
+                socket=${lib.escapeShellArg "${config.services.orbit.rootDirectory}/orbit-osquery.em"}
+                for ((attempt = 0; attempt < 300; attempt++)); do
+                  if [ -S "$socket" ]; then
+                    exit 0
+                  fi
+                  sleep 0.1
+                done
+                echo "Timed out after 30s waiting for the Orbit osquery socket: $socket" >&2
+                exit 1
+              '';
+            };
+          })
+
           # Netflix modules
           inputs.nflx-nixcfg.nixosModules.newt
           inputs.nflx-nixcfg.nixosModules.pulse-vpn

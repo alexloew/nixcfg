@@ -1,7 +1,7 @@
 # Containers
 # Rootless Podman, used as the backend for distrobox (see home/dev/distrobox.nix)
 
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   virtualisation.podman = {
@@ -29,13 +29,29 @@
   # (`distrobox create --nvidia` / `nvidia=true` in assemble.ini).
   hardware.nvidia-container-toolkit.enable = true;
 
-  # A configuration switch can update the NVIDIA userspace libraries while the
-  # running kernel still has the previous driver module loaded. Restarting the
-  # generator in that window fails with a driver/library version mismatch and
-  # prevents the new generation from becoming the boot default. Keep the CDI
-  # spec for the live driver until reboot; the unit runs normally at boot and
-  # regenerates it for the newly loaded module.
-  systemd.services.nvidia-container-toolkit-cdi-generator.restartIfChanged = false;
+  # A switch can update NVIDIA userspace while the previous kernel module is
+  # still loaded. Avoid restarting the generator just because its unit changed.
+  # The toolkit's udev rule can still explicitly restart it during activation,
+  # so skip that known mismatch without failing the unit or deleting an existing
+  # CDI spec. GPU containers require matching drivers; reboot into the new
+  # generation to regenerate the spec. Other generator failures remain fatal.
+  systemd.services.nvidia-container-toolkit-cdi-generator = {
+    restartIfChanged = false;
+    serviceConfig = {
+      RuntimeDirectoryPreserve = "yes";
+      ExecCondition = pkgs.writeShellScript "nvidia-cdi-driver-check" ''
+        if [ -r /sys/module/nvidia/version ]; then
+          read -r loaded_version < /sys/module/nvidia/version
+          expected_version=${lib.escapeShellArg config.hardware.nvidia.package.version}
+          if [ "$loaded_version" != "$expected_version" ]; then
+            echo "Skipping NVIDIA CDI generation: loaded module $loaded_version != configured driver $expected_version; reboot into the new generation to enable GPU containers." >&2
+            exit 1
+          fi
+        fi
+        exit 0
+      '';
+    };
+  };
 
   # Compose support for multi-container work (podman's own `compose` shim needs it)
   environment.systemPackages = with pkgs; [
