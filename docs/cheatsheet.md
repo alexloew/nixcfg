@@ -18,13 +18,14 @@
 
 | Key | Workspace |
 |---|---|
-| `Super+1` | `media` — Spotify and Obsidian |
-| `Super+2` | `web` — Chrome |
-| `Super+3` | `terminal` — Ghostty |
-| `Super+4` | `chat` — Slack |
-| `Super+Shift+1..4` | Move the focused column to the named workspace |
-| `Super+5..9`, `Super+0` | Focus indexed workspace 5–10 |
-| `Super+Shift+5..9`, `Super+Shift+0` | Move the focused column to indexed workspace 5–10 |
+| `Super+1` | `notes` — Obsidian on the laptop |
+| `Super+2` | `media` — Spotify on the left, below Slack |
+| `Super+3` | `web` — Chrome in the center, above Ghostty |
+| `Super+4` | `terminal` — Ghostty in the center |
+| `Super+5` | `chat` — Slack on the left, above Spotify |
+| `Super+Shift+1..5` | Move the focused column to the named workspace |
+| `Super+6..9`, `Super+0` | Focus indexed workspace 6–10 |
+| `Super+Shift+6..9`, `Super+Shift+0` | Move the focused column to indexed workspace 6–10 |
 
 ### Navigation and layout
 

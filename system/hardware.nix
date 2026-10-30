@@ -18,7 +18,7 @@
 
   # Lid-close behavior:
   # - Docked (external displays connected): ignore. Niri disconnects eDP-1 and
-  #   the topology watcher moves Slack beside Chrome on the external outputs.
+  #   the topology watcher moves Obsidian beside Chrome on the external outputs.
   # - Undocked (battery or AC, no external displays): suspend, so the laptop
   #   does not burn its battery sitting in a bag with the lid closed.
   # logind lid options moved under services.logind.settings.Login in nixpkgs.

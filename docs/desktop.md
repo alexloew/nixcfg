@@ -26,19 +26,21 @@ Output geometry is declared in `home/desktop/niri.nix`. `home/desktop/displays.n
 
 | Key | Workspace | Preferred output | Application |
 |---|---|---|---|
-| `Super+1` | `notes` | AW2725DF / left, top | Obsidian |
-| `Super+2` | `media` | AW2725DF / left, below `notes` | Spotify |
+| `Super+1` | `notes` | `eDP-1` / laptop | Obsidian |
+| `Super+2` | `media` | AW2725DF / left, below `chat` | Spotify |
 | `Super+3` | `web` | AW3423DWF / center, top | Chrome |
 | `Super+4` | `terminal` | AW3423DWF / center, below `web` | Ghostty |
-| `Super+5` | `chat` | `eDP-1` / right | Slack |
+| `Super+5` | `chat` | AW2725DF / left, top | Slack |
 
 `Super+Shift+1` through `Super+Shift+5` move a column to the corresponding named workspace.
 
 When docked, Niri has three side-by-side physical workspace columns:
 
-- **Left:** `notes` above `media` — Obsidian above Spotify.
-- **Center:** `web` above `terminal` — Chrome above Ghostty.
-- **Right:** `chat` — Slack.
+- **Left, 27-inch:** `chat` above `media` — Slack above Spotify.
+- **Center, 34-inch:** `web` above `terminal` — Chrome above Ghostty.
+- **Laptop:** `notes` — Obsidian.
+
+Each app occupies its own full-size workspace. “Above” refers to workspace order in the overview, not two windows sharing the screen. The named-workspace keybindings remain unchanged.
 
 With only the laptop panel connected, Niri cannot preserve multiple physical workspace columns. The reconciler therefore reproduces the accepted overview layout, excluding the extra empty workspace at the top:
 
@@ -68,15 +70,15 @@ DMS system sound effects are disabled as a suspend-safety workaround. When AC or
 2. The topology watcher observes the changed active-output signature.
 3. The topology-aware display service restarts.
 4. The left and center workspace columns remain unchanged.
-5. Slack moves into a full-width window column to the right of Chrome on `web`.
-6. The empty displaced `chat` workspace is removed and the previously active window regains focus.
+5. Obsidian moves into a full-width window column to the right of Chrome on `web`.
+6. The empty displaced `notes` workspace is removed and the previously active window regains focus.
 
 ### Lid open
 
 1. Niri reconnects `eDP-1` directly from the kernel lid state.
 2. The topology watcher restarts the display reconciler.
-3. `chat` is recreated on the laptop panel.
-4. Slack returns to `chat`.
+3. `notes` is recreated on the laptop panel.
+4. Obsidian returns to `notes`.
 5. The normal docked application layout is restored.
 
 ## Startup applications
@@ -99,7 +101,7 @@ Application placement uses observed Wayland app IDs:
 | Application | App ID |
 |---|---|
 | Spotify | `spotify` |
-| Obsidian | `md.Obsidian` |
+| Obsidian | `md.obsidian.Obsidian` (also accepts legacy `md.Obsidian`) |
 | Chrome | `google-chrome` |
 | Ghostty | `com.mitchellh.ghostty` |
 | Slack | `slack` (rules also accept `Slack`) |

@@ -59,11 +59,11 @@
         }
 
         # Named workspaces form three physical workspace columns when docked:
-        # notes above media on the left, web above terminal in the center, and
-        # chat on the right. The reconciler defines the laptop-only collapse.
+        # chat above media on the left, web above terminal in the center, and
+        # notes on the laptop. The reconciler defines the laptop-only collapse.
         {
           workspace = {
-            _args = [ "notes" ];
+            _args = [ "chat" ];
             open-on-output = "Dell Inc. AW2725DF 92Q6ZZ3";
           };
         }
@@ -87,7 +87,7 @@
         }
         {
           workspace = {
-            _args = [ "chat" ];
+            _args = [ "notes" ];
             open-on-output = "Samsung Display Corp. 0x4165 Unknown";
           };
         }
@@ -103,7 +103,7 @@
         }
         {
           window-rule._children = [
-            { match._props.app-id = "^md\\.Obsidian$"; }
+            { match._props.app-id = "^md\\.(obsidian\\.)?Obsidian$"; }
             { open-on-workspace = "notes"; }
             { default-column-width.proportion = 1.0; }
           ];
