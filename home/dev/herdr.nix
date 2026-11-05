@@ -1,6 +1,7 @@
-# herdr - terminal workspace manager / multiplexer for AI coding agents.
-# Pulled from its upstream flake (no nixpkgs package yet).
+# Herdr CLI - terminal workspace manager / multiplexer for AI coding agents.
+# Keep the CLI on its upstream flake for the local patch below.
 # https://github.com/ogulcancelik/herdr
+# Herdr Desktop is installed separately from nixpkgs as herdr-desktop.
 #
 # Local patch: agent-detection for wrapped launchers. Our `claude` runs inside
 # a bubblewrap sandbox (`bwrap … -- claude`) and execs a version-named binary
@@ -17,7 +18,10 @@ let
   integrationTargets = [ "claude" "codex" "opencode" "hermes" "pi" ];
 in
 {
-  home.packages = [ herdr ];
+  home.packages = [
+    herdr
+    pkgs.herdr-desktop
+  ];
 
   # Nix owns settings; Herdr's settings UI cannot save to this read-only file.
   # Manage only config.toml so sessions, sockets and logs stay writable.
