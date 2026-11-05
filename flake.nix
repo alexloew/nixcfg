@@ -132,6 +132,7 @@
           {
             nixpkgs.overlays = [
               (import ./overlays/openconnect-patched)
+              (import ./overlays/opencode-node-modules)
             ];
           }
 
