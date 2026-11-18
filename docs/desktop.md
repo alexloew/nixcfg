@@ -29,7 +29,7 @@ Output geometry is declared in `home/desktop/niri.nix`. `home/desktop/displays.n
 | `Super+1` | `notes` | `eDP-1` / laptop | Obsidian |
 | `Super+2` | `media` | AW2725DF / left, below `chat` | Spotify |
 | `Super+3` | `web` | AW3423DWF / center, top | Chrome |
-| `Super+4` | `terminal` | AW3423DWF / center, below `web` | Ghostty |
+| `Super+4` | `terminal` | AW3423DWF / center, below `web` | Herdr Desktop |
 | `Super+5` | `chat` | AW2725DF / left, top | Slack |
 
 `Super+Shift+1` through `Super+Shift+5` move a column to the corresponding named workspace.
@@ -37,7 +37,7 @@ Output geometry is declared in `home/desktop/niri.nix`. `home/desktop/displays.n
 When docked, Niri has three side-by-side physical workspace columns:
 
 - **Left, 27-inch:** `chat` above `media` — Slack above Spotify.
-- **Center, 34-inch:** `web` above `terminal` — Chrome above Ghostty.
+- **Center, 34-inch:** `web` above `terminal` — Chrome above Herdr Desktop.
 - **Laptop:** `notes` — Obsidian.
 
 Each app occupies its own full-size workspace. “Above” refers to workspace order in the overview, not two windows sharing the screen. The named-workspace keybindings remain unchanged.
@@ -48,7 +48,7 @@ With only the laptop panel connected, Niri cannot preserve multiple physical wor
 |---:|---|---|
 | 1 | `media` | Spotify |
 | 2 | `web` | Obsidian, Chrome and Slack as horizontal window columns |
-| 3 | `terminal` | Ghostty |
+| 3 | `terminal` | Herdr Desktop |
 
 The dock-only `notes` and `chat` names are removed after Obsidian and Slack merge into `web`. Niri retains its required empty spare workspace. When DP-1 and DP-2 return, the reconciler restores the five workspaces into their three preferred physical workspace columns.
 
@@ -87,7 +87,7 @@ DMS system sound effects are disabled as a suspend-safety workaround. When AC or
 
 1. discovers and validates the socket belonging to the live Niri process;
 2. detects connected outputs;
-3. launches only missing Spotify, Obsidian, Chrome, Ghostty and Slack processes;
+3. launches only missing Spotify, Obsidian, Chrome, Herdr Desktop and Slack processes;
 4. creates three physical workspace columns when docked or the accepted collapsed laptop layout;
 5. normalizes workspace order, window-column order and sizes;
 6. removes empty named workspaces that do not belong in the active topology;
@@ -103,7 +103,7 @@ Application placement uses observed Wayland app IDs:
 | Spotify | `spotify` |
 | Obsidian | `md.obsidian.Obsidian` (also accepts legacy `md.Obsidian`) |
 | Chrome | `google-chrome` |
-| Ghostty | `com.mitchellh.ghostty` |
+| Herdr Desktop | `herdr-app` |
 | Slack | `slack` (rules also accept `Slack`) |
 
 Window rules provide initial placement. The reconciler normalizes existing windows whenever it starts, making topology changes idempotent. Evaluation alone does not move windows.

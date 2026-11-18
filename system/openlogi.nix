@@ -11,7 +11,19 @@
   # Let nixpkgs own module integration, but keep the newer upstream package.
   programs.openlogi = {
     enable = true;
-    package = inputs.openlogi.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = inputs.openlogi.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (
+      old:
+      lib.optionalAttrs (
+        old.version == "0.9.0"
+        && !(lib.any (input: (input.pname or "") == "zstd") (
+          (old.buildInputs or [ ]) ++ (old.checkInputs or [ ])
+        ))
+      ) {
+        # Workspace tests compile zstd-sys; the Cargo hook requires system zstd.
+        # Keep tests enabled without changing the release/vendor configuration.
+        checkInputs = (old.checkInputs or [ ]) ++ [ pkgs.zstd ];
+      }
+    );
   };
 
   # The nixpkgs module installs the package and udev rules, but does not start

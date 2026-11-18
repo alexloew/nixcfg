@@ -653,11 +653,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1793809067,
-        "narHash": "sha256-Zg2KFXgAgfQUlZeCcS6HYpsFQzTiRKo1fayE8+jXWu8=",
+        "lastModified": 1795042929,
+        "narHash": "sha256-lh4ggPNYmO3YWn7263wLcLhElb1SndqfQcfouPWjOiM=",
         "ref": "refs/heads/main",
-        "rev": "4687afcf4bd7de6d4a4d74cfa3ff3e76ff83b100",
-        "revCount": 252,
+        "rev": "82252edf4154e98b76169da8898b441cda68a922",
+        "revCount": 254,
         "type": "git",
         "url": "https://netflix.ghe.com/ncselinuxdesktop/nflx-nixcfg"
       },
@@ -862,11 +862,11 @@
     },
     "nixpkgs_6": {
       "locked": {
-        "lastModified": 1794042290,
-        "narHash": "sha256-ziZn2PvCJE5JEEpqTdxXwJpPB+L3YqoCpTAMCzyaP3U=",
+        "lastModified": 1794890597,
+        "narHash": "sha256-lME2lHoDHAaSHP3/okgiVoJ0icVEvsQH8LeU3We7tcc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f4a03c008967841f2a0b3cb7c436fc6fc31671f6",
+        "rev": "04906337b6d53e8bb0eaf0470ae9f070a4d4eb55",
         "type": "github"
       },
       "original": {

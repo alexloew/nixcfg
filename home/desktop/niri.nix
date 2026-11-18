@@ -116,7 +116,7 @@
         }
         {
           window-rule._children = [
-            { match._props.app-id = "^com\\.mitchellh\\.ghostty$"; }
+            { match._props.app-id = "^herdr-app$"; }
             { open-on-workspace = "terminal"; }
           ];
         }
@@ -142,7 +142,7 @@
         }
         {
           window-rule._children = [
-            { match._props.app-id = "^com\\.mitchellh\\.ghostty$"; }
+            { match._props.app-id = "^herdr-app$"; }
             { match._props.app-id = "^Alacritty$"; }
             { match._props.app-id = "^kitty$"; }
             { match._props.app-id = "^foot$"; }
@@ -162,7 +162,7 @@
         {
           window-rule._children = [
             { match._props.app-id = "^google-chrome$"; }
-            { match._props.app-id = "^com\\.mitchellh\\.ghostty$"; }
+            { match._props.app-id = "^herdr-app$"; }
             { open-maximized = true; }
           ];
         }
@@ -301,7 +301,7 @@
       # so this generated file remains the sole binding authority.
       binds = {
         # Application launchers
-        "Mod+Return".spawn = [ "ghostty" ];
+        "Mod+Return".spawn = [ "herdr-app" ];
         "Mod+B".spawn = [ "firefox" ];
 
         # DMS IPC keybinds are declared directly so the generated Home Manager

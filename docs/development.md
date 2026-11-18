@@ -6,7 +6,7 @@ The interactive shell stack is:
 
 - Zsh with completion, vi keybindings and fzf history search
 - Starship prompt
-- Ghostty terminal
+- Herdr Desktop as the desktop terminal; Ghostty remains available
 - tmux with `Ctrl+\` as the primary prefix
 - Git, SSH and GitHub CLI configuration through Home Manager and shared Netflix modules
 
