@@ -6,7 +6,7 @@
 
 | Key | Action |
 |---|---|
-| `Super+Return` | Open Ghostty |
+| `Super+Return` | Open Herdr Desktop |
 | `Super+Space` | Toggle DMS Spotlight launcher |
 | `Super+B` | Open Firefox |
 | `Super+Q` | Close focused window |
@@ -20,8 +20,8 @@
 |---|---|
 | `Super+1` | `notes` — Obsidian on the laptop |
 | `Super+2` | `media` — Spotify on the left, below Slack |
-| `Super+3` | `web` — Chrome in the center, above Ghostty |
-| `Super+4` | `terminal` — Ghostty in the center |
+| `Super+3` | `web` — Chrome in the center, above Herdr Desktop |
+| `Super+4` | `terminal` — Herdr Desktop in the center |
 | `Super+5` | `chat` — Slack on the left, above Spotify |
 | `Super+Shift+1..5` | Move the focused column to the named workspace |
 | `Super+6..9`, `Super+0` | Focus indexed workspace 6–10 |

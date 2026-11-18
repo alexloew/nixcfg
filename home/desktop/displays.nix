@@ -179,26 +179,26 @@ let
       ${niri}/bin/niri msg action move-workspace-to-monitor --reference "layout-staging" "$uw"
 
       # Build three physical workspace columns: Slack above Spotify on the
-      # left, Chrome above Ghostty in the center, and Obsidian on the laptop.
+      # left, Chrome above Herdr Desktop in the center, and Obsidian on the laptop.
       move_app_to_workspace "spotify" "layout-staging"
       move_app_to_workspace "md.Obsidian" "layout-staging"
       move_app_to_workspace "google-chrome" "layout-staging"
-      move_app_to_workspace "com.mitchellh.ghostty" "layout-staging"
+      move_app_to_workspace "herdr-app" "layout-staging"
       move_app_to_workspace "slack" "layout-staging"
 
       move_app_to_workspace "slack" "chat"
       move_app_to_workspace "spotify" "media"
       move_app_to_workspace "google-chrome" "web"
-      move_app_to_workspace "com.mitchellh.ghostty" "terminal"
+      move_app_to_workspace "herdr-app" "terminal"
 
       set_app_window_height "slack" "100%"
       set_app_window_height "spotify" "100%"
       set_app_window_height "google-chrome" "100%"
-      set_app_window_height "com.mitchellh.ghostty" "100%"
+      set_app_window_height "herdr-app" "100%"
       set_app_column_width "slack" "100%"
       set_app_column_width "spotify" "100%"
       set_app_column_width "google-chrome" "100%"
-      set_app_column_width "com.mitchellh.ghostty" "100%"
+      set_app_column_width "herdr-app" "100%"
 
       ${niri}/bin/niri msg action move-workspace-to-index --reference "chat" 1
       ${niri}/bin/niri msg action move-workspace-to-index --reference "media" 2
@@ -244,25 +244,25 @@ let
       move_app_to_workspace "spotify" "layout-staging"
       move_app_to_workspace "md.Obsidian" "layout-staging"
       move_app_to_workspace "google-chrome" "layout-staging"
-      move_app_to_workspace "com.mitchellh.ghostty" "layout-staging"
+      move_app_to_workspace "herdr-app" "layout-staging"
       move_app_to_workspace "slack" "layout-staging"
 
       move_app_to_workspace "spotify" "media"
       move_app_to_workspace "md.Obsidian" "web"
       move_app_to_workspace "google-chrome" "web"
       move_app_to_workspace "slack" "web"
-      move_app_to_workspace "com.mitchellh.ghostty" "terminal"
+      move_app_to_workspace "herdr-app" "terminal"
 
       set_app_window_height "spotify" "100%"
       set_app_window_height "md.Obsidian" "100%"
       set_app_window_height "google-chrome" "100%"
       set_app_window_height "slack" "100%"
-      set_app_window_height "com.mitchellh.ghostty" "100%"
+      set_app_window_height "herdr-app" "100%"
       set_app_column_width "spotify" "100%"
       set_app_column_width "md.Obsidian" "100%"
       set_app_column_width "google-chrome" "100%"
       set_app_column_width "slack" "100%"
-      set_app_column_width "com.mitchellh.ghostty" "100%"
+      set_app_column_width "herdr-app" "100%"
 
       ${niri}/bin/niri msg action move-workspace-to-index --reference "media" 1
       ${niri}/bin/niri msg action move-workspace-to-index --reference "web" 2
@@ -278,7 +278,7 @@ let
     launch_if_missing "spotify" spotify
     launch_if_missing "md.Obsidian" obsidian
     launch_if_missing "google-chrome" google-chrome-stable
-    launch_if_missing "com.mitchellh.ghostty" ghostty
+    launch_if_missing "herdr-app" herdr-app
     launch_if_missing "slack" slack
     sleep 3
 
@@ -350,7 +350,7 @@ let
                   <<<"$event"
               )
               case "$app_id" in
-                spotify|md.obsidian|md.obsidian.obsidian|google-chrome|com.mitchellh.ghostty|slack)
+                spotify|md.obsidian|md.obsidian.obsidian|google-chrome|herdr-app|slack)
                   ${pkgs.systemd}/bin/systemctl --user --no-block \
                     restart configure-displays.service
                   ;;
