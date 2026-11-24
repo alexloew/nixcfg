@@ -38,6 +38,6 @@
   # boot. Niri now applies output modes and positions natively on connection.
 
   # Do not restart graphical user services unconditionally on resume. DMS
-  # restores its own Wayland surfaces, while Niri topology events start display
-  # reconciliation once an output is active.
+  # restores its own Wayland surfaces, while the display watcher requests
+  # reconciliation once Niri reports an active, settled output topology.
 }

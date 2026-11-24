@@ -43,6 +43,19 @@ let
     }
   '';
 
+  displayLayoutHelpers = ''
+    niri_json() { ${pkgs.coreutils}/bin/timeout 5s ${niri}/bin/niri msg --json "$@"; }
+    layout_jq() { ${pkgs.jq}/bin/jq "$@"; }
+    layout_flock() { ${pkgs.util-linux}/bin/flock "$@"; }
+    layout_service_is_running() {
+      ${pkgs.systemd}/bin/systemctl --user is-active --quiet configure-displays.service
+    }
+    request_layout_reconciliation() {
+      ${pkgs.systemd}/bin/systemctl --user --no-block restart configure-displays.service
+    }
+    ${builtins.readFile ./display-layout.sh}
+  '';
+
   configureDisplays = pkgs.writeShellScript "configure-displays" ''
     export WAYLAND_DISPLAY=''${WAYLAND_DISPLAY:-wayland-1}
     export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
@@ -50,13 +63,13 @@ let
     ${niriSocketDiscovery}
     wait_for_niri || exit 1
 
-    outputs=$(${niri}/bin/niri msg --json outputs 2>/dev/null)
-
-    # Lid-close suspend can briefly leave Niri with no active output. There is
-    # nothing to arrange in that state; a lid-open or topology event will start
-    # this service again once an output has a logical geometry.
-    if ! ${pkgs.jq}/bin/jq -e \
-      'any(to_entries[]; .value.logical != null)' <<<"$outputs" >/dev/null; then
+    ${displayLayoutHelpers}
+    exec 9>"$XDG_RUNTIME_DIR/nixcfg-display-layout.lock"
+    layout_flock -x 9 || exit 1
+    # Do not launch applications while suspend leaves us without a display.
+    # This is only an early guard; resample after startup before moving anything.
+    read_layout_outputs || exit 75
+    if [ "$expected_workspaces" = '{}' ]; then
       echo "No active outputs; deferring display reconciliation"
       exit 0
     fi
@@ -66,18 +79,6 @@ let
         | ${pkgs.jq}/bin/jq -r '.[] | select(.is_focused) | .id' \
         | ${pkgs.coreutils}/bin/head -n 1
     )
-
-    # Resolve only active connectors. Niri retains powered-off outputs in IPC
-    # with logical=null, so matching the human-readable inventory mistakes a
-    # closed laptop panel for an available Obsidian target.
-    active_output_by_model() {
-      ${pkgs.jq}/bin/jq -r --arg model "$1" \
-        'to_entries[] | select(.value.logical != null and .value.model == $model) | .key' \
-        <<<"$outputs" | ${pkgs.coreutils}/bin/head -n 1
-    }
-    uw=$(active_output_by_model "AW3423DWF")
-    aw=$(active_output_by_model "AW2725DF")
-    edp=$(active_output_by_model "0x4165")
 
     window_ids_for_app() {
       local app_id="$1"
@@ -222,12 +223,7 @@ let
     }
 
     arrange_laptop() {
-      local output="$edp"
-      [ -n "$output" ] || output=$(
-        ${niri}/bin/niri msg --json outputs 2>/dev/null \
-          | ${pkgs.jq}/bin/jq -r 'to_entries[] | select(.value.logical != null) | .key' \
-          | ${pkgs.coreutils}/bin/head -n 1
-      )
+      local output="$fallback_output"
       [ -n "$output" ] || return 1
 
       ensure_named_workspace "web" "$output"
@@ -282,11 +278,14 @@ let
     launch_if_missing "slack" slack
     sleep 3
 
-    if [ -n "$uw" ] && [ -n "$aw" ]; then
-      arrange_docked
-    else
-      arrange_laptop
-    fi
+    # Sample after application startup, not before the three-second delay.
+    reconcile_display_layout
+    layout_result=$?
+    case "$layout_result" in
+      0) ;;
+      2) exit 0 ;; # No active outputs during suspend; the watcher will retry.
+      *) exit "$layout_result" ;;
+    esac
 
     # Layout operations temporarily move focus. Restore the window that was
     # active before reconciliation instead of imposing an application choice.
@@ -305,6 +304,9 @@ let
       exit 1
     fi
 
+    # Do not let the long-lived wallpaper process retain the layout lock.
+    layout_flock -u 9
+    exec 9>&-
     exec ${pkgs.swaybg}/bin/swaybg "''${swaybg_args[@]}"
   '';
 
@@ -313,62 +315,9 @@ let
 
     ${niriSocketDiscovery}
     wait_for_niri || exit 1
-
-    active_output_signature() {
-      ${niri}/bin/niri msg --json outputs 2>/dev/null \
-        | ${pkgs.jq}/bin/jq -r \
-          '[to_entries[] | select(.value.logical != null) | .key] | sort | join(",")'
-    }
-
-    # Let the startup reconciler launch its initial app set before subscribing.
-    sleep 10
-
-    declare -A known_windows=()
-    last_signature=$(active_output_signature)
-    ${niri}/bin/niri msg --json event-stream \
-      | while IFS= read -r event; do
-          if ${pkgs.jq}/bin/jq -e 'has("WindowsChanged")' <<<"$event" >/dev/null; then
-            while IFS= read -r id; do
-              [ -z "$id" ] || known_windows["$id"]=1
-            done < <(${pkgs.jq}/bin/jq -r '.WindowsChanged.windows[].id' <<<"$event")
-            continue
-          fi
-
-          if ${pkgs.jq}/bin/jq -e 'has("WindowClosed")' <<<"$event" >/dev/null; then
-            id=$(${pkgs.jq}/bin/jq -r '.WindowClosed.id' <<<"$event")
-            unset "known_windows[$id]"
-            continue
-          fi
-
-          if ${pkgs.jq}/bin/jq -e 'has("WindowOpenedOrChanged")' <<<"$event" >/dev/null; then
-            id=$(${pkgs.jq}/bin/jq -r '.WindowOpenedOrChanged.window.id' <<<"$event")
-            if [ -z "''${known_windows[$id]+present}" ]; then
-              known_windows["$id"]=1
-              app_id=$(
-                ${pkgs.jq}/bin/jq -r \
-                  '.WindowOpenedOrChanged.window.app_id // "" | ascii_downcase' \
-                  <<<"$event"
-              )
-              case "$app_id" in
-                spotify|md.obsidian|md.obsidian.obsidian|google-chrome|herdr-app|slack)
-                  ${pkgs.systemd}/bin/systemctl --user --no-block \
-                    restart configure-displays.service
-                  ;;
-              esac
-            fi
-            continue
-          fi
-
-          if ${pkgs.jq}/bin/jq -e 'has("WorkspacesChanged")' <<<"$event" >/dev/null; then
-            sleep 0.5
-            signature=$(active_output_signature)
-            if [ "$signature" != "$last_signature" ]; then
-              last_signature="$signature"
-              ${pkgs.systemd}/bin/systemctl --user --no-block \
-                restart configure-displays.service
-            fi
-          fi
-        done
+    ${displayLayoutHelpers}
+    exec 9>"$XDG_RUNTIME_DIR/nixcfg-display-layout.lock"
+    watch_display_layout
   '';
 in
 {
@@ -385,6 +334,9 @@ in
         Type = "simple";
         ExecStart = "${configureDisplays}";
         Restart = "on-failure";
+        # Layout verification has its own bounded retry budget; do not turn a
+        # persistent mismatch into an unlimited systemd restart cycle.
+        RestartPreventExitStatus = [ 75 ];
         RestartSec = "2";
         Environment = "WAYLAND_DISPLAY=wayland-1";
         # Restarts must also terminate in-flight sleeps and Niri/jq IPC calls.
