@@ -58,7 +58,7 @@ The dock-only `notes` and `chat` names are removed after Obsidian and Slack merg
 
 The greeter's Niri configuration keeps the laptop panel logically available while the lid is closed. This prevents a lid-closed, undocked boot from starting DMS with zero outputs. The setting is greeter-only; the logged-in session retains the normal lid and topology behavior below.
 
-On resume, DMS keeps running and restores its own Wayland surfaces. The system does not restart graphical user services unconditionally: removing DMS's active lock surface makes Niri display its solid-red security fallback, while starting the display reconciler before any output is active creates a restart loop. Niri's output topology event starts reconciliation when the panel is available; a zero-output run exits successfully and defers to that event.
+On resume, DMS keeps running and restores its own Wayland surfaces. The system does not restart graphical user services unconditionally: removing DMS's active lock surface makes Niri display its solid-red security fallback, while starting the display reconciler before any output is active creates a restart loop. The display watcher detects when the panel becomes available; a zero-output run exits successfully and waits for a later check.
 
 There is deliberately no acpid-to-user-service lid bridge and no explicit `niri msg output eDP-1 off/on` pair. A lid-open event can arrive while systemd still has the user slice frozen; the user-manager call then fails, and an earlier explicit `off` would survive resume and leave Niri with no active output. Letting Niri consume the kernel lid state directly makes panel wake independent of user-service timing.
 
@@ -86,15 +86,26 @@ DMS system sound effects are disabled as a suspend-safety workaround. When AC or
 `configure-displays.service` starts with the graphical session. It:
 
 1. discovers and validates the socket belonging to the live Niri process;
-2. detects connected outputs;
-3. launches only missing Spotify, Obsidian, Chrome, Herdr Desktop and Slack processes;
+2. checks that an output is active before launching missing Spotify, Obsidian, Chrome, Herdr Desktop and Slack processes;
+3. samples outputs again after app startup, waiting for four matching snapshots 0.5 seconds apart;
 4. creates three physical workspace columns when docked or the accepted collapsed laptop layout;
 5. normalizes workspace order, window-column order and sizes;
 6. removes empty named workspaces that do not belong in the active topology;
-7. restores the previously focused window; and
-8. keeps `swaybg` running as the service process.
+7. verifies that the topology stayed unchanged and each managed workspace is on its intended monitor;
+8. restores the previously focused window; and
+9. releases the layout lock and keeps `swaybg` running as the service process.
 
-`display-topology-watcher.service` subscribes to Niri's event stream. Niri has no dedicated output-change event, so the watcher observes `WorkspacesChanged`, compares the active-output signature, and restarts the reconciler only when that signature changes. Both processes count only JSON outputs whose `logical` field is non-null; Niri keeps a powered-off laptop panel in its output inventory. It also tracks window IDs and reconciles when one of the five managed apps opens; layout changes to an existing window do not retrigger it.
+`display-topology-watcher.service` checks Niri every two seconds instead of relying on output-change events. It waits for two matching output signatures before acting. Signatures include connector, make, model, serial and logical geometry, so monitors exchanging the same `DP-1`/`DP-2` names are not mistaken for an unchanged setup. Both processes exclude outputs whose `logical` field is null, including the laptop panel with the lid closed.
+
+The watcher requests reconciliation for a settled topology change, a new managed application window, an incorrect workspace-to-monitor assignment or a stopped display service. This catches swapped workspace groups after resume even when both connector names remain unchanged. Manually moving a managed named workspace onto the wrong monitor is also corrected; unrelated workspaces are not checked.
+
+### Resume recovery and loop prevention
+
+- A shared runtime lock prevents the watcher from interrupting an in-progress layout pass. Temporary staging workspaces cannot trigger another restart. A crash releases the lock, and `swaybg` does not inherit it.
+- The reconciler samples outputs after app startup rather than acting on an earlier snapshot. Each settling attempt uses at most twelve samples. It retries a changed topology or incorrect final workspace assignment up to three times.
+- The watcher makes at most three requests for a persistent mismatch. Correct placement with a running service, a new settled topology or a new managed window resets that budget. An already-correct layout does not trigger a restart.
+- Verification failure exits with status 75 and logs the expected assignments. Systemd does not automatically restart that status; the watcher's bounded budget controls recovery instead.
+- Watcher IPC reads have a five-second timeout. Three consecutive failed snapshots restart the watcher so it rediscovers the live Niri socket. Neither process restarts DMS or the compositor, changes output modes or overrides lid handling.
 
 Application placement uses observed Wayland app IDs:
 
@@ -116,7 +127,8 @@ Window rules provide initial placement. The reconciler normalizes existing windo
 | Named workspace/output mapping | `home/desktop/niri.nix` |
 | App placement and opacity | `home/desktop/niri.nix` |
 | Lid suspend policy and native panel handling | `system/hardware.nix` and Niri |
-| Topology watcher, app reflow, wallpaper and startup | `home/desktop/displays.nix` |
+| Service wiring, app reflow, wallpaper and startup | `home/desktop/displays.nix` |
+| Topology settling, placement validation and bounded recovery | `home/desktop/display-layout.sh` |
 | DMS bar, theme and idle policy | `home/desktop/dms.nix` |
 | Greeter | `system/desktop/dms-greeter.nix` |
 | P16s hardware profile, GPU drivers and PRIME offload | `flake.nix` (`nixos-hardware`) |
@@ -132,6 +144,12 @@ niri msg --json workspaces | jq .
 niri msg --json windows | jq .
 systemctl --user status configure-displays.service
 systemctl --user status display-topology-watcher.service
+```
+
+Run the fixture regression tests with Bash and jq installed. They do not contact Niri or systemd, evaluate Nix, or change the desktop:
+
+```bash
+bash tests/display-layout.test.sh
 ```
 
 Validate generated KDL before activation:
