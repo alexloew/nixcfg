@@ -16,28 +16,28 @@ Niri owns outputs, workspaces, window rules and navigation. DMS owns the bar, la
 
 | Role | Output | Hardware | Logical position | Mode |
 |---|---|---|---:|---|
-| Left | `DP-2` | Dell AW2725DF | `0,0` | 2560×1440 at 143.969 Hz |
-| Center | `DP-1` | Dell AW3423DWF | `2560,0` | 3440×1440 at 99.982 Hz |
+| Left | `DP-1` | Dell AW3423DWF | `0,0` | 3440×1440 at 99.982 Hz |
+| Center | `DP-2` | Dell AW2725DF | `3440,0` | 2560×1440 at 143.969 Hz |
 | Right | `eDP-1` | Samsung laptop panel | `6000,0` when all outputs are present | 3840×2400 at scale 2 |
 
-Output geometry is declared in `home/desktop/niri.nix`. `home/desktop/displays.nix` detects models only to assign wallpapers; it does not issue mode or position changes.
+Output geometry is declared in `home/desktop/niri.nix`, matched by make/model/serial because connector names can swap. `home/desktop/displays.nix` detects models only to assign wallpapers; it does not issue mode or position changes.
 
 ## Named workspaces
 
 | Key | Workspace | Preferred output | Application |
 |---|---|---|---|
 | `Super+1` | `notes` | `eDP-1` / laptop | Obsidian |
-| `Super+2` | `media` | AW2725DF / left, below `chat` | Spotify |
-| `Super+3` | `web` | AW3423DWF / center, top | Chrome |
-| `Super+4` | `terminal` | AW3423DWF / center, below `web` | Herdr Desktop |
-| `Super+5` | `chat` | AW2725DF / left, top | Slack |
+| `Super+2` | `media` | AW2725DF / center, below `chat` | Spotify |
+| `Super+3` | `web` | AW3423DWF / left, top | Chrome |
+| `Super+4` | `terminal` | AW3423DWF / left, below `web` | Herdr Desktop |
+| `Super+5` | `chat` | AW2725DF / center, top | Slack |
 
 `Super+Shift+1` through `Super+Shift+5` move a column to the corresponding named workspace.
 
 When docked, Niri has three side-by-side physical workspace columns:
 
-- **Left, 27-inch:** `chat` above `media` — Slack above Spotify.
-- **Center, 34-inch:** `web` above `terminal` — Chrome above Herdr Desktop.
+- **Left, 34-inch:** `web` above `terminal` — Chrome above Herdr Desktop.
+- **Center, 27-inch:** `chat` above `media` — Slack above Spotify.
 - **Laptop:** `notes` — Obsidian.
 
 Each app occupies its own full-size workspace. “Above” refers to workspace order in the overview, not two windows sharing the screen. The named-workspace keybindings remain unchanged.

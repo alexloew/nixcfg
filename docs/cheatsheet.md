@@ -19,10 +19,10 @@
 | Key | Workspace |
 |---|---|
 | `Super+1` | `notes` — Obsidian on the laptop |
-| `Super+2` | `media` — Spotify on the left, below Slack |
-| `Super+3` | `web` — Chrome in the center, above Herdr Desktop |
-| `Super+4` | `terminal` — Herdr Desktop in the center |
-| `Super+5` | `chat` — Slack on the left, above Spotify |
+| `Super+2` | `media` — Spotify in the center, below Slack |
+| `Super+3` | `web` — Chrome on the left, above Herdr Desktop |
+| `Super+4` | `terminal` — Herdr Desktop on the left |
+| `Super+5` | `chat` — Slack in the center, above Spotify |
 | `Super+Shift+1..5` | Move the focused column to the named workspace |
 | `Super+6..9`, `Super+0` | Focus indexed workspace 6–10 |
 | `Super+Shift+6..9`, `Super+Shift+0` | Move the focused column to indexed workspace 6–10 |

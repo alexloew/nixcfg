@@ -178,8 +178,8 @@ let
       [ -z "$edp" ] || ${niri}/bin/niri msg action move-workspace-to-monitor --reference "notes" "$edp"
       ${niri}/bin/niri msg action move-workspace-to-monitor --reference "layout-staging" "$uw"
 
-      # Build three physical workspace columns: Slack above Spotify on the
-      # left, Chrome above Herdr Desktop in the center, and Obsidian on the laptop.
+      # Build three physical workspace columns: Chrome above Herdr Desktop on
+      # the left, Slack above Spotify in the center, and Obsidian on the laptop.
       move_app_to_workspace "spotify" "layout-staging"
       move_app_to_workspace "md.Obsidian" "layout-staging"
       move_app_to_workspace "google-chrome" "layout-staging"

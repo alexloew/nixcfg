@@ -30,23 +30,25 @@
     settings = {
       # Repeated top-level nodes must be expressed as ordered KDL children.
       _children = [
-        # Output configuration — niri requires connector names, not EDID strings.
-        # Current hardware: DP-1=AW3423DWF (ultrawide), DP-2=AW2725DF (27-inch)
+        # Output configuration. Match monitors by "make model serial" rather than
+        # connector name: DP-1/DP-2 follow port and dock enumeration order and
+        # can swap between boots or replugs.
+        # Left to right: ultrawide AW3423DWF, 27-inch AW2725DF, laptop panel.
         {
           output = {
-            _args = [ "DP-1" ];
+            _args = [ "Dell Inc. AW3423DWF GF0C2S3" ];
             scale = 1.0;
             transform = "normal";
-            position._props = { x = 2560; y = 0; };
+            position._props = { x = 0; y = 0; };
             mode = "3440x1440@99.982000";
           };
         }
         {
           output = {
-            _args = [ "DP-2" ];
+            _args = [ "Dell Inc. AW2725DF 92Q6ZZ3" ];
             scale = 1.0;
             transform = "normal";
-            position._props = { x = 0; y = 0; };
+            position._props = { x = 3440; y = 0; };
             mode = "2560x1440@143.969000";
           };
         }
@@ -59,7 +61,7 @@
         }
 
         # Named workspaces form three physical workspace columns when docked:
-        # chat above media on the left, web above terminal in the center, and
+        # web above terminal on the left, chat above media in the center, and
         # notes on the laptop. The reconciler defines the laptop-only collapse.
         {
           workspace = {
